@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KompraFácil - Tu Mercado Inteligente</title>
+    <title>DFPFantasy - Mercado Inteligente</title>
     <!-- Tailwind CSS para un diseño moderno y limpio estilo app móvil -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,7 +14,7 @@
     <header class="bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-lg font-bold tracking-wide">KompraFácil</h1>
+                <h1 class="text-lg font-bold tracking-wide">DFPFantasy Market</h1>
                 <p class="text-xs text-emerald-100" id="item-count">0 productos en el carrito</p>
             </div>
             <div class="text-right">
@@ -25,39 +25,42 @@
     </header>
 
     <!-- CONTENEDOR PRINCIPAL -->
-    <main class="max-w-md mx-auto p-4">
+    <main class="max-w-md mx-auto p-4 space-y-6">
 
         <!-- SECCIÓN 1: SELECTOR DE PASILLOS -->
-        <section class="mb-6">
+        <section>
             <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Pasillos del Supermercado</h2>
             <div class="grid grid-cols-4 gap-2" id="categories-container">
                 <!-- Se cargan dinámicamente -->
             </div>
         </section>
 
-        <!-- SECCIÓN 2: GESTIÓN DE PRODUCTOS DEL PASILLO SELECCIONADO -->
-        <section class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-700 text-lg" id="current-category-title">Selecciona un pasillo</h3>
-                <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-600 text-xs font-semibold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition">
-                    <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
+        <!-- SECCIÓN 2: GESTIÓN DE PRODUCTOS DEL PASILLO SELECCIONADO (DISEÑO LIMPIO) -->
+        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base" id="current-category-title">Pasillo</h3>
+                    <p class="text-xs text-slate-400">Agrega o selecciona tus productos aquí</p>
+                </div>
+                <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-600 text-xs font-semibold px-3 py-2 rounded-xl border border-emerald-200 hover:bg-emerald-100 transition flex items-center shadow-sm">
+                    <i class="fa-solid fa-plus mr-1.5"></i> Agregar al Pasillo
                 </button>
             </div>
 
             <!-- Lista de productos en este pasillo -->
             <div class="space-y-3" id="products-list">
-                <p class="text-sm text-slate-400 text-center py-6">Elige un pasillo arriba para ver o agregar productos.</p>
+                <p class="text-sm text-slate-400 text-center py-8">Elige un pasillo arriba para ver o agregar productos.</p>
             </div>
         </section>
 
         <!-- SECCIÓN 3: RESUMEN DEL CARRITO ACTUAL -->
-        <section class="bg-white rounded-2xl shadow-sm p-4">
-            <h3 class="font-bold text-slate-700 text-lg mb-3 flex items-center justify-between">
-                <span><i class="fa-solid fa-cart-shopping text-emerald-600 mr-2"></i> Tu Carrito</span>
-                <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline">Vaciar</button>
+        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100">
+            <h3 class="font-bold text-slate-700 text-base mb-3 flex items-center justify-between">
+                <span><i class="fa-solid fa-cart-shopping text-emerald-600 mr-2"></i> Tu Carrito de Compras</span>
+                <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline font-medium">Vaciar</button>
             </h3>
             <div class="divide-y divide-slate-100 max-h-60 overflow-y-auto" id="cart-list">
-                <p class="text-sm text-slate-400 text-center py-4">Aún no has agregado productos al carrito.</p>
+                <p class="text-sm text-slate-400 text-center py-6">Aún no has agregado productos al carrito.</p>
             </div>
         </section>
 
@@ -66,19 +69,20 @@
     <!-- MODAL PARA AGREGAR NUEVO PRODUCTO AL PASILLO -->
     <div id="product-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl">
-            <h3 class="font-bold text-lg mb-3 text-slate-800">Agregar Producto al Pasillo</h3>
+            <h3 class="font-bold text-lg mb-1 text-slate-800">Nuevo Producto</h3>
+            <p class="text-xs text-slate-400 mb-4" id="modal-subtitle">Se guardará en este pasillo permanentemente.</p>
             <form id="add-product-form" onsubmit="saveNewProduct(event)">
                 <div class="mb-3">
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Queso..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Jabón..." class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
-                <div class="mb-4">
+                <div class="mb-5">
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Precio ($)</label>
-                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="flex space-x-2">
-                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-sm font-semibold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-sm font-semibold">Guardar</button>
+                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-600 py-2.5 rounded-xl text-sm font-semibold">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm">Guardar</button>
                 </div>
             </form>
         </div>
@@ -86,7 +90,7 @@
 
     <!-- LÓGICA DE JAVASCRIPT LOCAL -->
     <script>
-        // Definición de Pasillos
+        // Definición de Pasillos con nombres limpios
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
             { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
@@ -99,48 +103,50 @@
 
         let activeCategory = 'secos';
 
-        // Cargar Base de Datos Local o inicializar vacía
         let products = JSON.parse(localStorage.getItem('komprafacil_products')) || {};
         let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
 
-        // Inicializar interfaz
         function initApp() {
             renderCategories();
             selectCategory(activeCategory);
             updateCartUI();
         }
 
-        // Renderizar botones de pasillos
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => `
                 <button onclick="selectCategory('${cat.id}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition ${activeCategory === cat.id ? 'bg-emerald-50 border-emerald-500 text-emerald-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">
-                    <i class="fa-solid ${cat.icon} text-xl mb-1"></i>
+                    <i class="fa-solid ${cat.icon} text-xl mb-1.5"></i>
                     <span class="text-[11px] font-medium truncate w-full text-center">${cat.name}</span>
                 </button>
             `).join('');
         }
 
-        // Cambiar de pasillo activo
         function selectCategory(catId) {
             activeCategory = catId;
             renderCategories();
             const catObj = categories.find(c => c.id === catId);
-            document.getElementById('current-category-title').innerText = `Pasillo: ${catObj.name}`;
+            document.getElementById('current-category-title</i>').innerText = `Pasillo: ${catObj.name}`;
             renderProducts();
         }
 
-        // Renderizar productos del pasillo actual
         function renderProducts() {
             const listContainer = document.getElementById('products-list');
             const catProducts = products[activeCategory] || [];
+            const catObj = categories.find(c => c.id === activeCategory);
+
+            document.getElementById('current-category-title').innerText = `${catObj.name}`;
 
             if (catProducts.length === 0) {
-                listContainer.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">No hay productos en este pasillo. ¡Agrega el primero con el botón de arriba!</p>`;
+                listContainer.innerHTML = `
+                    <div class="text-center py-6">
+                        <p class="text-sm text-slate-400 mb-2">No hay productos en este pasillo todavía.</p>
+                        <span class="text-xs text-emerald-600 font-semibold cursor-pointer hover:underline" onclick="openAddModal()">+ Agregar el primero</span>
+                    </div>`;
                 return;
             }
 
-            listContainer.innerHTML = catProducts.map((prod, index) => {
+            listContainer.innerHTML = catProducts.map((prod) => {
                 const inCartQty = cart[prod.id] ? cart[prod.id].qty : 0;
                 return `
                     <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -153,8 +159,8 @@
                                 <button onclick="updateCartItem('${prod.id}', -1)" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 font-bold shadow-sm">-</button>
                                 <span class="text-sm font-bold w-6 text-center">${inCartQty}</span>
                             ` : ''}
-                            <button onclick="updateCartItem('${prod.id}', 1)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">
-                                ${inCartQty > 0 ? '+' : '<i class="fa-solid fa-plus mr-1"></i> Agregar'}
+                            <button onclick="updateCartItem('${prod.id}', 1)" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-sm flex items-center">
+                                ${inCartQty > 0 ? '<span class="font-bold">+</span>' : '<i class="fa-solid fa-plus mr-1"></i> Añadir'}
                             </button>
                         </div>
                     </div>
@@ -162,16 +168,17 @@
             }).join('');
         }
 
-        // Abrir y cerrar modal
         function openAddModal() {
+            const catObj = categories.find(c => c.id === activeCategory);
+            document.getElementById('modal-subtitle').innerText = `Se guardará en el pasillo: ${catObj.name}`;
             document.getElementById('product-modal').classList.remove('hidden');
         }
+
         function closeAddModal() {
             document.getElementById('product-modal').classList.add('hidden');
             document.getElementById('add-product-form').reset();
         }
 
-        // Guardar nuevo producto en el pasillo actual
         function saveNewProduct(e) {
             e.preventDefault();
             const name = document.getElementById('new-prod-name').value.trim();
@@ -189,9 +196,7 @@
             renderProducts();
         }
 
-        // Modificar cantidad en el carrito (matemáticas en tiempo real)
         function updateCartItem(prodId, change) {
-            // Buscar el producto en todas las categorías
             let foundProd = null;
             for (let cat in products) {
                 const p = products[cat].find(item => item.id === prodId);
@@ -215,7 +220,6 @@
             updateCartUI();
         }
 
-        // Actualizar la interfaz del carrito y totales
         function updateCartUI() {
             const cartList = document.getElementById('cart-list');
             const cartKeys = Object.keys(cart);
@@ -223,7 +227,7 @@
             let totalItemsCount = 0;
 
             if (cartKeys.length === 0) {
-                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Aún no has agregado productos al carrito.</p>`;
+                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Aún no has agregado productos al carrito.</p>`;
                 document.getElementById('grand-total').innerText = '$0.00';
                 document.getElementById('item-count').innerText = '0 productos en el carrito';
                 return;
@@ -263,7 +267,6 @@
             updateCartUI();
         }
 
-        // Arrancar la app al cargar la página
         initApp();
     </script>
 </body>

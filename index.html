@@ -7,6 +7,12 @@
     <!-- Tailwind CSS para un diseño moderno y limpio estilo app móvil -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuente tipo máquina de escribir o simulación de ticket fiscal -->
+    <style>
+        .fiscal-ticket {
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans pb-32">
 
@@ -15,7 +21,7 @@
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             <div>
                 <h1 class="text-base font-bold tracking-wide">DFPFantasy Market</h1>
-                <p class="text-[11px] text-emerald-100" id="item-count">0 productos en la factura</p>
+                <p class="text-[11px] text-emerald-100" id="item-count">0 ítems en ticket fiscal</p>
             </div>
             <div class="text-right">
                 <span class="text-[10px] uppercase tracking-wider block text-emerald-200">Total a Pagar</span>
@@ -25,7 +31,7 @@
         </div>
         <!-- Selector de Tasa de Cambio Bs/$ -->
         <div class="max-w-md mx-auto bg-emerald-700/60 rounded-xl p-2 flex items-center justify-between text-xs">
-            <span class="text-emerald-100 font-medium">Tasa del Día ($):</span>
+            <span class="text-emerald-100 font-medium">Tasa BCV / Día ($):</span>
             <input type="number" step="0.01" id="exchange-rate" value="36.50" onchange="updateExchangeRate(this.value)" class="w-24 bg-white text-slate-800 font-bold px-2 py-1 rounded-lg text-right focus:outline-none">
         </div>
     </header>
@@ -59,26 +65,53 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 3: TICKET / FACTURA DETALLADA DEL MERCADO -->
-        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100">
+        <!-- SECCIÓN 3: TICKET / FACTURA FISCAL ESTILO VENEZOLANO -->
+        <section class="bg-white rounded-2xl shadow-md p-4 border border-slate-200">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
                 <h3 class="font-bold text-slate-700 text-base flex items-center">
-                    <i class="fa-solid fa-receipt text-emerald-600 mr-2"></i> Detalle de Factura
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Comprobante Fiscal (SENIAT)
                 </h3>
-                <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline font-medium">Limpiar Factura</button>
+                <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline font-medium">Nueva Factura</button>
             </div>
             
-            <!-- Encabezados de la tabla / factura -->
-            <div class="grid grid-cols-12 text-[11px] font-bold text-slate-400 uppercase pb-2 border-b border-slate-100">
-                <span class="col-span-4">Producto</span>
-                <span class="col-span-3 text-center">Cant / Peso</span>
-                <span class="col-span-4 text-right">Subtotal</span>
+            <!-- ENCABEZADO FISCAL ESTILO TICKET -->
+            <div class="bg-slate-50 rounded-xl p-3 mb-3 border border-dashed border-slate-200 text-center fiscal-ticket text-[11px] text-slate-600 space-y-1">
+                <p class="font-bold text-slate-800 text-xs">DFPFANTASY MARKET, C.A.</p>
+                <p>RIF: J-40123456-7 | Ciudad Bolívar, Edo. Bolívar</p>
+                <div class="flex justify-between px-2 pt-1 border-t border-slate-200 text-[10px] text-slate-500">
+                    <span id="ticket-date">Fecha: --/--/----</span>
+                    <span id="ticket-number">Nro: #000001</span>
+                </div>
+            </div>
+
+            <!-- Cabecera de columnas de la factura -->
+            <div class="grid grid-cols-12 text-[10px] font-bold text-slate-400 uppercase pb-2 border-b border-slate-100 px-1">
+                <span class="col-span-5">Descripción</span>
+                <span class="col-span-3 text-center">Cant/Peso</span>
+                <span class="col-span-3 text-right">Total $</span>
                 <span class="col-span-1"></span>
             </div>
 
-            <!-- Listado detallado tipo factura -->
-            <div class="divide-y divide-slate-50 max-h-60 overflow-y-auto" id="cart-list">
-                <p class="text-sm text-slate-400 text-center py-4">Aún no hay productos agregados a la cuenta.</p>
+            <!-- Listado detallado fiscal -->
+            <div class="divide-y divide-slate-50 max-h-52 overflow-y-auto px-1" id="cart-list">
+                <p class="text-sm text-slate-400 text-center py-4">Sin ítems registrados en el ticket.</p>
+            </div>
+
+            <!-- PIE DE TICKET FISCAL CON TOTALES OFICIALES -->
+            <div class="mt-4 pt-3 border-t border-slate-200 space-y-1.5 fiscal-ticket text-xs">
+                <div class="flex justify-between text-slate-600">
+                    <span>SUB-TOTAL USD:</span>
+                    <span id="fiscal-sub-usd" class="font-bold">$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                    <span>TASA CAMBIO BCV:</span>
+                    <span id="fiscal-tasa" class="font-bold">Bs. 36.50</span>
+                </div>
+                <div class="flex justify-between text-slate-900 font-extrabold text-sm pt-1 border-t border-dashed border-slate-300">
+                    <span>TOTAL GENERAL BS:</span>
+                    <span id="fiscal-total-bs" class="text-emerald-600">Bs. 0.00</span>
+                </div>
+                <p class="text-[9px] text-center text-slate-400 pt-2">*** DOCUMENTO EMITIDO CON FINES DE CONTROL INTERNO ***</p>
             </div>
         </section>
 
@@ -125,6 +158,10 @@
         let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
 
         document.getElementById('exchange-rate').value = exchangeRate;
+
+        // Mostrar fecha actual en el formato del ticket
+        const today = new Date();
+        document.getElementById('ticket-date').innerText = `Fecha: ${today.toLocaleDateString()}`;
 
         function initApp() {
             renderCategories();
@@ -200,12 +237,10 @@
                         <div class="flex-1 pr-2">
                             <div class="flex items-center space-x-2">
                                 <h4 class="font-semibold text-slate-800 text-sm">${prod.name}</h4>
-                                <!-- Botón para Editar nombre -->
                                 <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-600 text-xs" title="Editar nombre">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
-                                <!-- NUEVO: Botón para Borrar producto del pasillo -->
-                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-500 text-xs" title="Eliminar producto del pasillo">
+                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-500 text-xs" title="Eliminar producto">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
@@ -283,17 +318,14 @@
             updateCartUI();
         }
 
-        // NUEVO: Función para eliminar un producto erróneo del pasillo por completo
         function deleteProductFromAisle(prodId) {
             if (!confirm("¿Estás seguro de eliminar este producto del pasillo?")) return;
 
-            // Eliminar de la lista de productos del pasillo activo
             if (products[activeCategory]) {
                 products[activeCategory] = products[activeCategory].filter(p => p.id !== prodId);
                 localStorage.setItem('komprafacil_products', JSON.stringify(products));
             }
 
-            // Si estaba en el carrito, eliminarlo de la factura también
             if (cart[prodId]) {
                 delete cart[prodId];
                 localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
@@ -381,10 +413,12 @@
             let grandTotal = 0;
 
             if (cartKeys.length === 0) {
-                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Aún no hay productos agregados a la cuenta.</p>`;
+                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Sin ítems registrados en el ticket.</p>`;
                 document.getElementById('grand-total').innerText = '$0.00';
                 document.getElementById('grand-total-bs').innerText = 'Bs. 0.00';
-                document.getElementById('item-count').innerText = '0 productos en la factura';
+                document.getElementById('fiscal-sub-usd').innerText = '$0.00';
+                document.getElementById('fiscal-total-bs').innerText = 'Bs. 0.00';
+                document.getElementById('item-count').innerText = '0 ítems en ticket fiscal';
                 return;
             }
 
@@ -397,15 +431,15 @@
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 return `
-                    <div class="py-2.5 grid grid-cols-12 items-center text-sm">
-                        <div class="col-span-4 pr-1">
-                            <span class="font-medium text-slate-700 truncate block">${item.name}</span>
-                            <span class="text-[10px] text-slate-400">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
+                    <div class="py-2 grid grid-cols-12 items-center text-[11px] fiscal-ticket">
+                        <div class="col-span-5 pr-1">
+                            <span class="font-bold text-slate-800 truncate block">${item.name}</span>
+                            <span class="text-[9px] text-slate-400">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
                         </div>
-                        <div class="col-span-3 text-center text-xs font-semibold text-slate-600">
+                        <div class="col-span-3 text-center font-semibold text-slate-600">
                             ${qtyLabel}
                         </div>
-                        <div class="col-span-4 text-right font-bold text-slate-800">
+                        <div class="col-span-3 text-right font-bold text-slate-800">
                             $${subtotal.toFixed(2)}
                         </div>
                         <div class="col-span-1 text-right">
@@ -421,7 +455,12 @@
 
             document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
             document.getElementById('grand-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('item-count').innerText = `${cartKeys.length} ítems en la factura`;
+            
+            // Actualizar bloques del ticket fiscal inferior
+            document.getElementById('fiscal-sub-usd').innerText = `$${grandTotal.toFixed(2)}`;
+            document.getElementById('fiscal-tasa').innerText = `Bs. ${exchangeRate.toFixed(2)}`;
+            document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('item-count').innerText = `${cartKeys.length} ítems en ticket fiscal`;
         }
 
         function clearCart() {

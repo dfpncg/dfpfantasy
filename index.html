@@ -10,17 +10,23 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans pb-32">
 
-    <!-- CABECERA FIJA CON EL TOTAL ACUMULADO -->
+    <!-- CABECERA FIJA CON EL TOTAL ACUMULADO Y TASA DE CAMBIO -->
     <header class="bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md">
-        <div class="max-w-md mx-auto flex justify-between items-center">
+        <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             <div>
-                <h1 class="text-lg font-bold tracking-wide">DFPFantasy Market</h1>
-                <p class="text-xs text-emerald-100" id="item-count">0 productos en la factura</p>
+                <h1 class="text-base font-bold tracking-wide">DFPFantasy Market</h1>
+                <p class="text-[11px] text-emerald-100" id="item-count">0 productos en la factura</p>
             </div>
             <div class="text-right">
-                <span class="text-xs uppercase tracking-wider block text-emerald-200">Total a Pagar</span>
-                <span class="text-2xl font-extrabold" id="grand-total">$0.00</span>
+                <span class="text-[10px] uppercase tracking-wider block text-emerald-200">Total a Pagar</span>
+                <span class="text-xl font-extrabold" id="grand-total">$0.00</span>
+                <span class="text-xs font-semibold block text-emerald-100" id="grand-total-bs">Bs. 0.00</span>
             </div>
+        </div>
+        <!-- Selector de Tasa de Cambio Bs/$ -->
+        <div class="max-w-md mx-auto bg-emerald-700/60 rounded-xl p-2 flex items-center justify-between text-xs">
+            <span class="text-emerald-100 font-medium">Tasa del Día ($):</span>
+            <input type="number" step="0.01" id="exchange-rate" value="36.50" onchange="updateExchangeRate(this.value)" class="w-24 bg-white text-slate-800 font-bold px-2 py-1 rounded-lg text-right focus:outline-none">
         </div>
     </header>
 
@@ -133,13 +139,22 @@
 
         let activeCategory = 'secos';
         let selectedProductForCart = null;
+        let exchangeRate = parseFloat(localStorage.getItem('komprafacil_rate')) || 36.50;
 
         let products = JSON.parse(localStorage.getItem('komprafacil_products')) || {};
         let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
 
+        document.getElementById('exchange-rate').value = exchangeRate;
+
         function initApp() {
             renderCategories();
             selectCategory(activeCategory);
+            updateCartUI();
+        }
+
+        function updateExchangeRate(val) {
+            exchangeRate = parseFloat(val) || 0;
+            localStorage.setItem('komprafacil_rate', exchangeRate);
             updateCartUI();
         }
 
@@ -173,19 +188,24 @@
 
             listContainer.innerHTML = catProducts.map((prod) => {
                 const inCart = cart[prod.id];
-                const qtyDisplay = inCart ? (currentCat.isWeight ? `${inCart.qty} kg` : `${inCart.qty} und`) : '';
+                const qtyDisplay = inCart ? (currentCat.isWeight ? `${inCart.qty} kg` : `${inCart.qty} und`) : 0;
                 
                 return `
                     <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <div>
+                        <div onclick="openQtyModal('${prod.id}')" class="cursor-pointer flex-1 pr-2">
                             <h4 class="font-semibold text-slate-800 text-sm">${prod.name}</h4>
                             <span class="text-xs text-emerald-600 font-bold">$${prod.price.toFixed(2)} ${currentCat.isWeight ? 'por kg' : ''}</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            ${inCart ? `<span class="text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded border border-slate-200">${qtyDisplay}</span>` : ''}
-                            <button onclick="openQtyModal('${prod.id}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">
-                                <i class="fa-solid fa-cart-plus mr-1"></i> ${inCart ? 'Editar' : 'Añadir'}
-                            </button>
+                        <div class="flex items-center space-x-1.5">
+                            ${inCart ? `
+                                <button onclick="quickChangeQty('${prod.id}', -1)" class="w-7 h-7 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 font-bold shadow-sm text-xs">-</button>
+                                <span class="text-xs font-bold w-10 text-center text-slate-700">${qtyDisplay}</span>
+                                <button onclick="quickChangeQty('${prod.id}', 1)" class="w-7 h-7 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-bold shadow-sm text-xs">+</button>
+                            ` : `
+                                <button onclick="openQtyModal('${prod.id}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm flex items-center">
+                                    <i class="fa-solid fa-plus mr-1"></i> Añadir
+                                </button>
+                            `}
                         </div>
                     </div>
                 `;
@@ -279,6 +299,19 @@
             updateCartUI();
         }
 
+        function quickChangeQty(prodId, change) {
+            if (!cart[prodId]) return;
+            cart[prodId].qty += change;
+
+            if (cart[prodId].qty <= 0) {
+                delete cart[prodId];
+            }
+
+            localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
+            renderProducts();
+            updateCartUI();
+        }
+
         function removeCartItem(prodId) {
             delete cart[prodId];
             localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
@@ -294,6 +327,7 @@
             if (cartKeys.length === 0) {
                 cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Aún no hay productos agregados a la cuenta.</p>`;
                 document.getElementById('grand-total').innerText = '$0.00';
+                document.getElementById('grand-total-bs').innerText = 'Bs. 0.00';
                 document.getElementById('item-count').innerText = '0 productos en la factura';
                 return;
             }
@@ -327,7 +361,10 @@
                 `;
             }).join('');
 
+            const totalBs = grandTotal * exchangeRate;
+
             document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
+            document.getElementById('grand-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             document.getElementById('item-count').innerText = `${cartKeys.length} ítems en la factura`;
         }
 

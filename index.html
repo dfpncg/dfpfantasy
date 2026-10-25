@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KompraFácil - Tu Mercado Inteligente</title>
+    <title>DFPFantasy - Mercado Inteligente</title>
     <!-- Tailwind CSS para un diseño moderno y limpio estilo app móvil -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,7 +14,7 @@
     <header class="bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-lg font-bold tracking-wide">KompraFácil</h1>
+                <h1 class="text-lg font-bold tracking-wide">DFPFantasy Market</h1>
                 <p class="text-xs text-emerald-100" id="item-count">0 productos en el carrito</p>
             </div>
             <div class="text-right">
@@ -70,10 +70,10 @@
             <form id="add-product-form" onsubmit="saveNewProduct(event)">
                 <div class="mb-3">
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Queso..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Precio ($)</label>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1" id="price-label-modal">Precio Referencial ($)</label>
                     <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="flex space-x-2">
@@ -84,20 +84,43 @@
         </div>
     </div>
 
+    <!-- MODAL PARA CONFIRMAR PRECIO ACTUAL Y CANTIDAD (O KILOS) -->
+    <div id="qty-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl">
+            <h3 class="font-bold text-lg mb-1 text-slate-800" id="modal-prod-title">Producto</h3>
+            <p class="text-xs text-slate-400 mb-4">Actualiza el precio de hoy e indica cuánto llevas.</p>
+            <form id="qty-form" onsubmit="confirmAddToCart(event)">
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1" id="input-price-title">Precio Actual ($)</label>
+                    <input type="number" step="0.01" id="modal-prod-price" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1" id="input-qty-title">Cantidad o Kilos</label>
+                    <input type="number" step="any" id="modal-prod-qty" required value="1" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <p class="text-[10px] text-slate-400 mt-1" id="qty-hint">Usa enteros (1, 2) o decimales para peso (0.5 para medio kilo).</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closeQtyModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-sm font-semibold">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-sm font-semibold">Añadir al Carrito</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- LÓGICA DE JAVASCRIPT LOCAL -->
     <script>
-        // Definición de Pasillos
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
             { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
             { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese' },
             { id: 'frios', name: 'Fríos', icon: 'fa-fish' },
-            { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot' },
+            { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot', isWeight: true },
             { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
             { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' }
         ];
 
         let activeCategory = 'secos';
+        let selectedProductForCart = null;
 
         let products = JSON.parse(localStorage.getItem('komprafacil_products')) || {};
         let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
@@ -129,6 +152,7 @@
         function renderProducts() {
             const listContainer = document.getElementById('products-list');
             const catProducts = products[activeCategory] || [];
+            const currentCat = categories.find(c => c.id === activeCategory);
 
             if (catProducts.length === 0) {
                 listContainer.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">No hay productos en este pasillo. ¡Agrega el primero con el botón de arriba!</p>`;
@@ -136,20 +160,19 @@
             }
 
             listContainer.innerHTML = catProducts.map((prod) => {
-                const inCartQty = cart[prod.id] ? cart[prod.id].qty : 0;
+                const inCart = cart[prod.id];
+                const qtyDisplay = inCart ? (currentCat.isWeight ? `${inCart.qty} kg` : inCart.qty) : 0;
+                
                 return `
                     <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <div>
                             <h4 class="font-semibold text-slate-800 text-sm">${prod.name}</h4>
-                            <span class="text-xs text-emerald-600 font-bold">$${prod.price.toFixed(2)}</span>
+                            <span class="text-xs text-emerald-600 font-bold">$${prod.price.toFixed(2)} ${currentCat.isWeight ? 'por kg' : ''}</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            ${inCartQty > 0 ? `
-                                <button onclick="updateCartItem('${prod.id}', -1)" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 font-bold shadow-sm">-</button>
-                                <span class="text-sm font-bold w-6 text-center">${inCartQty}</span>
-                            ` : ''}
-                            <button onclick="updateCartItem('${prod.id}', 1)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">
-                                ${inCartQty > 0 ? '+' : '<i class="fa-solid fa-plus mr-1"></i> Agregar'}
+                            ${inCart ? `<span class="text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded border border-slate-200">${qtyDisplay}</span>` : ''}
+                            <button onclick="openQtyModal('${prod.id}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">
+                                <i class="fa-solid fa-cart-plus mr-1"></i> ${inCart ? 'Editar' : 'Añadir'}
                             </button>
                         </div>
                     </div>
@@ -158,6 +181,8 @@
         }
 
         function openAddModal() {
+            const currentCat = categories.find(c => c.id === activeCategory);
+            document.getElementById('price-label-modal').innerText = currentCat.isWeight ? 'Precio por Kilo ($)' : 'Precio ($)';
             document.getElementById('product-modal').classList.remove('hidden');
         }
         function closeAddModal() {
@@ -182,19 +207,68 @@
             renderProducts();
         }
 
-        function updateCartItem(prodId, change) {
+        // Abrir modal para actualizar precio al instante y definir cantidad / peso
+        function openQtyModal(prodId) {
             let foundProd = null;
             for (let cat in products) {
                 const p = products[cat].find(item => item.id === prodId);
                 if (p) { foundProd = p; break; }
             }
-
             if (!foundProd) return;
 
-            if (!cart[prodId]) {
-                cart[prodId] = { ...foundProd, qty: 0 };
+            selectedProductForCart = foundProd;
+            const currentCat = categories.find(c => c.id === activeCategory);
+
+            document.getElementById('modal-prod-title').innerText = foundProd.name;
+            document.getElementById('modal-prod-price').value = foundProd.price; // Precio actual editable
+            
+            const existingCartItem = cart[prodId];
+            document.getElementById('modal-prod-qty').value = existingCartItem ? existingCartItem.qty : (currentCat.isWeight ? 1 : 1);
+            
+            document.getElementById('input-price-title').innerText = currentCat.isWeight ? 'Precio Actual por Kilo ($)' : 'Precio Actual ($)';
+            document.getElementById('input-qty-title').innerText = currentCat.isWeight ? 'Cantidad en Kilos (ej: 0.500 o 2)' : 'Cantidad de Unidades';
+            
+            document.getElementById('qty-modal').classList.remove('hidden');
+        }
+
+        function closeQtyModal() {
+            document.getElementById('qty-modal').classList.add('hidden');
+            selectedProductForCart = null;
+        }
+
+        function confirmAddToCart(e) {
+            e.preventDefault();
+            if (!selectedProductForCart) return;
+
+            const updatedPrice = parseFloat(document.getElementById('modal-prod-price').value);
+            const enteredQty = parseFloat(document.getElementById('modal-prod-qty').value);
+
+            if (enteredQty <= 0) {
+                delete cart[selectedProductForCart.id];
+            } else {
+                // Actualizamos también el precio base del producto en el pasillo por si cambió en el mercado
+                selectedProductForCart.price = updatedPrice;
+
+                cart[selectedProductForCart.id] = {
+                    ...selectedProductForCart,
+                    price: updatedPrice,
+                    qty: enteredQty
+                };
             }
 
+            localStorage.setItem('komprafacil_products', JSON.stringify(products));
+            localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
+
+            closeQtyModal();
+            renderProducts();
+            updateCartUI();
+        }
+
+        function updateCartItemQty(prodId, change) {
+            const currentCat = categories.find(c => c.id === activeCategory);
+            if (!cart[prodId]) return;
+
+            // Si es por peso, incrementa o decrementa de 0.5 en 0.5 o de 1 en 1
             cart[prodId].qty += change;
 
             if (cart[prodId].qty <= 0) {
@@ -223,19 +297,22 @@
                 const item = cart[key];
                 const subtotal = item.price * item.qty;
                 grandTotal += subtotal;
-                totalItemsCount += item.qty;
+                totalItemsCount += typeof item.qty === 'number' ? 1 : 1;
+
+                // Verificamos si pertenece a hortalizas para mostrar 'kg' o unidades
+                let isWeightItem = key.startsWith('hortalizas');
+                let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 return `
-                    <div class="py-2.5 flex justify-between items-center text-sm">
+                    <div class="py-2.5 flex justify-between items-center text-sm border-b border-slate-50">
                         <div>
                             <span class="font-medium text-slate-700">${item.name}</span>
-                            <span class="text-xs text-slate-400 block">${item.qty} x $${item.price.toFixed(2)}</span>
+                            <span class="text-xs text-slate-400 block">${qtyLabel} x $${item.price.toFixed(2)}</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <span class="font-bold text-slate-800">$${subtotal.toFixed(2)}</span>
                             <div class="flex space-x-1">
-                                <button onclick="updateCartItem('${item.id}', -1)" class="w-6 h-6 bg-slate-100 rounded text-xs font-bold text-slate-600">-</button>
-                                <button onclick="updateCartItem('${item.id}', 1)" class="w-6 h-6 bg-emerald-100 rounded text-xs font-bold text-emerald-700">+</button>
+                                <button onclick="openQtyModal('${item.id}')" class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded text-xs font-semibold">Editar</button>
                             </div>
                         </div>
                     </div>
@@ -243,7 +320,7 @@
             }).join('');
 
             document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
-            document.getElementById('item-count').innerText = `${totalItemsCount} productos en el carrito`;
+            document.getElementById('item-count').innerText = `${cartKeys.length} productos distintos`;
         }
 
         function clearCart() {

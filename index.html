@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KompraFácil - Tu Mercado Inteligente</title>
+    <!-- Tailwind CSS para un diseño moderno y limpio estilo app móvil -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-32">
+
+    <!-- CABECERA FIJA CON EL TOTAL ACUMULADO -->
+    <header class="bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold tracking-wide">KompraFácil</h1>
+                <p class="text-xs text-emerald-100" id="item-count">0 productos en el carrito</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs uppercase tracking-wider block text-emerald-200">Total Carrito</span>
+                <span class="text-2xl font-extrabold" id="grand-total">$0.00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="max-w-md mx-auto p-4">
+
+        <!-- SECCIÓN 1: SELECTOR DE PASILLOS -->
+        <section class="mb-6">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Pasillos del Supermercado</h2>
+            <div class="grid grid-cols-4 gap-2" id="categories-container">
+                <!-- Se cargan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: GESTIÓN DE PRODUCTOS DEL PASILLO SELECCIONADO -->
+        <section class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-700 text-lg" id="current-category-title">Selecciona un pasillo</h3>
+                <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-600 text-xs font-semibold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition">
+                    <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
+                </button>
+            </div>
+
+            <!-- Lista de productos en este pasillo -->
+            <div class="space-y-3" id="products-list">
+                <p class="text-sm text-slate-400 text-center py-6">Elige un pasillo arriba para ver o agregar productos.</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: RESUMEN DEL CARRITO ACTUAL -->
+        <section class="bg-white rounded-2xl shadow-sm p-4">
+            <h3 class="font-bold text-slate-700 text-lg mb-3 flex items-center justify-between">
+                <span><i class="fa-solid fa-cart-shopping text-emerald-600 mr-2"></i> Tu Carrito</span>
+                <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline">Vaciar</button>
+            </h3>
+            <div class="divide-y divide-slate-100 max-h-60 overflow-y-auto" id="cart-list">
+                <p class="text-sm text-slate-400 text-center py-4">Aún no has agregado productos al carrito.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL PARA AGREGAR NUEVO PRODUCTO AL PASILLO -->
+    <div id="product-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl">
+            <h3 class="font-bold text-lg mb-3 text-slate-800">Agregar Producto al Pasillo</h3>
+            <form id="add-product-form" onsubmit="saveNewProduct(event)">
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nombre del Producto</label>
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Queso..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Precio ($)</label>
+                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-sm font-semibold">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-sm font-semibold">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LÓGICA DE JAVASCRIPT LOCAL -->
+    <script>
+        // Definición de Pasillos
+        const categories = [
+            { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
+            { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
+            { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese' },
+            { id: 'frios', name: 'Fríos', icon: 'fa-fish' },
+            { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot' },
+            { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
+            { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' }
+        ];
+
+        let activeCategory = 'secos';
+
+        // Cargar Base de Datos Local o inicializar vacía
+        let products = JSON.parse(localStorage.getItem('komprafacil_products')) || {};
+        let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
+
+        // Inicializar interfaz
+        function initApp() {
+            renderCategories();
+            selectCategory(activeCategory);
+            updateCartUI();
+        }
+
+        // Renderizar botones de pasillos
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="selectCategory('${cat.id}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition ${activeCategory === cat.id ? 'bg-emerald-50 border-emerald-500 text-emerald-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">
+                    <i class="fa-solid ${cat.icon} text-xl mb-1"></i>
+                    <span class="text-[11px] font-medium truncate w-full text-center">${cat.name}</span>
+                </button>
+            `).join('');
+        }
+
+        // Cambiar de pasillo activo
+        function selectCategory(catId) {
+            activeCategory = catId;
+            renderCategories();
+            const catObj = categories.find(c => c.id === catId);
+            document.getElementById('current-category-title').innerText = `Pasillo: ${catObj.name}`;
+            renderProducts();
+        }
+
+        // Renderizar productos del pasillo actual
+        function renderProducts() {
+            const listContainer = document.getElementById('products-list');
+            const catProducts = products[activeCategory] || [];
+
+            if (catProducts.length === 0) {
+                listContainer.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">No hay productos en este pasillo. ¡Agrega el primero con el botón de arriba!</p>`;
+                return;
+            }
+
+            listContainer.innerHTML = catProducts.map((prod, index) => {
+                const inCartQty = cart[prod.id] ? cart[prod.id].qty : 0;
+                return `
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm">${prod.name}</h4>
+                            <span class="text-xs text-emerald-600 font-bold">$${prod.price.toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${inCartQty > 0 ? `
+                                <button onclick="updateCartItem('${prod.id}', -1)" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 font-bold shadow-sm">-</button>
+                                <span class="text-sm font-bold w-6 text-center">${inCartQty}</span>
+                            ` : ''}
+                            <button onclick="updateCartItem('${prod.id}', 1)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">
+                                ${inCartQty > 0 ? '+' : '<i class="fa-solid fa-plus mr-1"></i> Agregar'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Abrir y cerrar modal
+        function openAddModal() {
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+        function closeAddModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.getElementById('add-product-form').reset();
+        }
+
+        // Guardar nuevo producto en el pasillo actual
+        function saveNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-prod-name').value.trim();
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+
+            if (!products[activeCategory]) {
+                products[activeCategory] = [];
+            }
+
+            const newId = `${activeCategory}_${Date.now()}`;
+            products[activeCategory].push({ id: newId, name, price });
+
+            localStorage.setItem('komprafacil_products', JSON.stringify(products));
+            closeAddModal();
+            renderProducts();
+        }
+
+        // Modificar cantidad en el carrito (matemáticas en tiempo real)
+        function updateCartItem(prodId, change) {
+            // Buscar el producto en todas las categorías
+            let foundProd = null;
+            for (let cat in products) {
+                const p = products[cat].find(item => item.id === prodId);
+                if (p) { foundProd = p; break; }
+            }
+
+            if (!foundProd) return;
+
+            if (!cart[prodId]) {
+                cart[prodId] = { ...foundProd, qty: 0 };
+            }
+
+            cart[prodId].qty += change;
+
+            if (cart[prodId].qty <= 0) {
+                delete cart[prodId];
+            }
+
+            localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
+            renderProducts();
+            updateCartUI();
+        }
+
+        // Actualizar la interfaz del carrito y totales
+        function updateCartUI() {
+            const cartList = document.getElementById('cart-list');
+            const cartKeys = Object.keys(cart);
+            let grandTotal = 0;
+            let totalItemsCount = 0;
+
+            if (cartKeys.length === 0) {
+                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Aún no has agregado productos al carrito.</p>`;
+                document.getElementById('grand-total').innerText = '$0.00';
+                document.getElementById('item-count').innerText = '0 productos en el carrito';
+                return;
+            }
+
+            cartList.innerHTML = cartKeys.map(key => {
+                const item = cart[key];
+                const subtotal = item.price * item.qty;
+                grandTotal += subtotal;
+                totalItemsCount += item.qty;
+
+                return `
+                    <div class="py-2.5 flex justify-between items-center text-sm">
+                        <div>
+                            <span class="font-medium text-slate-700">${item.name}</span>
+                            <span class="text-xs text-slate-400 block">${item.qty} x $${item.price.toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="font-bold text-slate-800">$${subtotal.toFixed(2)}</span>
+                            <div class="flex space-x-1">
+                                <button onclick="updateCartItem('${item.id}', -1)" class="w-6 h-6 bg-slate-100 rounded text-xs font-bold text-slate-600">-</button>
+                                <button onclick="updateCartItem('${item.id}', 1)" class="w-6 h-6 bg-emerald-100 rounded text-xs font-bold text-emerald-700">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
+            document.getElementById('item-count').innerText = `${totalItemsCount} productos en el carrito`;
+        }
+
+        function clearCart() {
+            cart = {};
+            localStorage.removeItem('komprafacil_cart');
+            renderProducts();
+            updateCartUI();
+        }
+
+        // Arrancar la app al cargar la página
+        initApp();
+    </script>
+</body>
+</html>

@@ -111,13 +111,13 @@
 
             <div class="grid grid-cols-1 gap-3 pt-2">
                 <!-- Botón Nueva Compra -->
-                <button onclick="selectMenuOption('new-purchase')" class="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition text-left group">
+                <button onclick="startNewPurchase()" class="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition text-left group">
                     <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg font-bold group-hover:scale-110 transition">
                         <i class="fa-solid fa-cart-shopping"></i>
                     </div>
                     <div>
                         <strong class="block text-sm font-black">Nueva Compra</strong>
-                        <span class="text-[11px] text-emerald-100 font-medium">Arma tu carrito, pasillos y factura</span>
+                        <span class="text-[11px] text-emerald-100 font-medium">Inicia un carrito limpio y selecciona tu comercio</span>
                     </div>
                 </button>
 
@@ -158,7 +158,7 @@
                 </button>
             </div>
             <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-emerald-100" id="fiscal-box">
-                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se solicitará al guardar factura</span></p>
+                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se seleccionará al guardar factura</span></p>
                 <p><strong class="text-slate-900 font-bold">RIF Comercio:</strong> <span id="display-rif-comercio" class="font-semibold">--</span></p>
                 <p><strong class="text-slate-900 font-bold">Cliente / Comprador:</strong> <span id="display-cliente" class="font-semibold">Registrado</span></p>
             </div>
@@ -206,7 +206,7 @@
             
             <!-- ENCABEZADO FISCAL ESTILO TICKET -->
             <div class="bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200" id="ticket-inner-box">
-                <p class="font-black text-slate-950 text-xs" id="ticket-comercio-name">COMERCIO NO CONFIGURADO</p>
+                <p class="font-black text-slate-950 text-xs" id="ticket-comercio-name">COMERCIO NO SELECCIONADO</p>
                 <p id="ticket-comercio-rif" class="text-slate-900 font-bold">RIF: J-00000000-0</p>
                 <p class="text-[10px] text-slate-700 font-semibold" id="ticket-comercio-dir">Ciudad Bolívar, Venezuela</p>
                 
@@ -372,11 +372,20 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURACIÓN FISCAL (DATOS DEL COMERCIO) -->
+    <!-- MODAL DE CONFIGURACIÓN FISCAL / SELECCIÓN DE COMERCIOS FRECUENTES -->
     <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
-            <h3 class="font-bold text-lg mb-1 text-slate-900">Datos Fiscales del Comercio</h3>
-            <p class="text-[11px] text-slate-500 mb-3 font-semibold">Requerido para generar y enviar el comprobante fiscal.</p>
+            <h3 class="font-bold text-lg mb-1 text-slate-900">Comercio Emisor de la Factura</h3>
+            <p class="text-[11px] text-slate-500 mb-3 font-semibold">Selecciona un comercio guardado o registra uno nuevo.</p>
+            
+            <!-- Selector de Comercios Frecuentes Guardados -->
+            <div id="saved-stores-section" class="mb-3 hidden">
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Comercios Frecuentes</label>
+                <select id="saved-stores-select" onchange="fillSavedStore(this.value)" class="w-full bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-2 text-xs font-bold text-emerald-900 focus:outline-none">
+                    <option value="">-- Elige un comercio guardado --</option>
+                </select>
+            </div>
+
             <form id="fiscal-form" onsubmit="saveFiscalData(event)">
                 <div class="border-b border-slate-100 pb-3 mb-3">
                     <div class="mb-2">
@@ -395,7 +404,7 @@
 
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Guardar Datos</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Usar y Guardar Comercio</button>
                 </div>
             </form>
         </div>
@@ -443,7 +452,8 @@
 
         let products = {};
         let cart = {};
-        let fiscalData = null;
+        let fiscalData = null; // Comercio activo de la compra actual
+        let savedStores = []; // Lista de comercios frecuentes guardados
         let purchaseHistory = [];
 
         let tempAuthEmail = '';
@@ -475,23 +485,38 @@
             updateCartUI();
             renderHistory();
 
-            // Mostrar la pantalla flotante de opciones al iniciar sesión
+            // Mostrar el menú principal flotante al iniciar sesión
             showDashboardMenu();
         }
 
-        // FUNCIONES DE CONTROL DE LA PANTALLA FLOTANTE / MENÚ PRINCIPAL
         function showDashboardMenu() {
             if (!currentUser) return;
             document.getElementById('dashboard-menu-modal').classList.remove('hidden');
         }
 
+        // FUNCIONALIDAD NUEVA: INICIAR NUEVA COMPRA LIMPIA
+        function startNewPurchase() {
+            document.getElementById('dashboard-menu-modal').classList.add('hidden');
+            cart = {};
+            fiscalData = null; // Limpiar comercio previo para seleccionarlo al guardar
+            document.getElementById('ticket-number-input').value = '';
+            
+            // Restablecer interfaz visual del comercio en el ticket
+            document.getElementById('display-comercio').innerText = 'Se seleccionará al guardar factura';
+            document.getElementById('display-rif-comercio').innerText = '--';
+            document.getElementById('ticket-comercio-name').innerText = 'COMERCIO NO SELECCIONADO';
+            document.getElementById('ticket-comercio-rif').innerText = 'RIF: J-00000000-0';
+            document.getElementById('ticket-comercio-dir').innerText = 'Ciudad Bolívar, Venezuela';
+
+            saveDataToCloud();
+            renderProducts();
+            updateCartUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function selectMenuOption(option) {
             document.getElementById('dashboard-menu-modal').classList.add('hidden');
-            if (option === 'new-purchase') {
-                // Desplazarse hacia la sección de pasillos o carrito
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (option === 'history-view') {
-                // Desplazarse directo a la sección de historial abajo
+            if (option === 'history-view') {
                 const historyEl = document.getElementById('history-card');
                 if (historyEl) {
                     historyEl.scrollIntoView({ behavior: 'smooth' });
@@ -570,6 +595,7 @@
                     await db.collection("users").doc(currentUser).set({
                         pin: tempAuthPin,
                         fiscal: tempClientData,
+                        stores: [],
                         products: {},
                         cart: {},
                         history: []
@@ -595,7 +621,7 @@
 
         async function deleteAccount() {
             if (!currentUser) return;
-            if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"? Se borrará toda tu información tanto de la base de datos como del dispositivo de forma permanente.`)) return;
+            if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"? Se borrará toda tu información de forma permanente.`)) return;
 
             try {
                 await db.collection("users").doc(currentUser).delete();
@@ -606,7 +632,7 @@
                 location.reload();
             } catch (err) {
                 console.error("Error al eliminar la cuenta en Firebase:", err);
-                alert("Hubo un error al eliminar la cuenta de la base de datos.");
+                alert("Hubo un error al eliminar la cuenta.");
             }
         }
 
@@ -615,6 +641,7 @@
             try {
                 await db.collection("users").doc(currentUser).set({
                     fiscal: fiscalData,
+                    stores: savedStores,
                     products: products,
                     cart: cart,
                     history: purchaseHistory
@@ -633,6 +660,7 @@
                     products = data.products || {};
                     cart = data.cart || {};
                     fiscalData = data.fiscal || null;
+                    savedStores = data.stores || [];
                     purchaseHistory = data.history || [];
                 }
             } catch (err) {
@@ -727,30 +755,61 @@
         }
 
         function loadFiscalUI() {
-            if (!fiscalData) return;
+            if (!fiscalData || !fiscalData.storeName) {
+                document.getElementById('display-comercio').innerText = 'Se seleccionará al guardar factura';
+                document.getElementById('display-rif-comercio').innerText = '--';
+                return;
+            }
 
-            document.getElementById('display-comercio').innerText = fiscalData.storeName || 'Pendiente al guardar';
-            document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif || '--';
+            document.getElementById('display-comercio').innerText = fiscalData.storeName;
+            document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif;
             document.getElementById('display-cliente').innerText = fiscalData.clientName ? `${fiscalData.clientName} (${fiscalData.clientDoc})` : 'Registrado';
 
-            if (fiscalData.storeName) {
-                document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
-                document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
-                document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
-            }
+            document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
+            document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
+            document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
+            
             if (fiscalData.clientName) {
                 document.getElementById('ticket-cliente-name').innerText = fiscalData.clientName;
                 document.getElementById('ticket-cliente-doc').innerText = fiscalData.clientDoc;
             }
         }
 
+        // ABRIR MODAL FISCAL CON OPCIÓN DE SELECCIONAR COMERCIOS GUARDADOS
         function openFiscalModal() {
+            const selectEl = document.getElementById('saved-stores-select');
+            const sectionEl = document.getElementById('saved-stores-section');
+
+            if (savedStores && savedStores.length > 0) {
+                sectionEl.classList.remove('hidden');
+                selectEl.innerHTML = `<option value="">-- Elige un comercio guardado --</option>` + 
+                    savedStores.map(st => `<option value="${st.storeName}">${st.storeName} (${st.storeRif})</option>`).join('');
+            } else {
+                sectionEl.classList.add('hidden');
+            }
+
             if (fiscalData && fiscalData.storeName) {
                 document.getElementById('store-name').value = fiscalData.storeName;
                 document.getElementById('store-rif').value = fiscalData.storeRif;
                 document.getElementById('store-dir').value = fiscalData.storeDir;
+            } else {
+                document.getElementById('store-name').value = '';
+                document.getElementById('store-rif').value = '';
+                document.getElementById('store-dir').value = '';
             }
+
             document.getElementById('fiscal-modal').classList.remove('hidden');
+        }
+
+        // RELLENAR AUTOMÁTICAMENTE SI SE SELECCIONA UN COMERCIO FRECUENTE
+        function fillSavedStore(storeName) {
+            if (!storeName) return;
+            const found = savedStores.find(st => st.storeName === storeName);
+            if (found) {
+                document.getElementById('store-name').value = found.storeName;
+                document.getElementById('store-rif').value = found.storeRif;
+                document.getElementById('store-dir').value = found.storeDir;
+            }
         }
 
         function closeFiscalModal() {
@@ -759,10 +818,20 @@
 
         function saveFiscalData(e) {
             e.preventDefault();
+            const name = document.getElementById('store-name').value.trim();
+            const rif = document.getElementById('store-rif').value.trim();
+            const dir = document.getElementById('store-dir').value.trim();
+
             if (!fiscalData) fiscalData = {};
-            fiscalData.storeName = document.getElementById('store-name').value.trim();
-            fiscalData.storeRif = document.getElementById('store-rif').value.trim();
-            fiscalData.storeDir = document.getElementById('store-dir').value.trim();
+            fiscalData.storeName = name;
+            fiscalData.storeRif = rif;
+            fiscalData.storeDir = dir;
+
+            // Guardar en la lista de comercios frecuentes si no existe ya
+            const exists = savedStores.some(st => st.storeName.toLowerCase() === name.toLowerCase());
+            if (!exists) {
+                savedStores.push({ storeName: name, storeRif: rif, storeDir: dir });
+            }
 
             saveDataToCloud();
             loadFiscalUI();
@@ -1069,9 +1138,9 @@
                 return;
             }
 
-            // Exigir datos del comercio estrictamente al momento de guardar y enviar
+            // Si el comercio no está seleccionado para esta compra, abrir el modal fiscal obligatorio
             if (!fiscalData || !fiscalData.storeName) {
-                alert("Para guardar y enviar la factura, debes indicar los datos fiscales del comercio emisor.");
+                alert("Para guardar y enviar la factura, debes indicar o seleccionar el comercio emisor.");
                 openFiscalModal();
                 return;
             }

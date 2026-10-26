@@ -61,20 +61,24 @@
         .shimmer-btn:hover {
             background-position: right center;
         }
-        /* FONDO TEMÁTICO FAMILIAR Y DE HOGAR */
+        /* FONDO FAMILIAR MUY DIFUMINADO (BLUR) Y FIJO SIN SCROLL */
         .market-hero-bg {
-            background: linear-gradient(135deg, rgba(5, 150, 105, 0.92) 0%, rgba(4, 120, 87, 0.95) 50%, rgba(6, 78, 59, 0.98) 100%),
+            background: linear-gradient(135deg, rgba(4, 120, 87, 0.88) 0%, rgba(6, 78, 59, 0.92) 100%),
                         url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80');
             background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
         }
+        /* DEGRADADO INTERNO ELEGANTE PARA LA APLICACIÓN */
+        .app-inner-gradient {
+            background: linear-gradient(180deg, rgba(236, 253, 245, 0.7) 0%, rgba(209, 250, 229, 0.3) 100%);
+        }
     </style>
 </head>
-<body class="bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-300" id="body-theme">
+<body class="app-inner-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden" id="body-theme">
 
-    <!-- PANTALLA DE TRANSICIÓN ANIMADA CON TOQUE FAMILIAR Y DE UNIÓN -->
-    <div id="transition-screen" class="fixed inset-0 market-hero-bg z-50 hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity duration-300">
+    <!-- PANTALLA DE TRANSICIÓN ANIMADA -->
+    <div id="transition-screen" class="fixed inset-0 market-hero-bg backdrop-blur-xl z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated border border-emerald-100">
             <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-4xl shadow-md animate-logo-glow">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
@@ -234,7 +238,7 @@
             </div>
         </section>
 
-        <!-- COMPROBANTE RECIBO -->
+        <!-- COMPROBANTE RECIBO (BOTÓN DUPLICADO ELIMINADO) -->
         <section class="bg-white rounded-2xl shadow-sm p-4 border border-emerald-200 transition-colors duration-300" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-100">
                 <h3 class="font-black text-slate-900 text-sm flex items-center" id="ticket-title-text">
@@ -352,104 +356,111 @@
         </div>
     </div>
 
-    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO FAMILIAR Y DE HOGAR -->
-    <div id="auth-modal" class="fixed inset-0 market-hero-bg z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[95vh] overflow-y-auto modal-animated">
-            
-            <!-- PASO 1: Ingreso y Opción de Olvidó Clave -->
-            <div id="auth-step-1">
-                <div class="text-center mb-4">
-                    <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-4xl shadow-md animate-logo-glow">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
-                            <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.3" />
-                            <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                            <circle cx="23" cy="37" r="2.5" fill="#059669"/>
-                            <circle cx="33" cy="37" r="2.5" fill="#059669"/>
-                            <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-black text-xl text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
-                    <p class="text-[11px] text-slate-500 font-semibold mt-1">Hogar, unión y control fiscal en Venezuela</p>
-                </div>
+    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO DIFUMINADO Y COPYRIGHT OFICIAL -->
+    <div id="auth-modal" class="fixed inset-0 market-hero-bg backdrop-blur-md z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
+        <div class="flex-1 w-full flex items-center justify-center">
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[85vh] overflow-y-auto modal-animated">
                 
-                <form onsubmit="handleAuthSubmit(event)">
-                    <div class="mb-3">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
-                        <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
-                        <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
-                    </div>
-
-                    <div class="text-right mb-4">
-                        <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-emerald-700 font-bold hover:underline">¿Olvidaste tu PIN?</button>
-                    </div>
-
-                    <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md">Continuar</button>
-                </form>
-            </div>
-
-            <!-- PASO 2: Registro -->
-            <div id="auth-step-2" class="hidden">
-                <div class="text-center mb-3">
-                    <h3 class="font-black text-base text-slate-900">Registro de Datos Personales</h3>
-                    <p class="text-[10px] text-emerald-700 font-bold">Tus datos como cliente para los recibos</p>
-                </div>
-                
-                <form onsubmit="handleFiscalRegister(event)">
-                    <div class="mb-2.5">
-                        <label class="block text-[10px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
-                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
-                    </div>
-
-                    <div class="mb-2.5">
-                        <label class="block text-[10px] font-bold text-slate-700 mb-1">Cédula o RIF (Número)</label>
-                        <div class="flex">
-                            <select id="reg-doc-type" class="bg-slate-100 border border-slate-200 rounded-l-xl px-2 py-2 text-xs font-bold text-slate-900">
-                                <option value="V-">V-</option>
-                                <option value="E-">E-</option>
-                                <option value="J-">J-</option>
-                                <option value="G-">G-</option>
-                            </select>
-                            <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900">
+                <!-- PASO 1: Ingreso y Olvidó Clave -->
+                <div id="auth-step-1">
+                    <div class="text-center mb-4">
+                        <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-4xl shadow-md animate-logo-glow">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
+                                <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.3" />
+                                <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <circle cx="23" cy="37" r="2.5" fill="#059669"/>
+                                <circle cx="33" cy="37" r="2.5" fill="#059669"/>
+                                <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
+                            </svg>
                         </div>
+                        <h3 class="font-black text-xl text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
+                        <p class="text-[11px] text-slate-500 font-semibold mt-1">Hogar, unión y control fiscal en Venezuela</p>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="block text-[10px] font-bold text-slate-700 mb-1">Teléfono (Operadora Venezuela)</label>
-                        <div class="flex space-x-1">
-                            <select id="reg-phone-op" class="bg-slate-100 border border-slate-200 rounded-xl px-2 py-2 text-xs font-bold text-slate-900">
-                                <option value="0414">0414 (Movistar)</option>
-                                <option value="0424">0424 (Movistar)</option>
-                                <option value="0416">0416 (Movilnet)</option>
-                                <option value="0426">0426 (Movilnet)</option>
-                                <option value="0412">0412 (Digitel)</option>
-                            </select>
-                            <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900" maxlength="7">
+                    
+                    <form onsubmit="handleAuthSubmit(event)">
+                        <div class="mb-3">
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
+                            <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
                         </div>
-                    </div>
 
-                    <button type="submit" class="w-full shimmer-btn text-white py-2.5 rounded-xl text-xs font-black">Registrarse y Enviar Código</button>
-                </form>
-            </div>
+                        <div class="mb-2">
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
+                            <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
 
-            <!-- PASO 3: Verificación -->
-            <div id="auth-step-3" class="hidden text-center">
-                <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-md animate-logo-glow">
-                    <i class="fa-solid fa-envelope-circle-check"></i>
+                        <div class="text-right mb-4">
+                            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-emerald-700 font-bold hover:underline">¿Olvidaste tu PIN?</button>
+                        </div>
+
+                        <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md">Continuar</button>
+                    </form>
                 </div>
-                <h3 class="font-black text-base text-slate-900 mb-1">Verificación de Correo</h3>
-                <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo:</p>
-                
-                <form onsubmit="handleVerificationSubmit(event)">
-                    <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none">
-                    <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md">Verificar y Entrar</button>
-                </form>
-            </div>
 
+                <!-- PASO 2: Registro -->
+                <div id="auth-step-2" class="hidden">
+                    <div class="text-center mb-3">
+                        <h3 class="font-black text-base text-slate-900">Registro de Datos Personales</h3>
+                        <p class="text-[10px] text-emerald-700 font-bold">Tus datos como cliente para los recibos</p>
+                    </div>
+                    
+                    <form onsubmit="handleFiscalRegister(event)">
+                        <div class="mb-2.5">
+                            <label class="block text-[10px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
+                            <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
+                        </div>
+
+                        <div class="mb-2.5">
+                            <label class="block text-[10px] font-bold text-slate-700 mb-1">Cédula o RIF (Número)</label>
+                            <div class="flex">
+                                <select id="reg-doc-type" class="bg-slate-100 border border-slate-200 rounded-l-xl px-2 py-2 text-xs font-bold text-slate-900">
+                                    <option value="V-">V-</option>
+                                    <option value="E-">E-</option>
+                                    <option value="J-">J-</option>
+                                    <option value="G-">G-</option>
+                                </select>
+                                <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-bold text-slate-700 mb-1">Teléfono (Operadora Venezuela)</label>
+                            <div class="flex space-x-1">
+                                <select id="reg-phone-op" class="bg-slate-100 border border-slate-200 rounded-xl px-2 py-2 text-xs font-bold text-slate-900">
+                                    <option value="0414">0414 (Movistar)</option>
+                                    <option value="0424">0424 (Movistar)</option>
+                                    <option value="0416">0416 (Movilnet)</option>
+                                    <option value="0426">0426 (Movilnet)</option>
+                                    <option value="0412">0412 (Digitel)</option>
+                                </select>
+                                <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900" maxlength="7">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full shimmer-btn text-white py-2.5 rounded-xl text-xs font-black">Registrarse y Enviar Código</button>
+                    </form>
+                </div>
+
+                <!-- PASO 3: Verificación -->
+                <div id="auth-step-3" class="hidden text-center">
+                    <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-md animate-logo-glow">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                    </div>
+                    <h3 class="font-black text-base text-slate-900 mb-1">Verificación de Correo</h3>
+                    <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo:</p>
+                    
+                    <form onsubmit="handleVerificationSubmit(event)">
+                        <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none">
+                        <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md">Verificar y Entrar</button>
+                    </form>
+                </div>
+
+            </div>
         </div>
+
+        <!-- PIE DE PÁGINA OFICIAL EN LA PANTALLA DE INICIO -->
+        <footer class="w-full text-center py-2 text-[10px] text-emerald-100 font-semibold tracking-wide drop-shadow-md">
+            DFPFantasy CorVe, C.A Copyright ©2026 DFPfantasy Market VE. Todos los derechos reservados.
+        </footer>
     </div>
 
     <!-- MODAL DE RECUPERACIÓN / OLVIDO DE CLAVE -->
@@ -646,7 +657,6 @@
             document.getElementById('history-modal').classList.add('hidden');
         }
 
-        // LÓGICA DE RECUPERACIÓN DE CLAVE / PIN
         function openForgotPasswordModal() {
             document.getElementById('forgot-email').value = '';
             document.getElementById('forgot-step-1').classList.remove('hidden');
@@ -898,7 +908,7 @@
             const boxes = ['fiscal-box', 'ticket-inner-box'];
 
             if (isDarkMode) {
-                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300";
+                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300 overflow-x-hidden";
                 header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-sun text-xs";
 
@@ -911,7 +921,7 @@
                     if(el) el.className = "bg-slate-900 rounded-xl p-3 mb-3 border border-dashed border-slate-600 text-center fiscal-ticket text-[11px] text-slate-100 font-bold space-y-1";
                 });
             } else {
-                body.className = "bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-300";
+                body.className = "app-inner-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden";
                 header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-moon text-xs";
 
@@ -1123,7 +1133,7 @@
                 }
 
                 return `
-                    <div class="flex items-center justify-between p-3 bg-emerald-50/60 dark:bg-slate-800 rounded-xl border border-emerald-100 dark:border-slate-700 transition-colors duration-300">
+                    <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-emerald-100 dark:border-slate-700 transition-colors duration-300 shadow-xs">
                         <div class="flex-1 pr-2">
                             <div class="flex items-center space-x-2">
                                 <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">${prod.name}</h4>
@@ -1322,7 +1332,6 @@
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
-        // VALIDACIÓN ESTRICTA: NO SE PUEDE GUARDAR NI ENVIAR FACTURAS EN BLANCO SIN PRODUCTOS
         function saveAndSendPurchase() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
@@ -1422,7 +1431,7 @@
             }
 
             historyList.innerHTML = purchaseHistory.slice(0, 3).map(rec => `
-                <div onclick="viewInvoiceDetail(${rec.id})" class="bg-emerald-50/70 dark:bg-slate-800 p-2.5 rounded-xl border border-emerald-200 dark:border-slate-700 flex justify-between items-center text-xs cursor-pointer hover:bg-emerald-100 transition shadow-xs">
+                <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-emerald-200 dark:border-slate-700 flex justify-between items-center text-xs cursor-pointer hover:bg-emerald-50 transition shadow-xs">
                     <div>
                         <strong class="font-black block text-slate-900 dark:text-slate-100">${rec.store} (Fac: #${rec.facNumber})</strong>
                         <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">${rec.date} • ${rec.itemsCount} ítems</span>
@@ -1443,7 +1452,7 @@
             }
 
             modalList.innerHTML = purchaseHistory.map(rec => `
-                <div onclick="viewInvoiceDetail(${rec.id})" class="bg-emerald-50/70 p-3 rounded-2xl border border-emerald-200 flex justify-between items-center text-xs shadow-xs cursor-pointer hover:bg-emerald-100 transition">
+                <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white p-3 rounded-2xl border border-emerald-200 flex justify-between items-center text-xs shadow-xs cursor-pointer hover:bg-emerald-50 transition">
                     <div>
                         <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>
                         <span class="text-[11px] font-bold text-emerald-800 block">Factura: #${rec.facNumber}</span>

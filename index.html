@@ -344,18 +344,18 @@
 
     </main>
 
-    <!-- MODAL ESCÁNER DE CÁMARA 100% OPERATIVO -->
+    <!-- MODAL ESCÁNER DE CÁMARA PRO (OPTIMIZADO PARA ENFOQUE Y VELOCIDAD) -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                 <h3 class="font-black text-sm text-slate-950 flex items-center">
-                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner de Código de Barras
+                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner de Alta Velocidad
                 </h3>
                 <button onclick="closeScannerModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-700 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-500 font-medium">Apunta la cámara de tu teléfono hacia el código de barras del empaque.</p>
+            <p class="text-[11px] text-slate-500 font-medium">Mantén el teléfono a una distancia natural de 15 a 20 cm del código.</p>
             
-            <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-950 min-h-[220px]"></div>
+            <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-950 min-h-[240px]"></div>
 
             <button onclick="closeScannerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black shadow-md">
                 Cerrar Escáner
@@ -649,14 +649,14 @@
 
         let products = {};
         let cart = {};
-        let inventory = {}; // Alacena en casa: { prodId: qty }
-        let barcodeMap = {}; // Mapeo de código de barras a prodId
+        let inventory = {}; 
+        let barcodeMap = {}; 
         let fiscalData = null;
         let savedStores = [];
         let purchaseHistory = [];
 
         let html5QrCode = null;
-        let scannerContextMode = 'cart'; // 'cart' o 'inventory'
+        let scannerContextMode = 'cart'; 
 
         document.getElementById('exchange-rate').value = exchangeRate;
         const nowObj = new Date();
@@ -758,7 +758,7 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE ESCÁNER DE CÁMARA PRO ---
+        // --- GESTIÓN DE ESCÁNER DE CÁMARA PRO (OPTIMIZADO CON ENFOQUE AUTOMÁTICO CONTINUO) ---
         function openScannerModal(mode = 'cart') {
             scannerContextMode = mode;
             document.getElementById('scanner-modal').classList.remove('hidden');
@@ -782,13 +782,31 @@
                 handleScannedBarcode(decodedText);
             };
 
-            const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+            // Parámetros avanzados optimizados para enfoque continuo y alta velocidad en lectura de barras
+            const config = { 
+                fps: 20, 
+                qrbox: { width: 280, height: 160 },
+                aspectRatio: 1.0
+            };
 
             html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+            
+            // Forzar cámara trasera con restricciones avanzadas de enfoque y nitidez
+            const constraints = {
+                facingMode: "environment",
+                focusMode: "continuous",
+                advanced: [{ focusMode: "continuous" }]
+            };
+
+            html5QrCode.start(constraints, config, qrCodeSuccessCallback)
                 .catch(err => {
-                    console.error("Error al iniciar cámara:", err);
-                    alert("No se pudo encender la cámara. Asegúrate de dar permisos en tu navegador.");
+                    console.warn("Restricciones avanzadas no soportadas, iniciando estándar...", err);
+                    // Respaldo automático si el navegador no acepta el parámetro avanzado de enfoque
+                    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+                        .catch(err2 => {
+                            console.error("Error al encender cámara:", err2);
+                            alert("No se pudo encender la cámara. Asegúrate de dar permisos en tu navegador.");
+                        });
                 });
         }
 
@@ -804,7 +822,6 @@
             }
 
             if (foundProd) {
-                // El producto YA existe y se reconoce automáticamente
                 if (scannerContextMode === 'inventory') {
                     if (!inventory[foundProd.id]) inventory[foundProd.id] = 0;
                     inventory[foundProd.id] += 1;
@@ -824,7 +841,6 @@
                     alert(`¡Escaneado con éxito! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
                 }
             } else {
-                // Producto totalmente nuevo que nunca se había registrado
                 document.getElementById('edit-prod-id').value = '';
                 document.getElementById('scanned-barcode-val').value = barcode;
                 document.getElementById('modal-product-title').innerText = scannerContextMode === 'inventory' ? 'Nuevo Producto (Registrar en Alacena)' : 'Nuevo Producto (Escáner)';
@@ -1289,7 +1305,6 @@
                 savedId = `${targetCategory}_${Date.now()}`;
                 products[targetCategory].push({ id: savedId, name, price });
                 
-                // VINCULACIÓN CRÍTICA CORREGIDA: Asociar permanentemente el código de barras escaneado al producto recién creado
                 if (barcode) {
                     barcodeMap[barcode] = savedId;
                 }
@@ -1310,7 +1325,6 @@
             if (cart[prodId]) delete cart[prodId];
             if (inventory[prodId]) delete inventory[prodId];
 
-            // Limpiar también del mapa de códigos de barras
             for (let code in barcodeMap) {
                 if (barcodeMap[code] === prodId) delete barcodeMap[code];
             }
@@ -1497,7 +1511,7 @@
 
             emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
                 .then(() => {
-                    alert("¡Compra guardada, inventario de alacena actualizado y factura enviada con éxito a tu correo!");
+                    alert("¡Compra guardada, inventario de alacena actualizado y factura enviada con éxito à tu correo!");
                 }, (err) => {
                     alert("Compra guardada y sumada a alacena, pero ocurrió un error al enviar el correo.");
                     console.error(err);

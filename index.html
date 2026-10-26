@@ -17,8 +17,6 @@
     <!-- Firebase SDKs (Compat version) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <!-- HTML5 Barcode Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAjz8HFM1IDo8AdpB_QPZLu0NVPALzvBmk",
@@ -195,16 +193,6 @@
                     </div>
                 </button>
 
-                <button onclick="openInventoryModal()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 p-3 rounded-2xl shadow-xs flex items-center space-x-3 transition transform hover:scale-[1.02] text-left border border-emerald-200">
-                    <div class="w-9 h-9 bg-emerald-200 rounded-xl flex items-center justify-center text-emerald-800 text-base font-bold">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                    </div>
-                    <div>
-                        <strong class="block text-xs font-black">Mi Alacena en Casa</strong>
-                        <span class="text-[10px] text-emerald-700 font-medium">Revisa, escanea y ajusta tu inventario</span>
-                    </div>
-                </button>
-
                 <button onclick="openStatsModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 p-3 rounded-2xl shadow-xs flex items-center space-x-3 transition transform hover:scale-[1.02] text-left border border-indigo-200">
                     <div class="w-9 h-9 bg-indigo-200 rounded-xl flex items-center justify-center text-indigo-800 text-base font-bold">
                         <i class="fa-solid fa-chart-pie"></i>
@@ -230,14 +218,6 @@
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto p-4 space-y-4">
-
-        <!-- BOTÓN DE ESCÁNER PRINCIPAL -->
-        <section class="bg-white rounded-2xl shadow-xs p-3 border border-emerald-100 transition-colors duration-300" id="search-card">
-            <button onclick="openScannerModal('cart')" class="w-full shimmer-btn text-white py-3.5 px-4 rounded-xl text-sm font-black shadow-md flex items-center justify-center space-x-2 transition transform active:scale-95">
-                <i class="fa-solid fa-barcode text-lg"></i>
-                <span>ESCANEAR PRODUCTO AL VUELO</span>
-            </button>
-        </section>
 
         <!-- DATOS FISCALES -->
         <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300" id="fiscal-card">
@@ -267,10 +247,10 @@
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base" id="current-category-title">Pasillo</h3>
-                    <p class="text-[11px] text-slate-500 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos al vuelo</p>
+                    <p class="text-[11px] text-slate-500 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos manualmente</p>
                 </div>
                 <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition">
-                    <i class="fa-solid fa-plus mr-1"></i> Nuevo
+                    <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
                 </button>
             </div>
             <div class="space-y-2.5" id="products-list">
@@ -344,55 +324,13 @@
 
     </main>
 
-    <!-- MODAL ESCÁNER DE CÁMARA -->
-    <div id="scanner-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
-            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-                <h3 class="font-black text-sm text-slate-950 flex items-center">
-                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner Estricto DFPfantasy
-                </h3>
-                <button onclick="closeScannerModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-700 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <p class="text-[11px] text-slate-500 font-medium">Apunta la cámara al código de barras del producto.</p>
-            
-            <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-900 min-h-[260px] relative flex items-center justify-center"></div>
-
-            <button onclick="closeScannerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black shadow-md">
-                Cerrar Escáner
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL DIRECTO PARA ACTUALIZAR CANTIDAD EN ALACENA -->
-    <div id="quick-inventory-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl w-full max-w-xs p-6 shadow-2xl modal-animated space-y-4 text-center">
-            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto text-xl shadow-xs">
-                <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-            <div>
-                <h3 class="font-black text-base text-slate-900" id="quick-prod-name">Producto</h3>
-                <p class="text-[11px] text-emerald-700 font-bold">Actualizar existencias en Mi Alacena</p>
-            </div>
-            <input type="hidden" id="quick-prod-id">
-            <div>
-                <label class="block text-[10px] font-bold text-slate-600 mb-1">Cantidad física actual en casa:</label>
-                <input type="number" min="0" id="quick-prod-qty" class="w-28 mx-auto bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-900 focus:outline-none focus:border-emerald-600">
-            </div>
-            <div class="flex space-x-2 pt-2">
-                <button type="button" onclick="closeQuickInventoryModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
-                <button type="button" onclick="saveQuickInventoryQty()" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NUEVO PRODUCTO (SÓLO SI EL CÓDIGO ES 100% NUEVO Y NO ESTÁ REGISTRADO) -->
+    <!-- MODAL NUEVO PRODUCTO MANUAL -->
     <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-3">
             <h3 class="font-black text-base text-slate-900" id="modal-product-title">Registrar Producto Nuevo</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Este código de barras no está registrado. Ingresa sus datos para guardarlo de manera orgánica:</p>
+            <p class="text-[11px] text-slate-500 font-medium">Ingresa los datos del producto para guardarlo en el pasillo:</p>
             <form id="add-product-form" onsubmit="saveProduct(event)">
                 <input type="hidden" id="edit-prod-id">
-                <input type="hidden" id="scanned-barcode-val">
                 <div class="mb-2.5">
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Producto</label>
                     <input type="text" id="new-prod-name" required placeholder="Ej. Harina PAN" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
@@ -416,44 +354,9 @@
                 </div>
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Registrar</button>
+                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Guardar</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- MODAL MI ALACENA EN CASA (INVENTARIO DOMÉSTICO) -->
-    <div id="inventory-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[85vh] overflow-y-auto modal-animated space-y-4">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 class="font-black text-base text-slate-900 flex items-center">
-                    <i class="fa-solid fa-boxes-stacked text-emerald-600 mr-2 text-lg"></i> Mi Alacena en Casa
-                </h3>
-                <button onclick="closeInventoryModal()" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            
-            <div class="flex space-x-2">
-                <button onclick="openScannerModal('inventory')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-3 rounded-xl text-xs font-black shadow-md flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-barcode text-sm"></i>
-                    <span>Escanear para Alacena</span>
-                </button>
-                <button onclick="openAddModalForInventory()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 py-2.5 px-3 rounded-xl text-xs font-black flex items-center justify-center space-x-1.5">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Añadir Manual</span>
-                </button>
-            </div>
-
-            <p class="text-xs text-slate-500 font-medium">Controla aquí las existencias físicas en tus gabinetes:</p>
-            
-            <div class="space-y-2.5 max-h-52 overflow-y-auto pr-1" id="inventory-items-list">
-                <p class="text-xs text-center py-6 text-slate-400 font-black">Sin productos en la alacena.</p>
-            </div>
-
-            <button onclick="closeInventoryModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black shadow-md">
-                Guardar y Cerrar Alacena
-            </button>
         </div>
     </div>
 
@@ -672,14 +575,9 @@
 
         let products = {};
         let cart = {};
-        let inventory = {}; 
-        let barcodeMap = {}; // Diccionario estricto: codigoBarras -> productoId
         let fiscalData = null;
         let savedStores = [];
         let purchaseHistory = [];
-
-        let html5QrCode = null;
-        let scannerContextMode = 'cart'; 
 
         document.getElementById('exchange-rate').value = exchangeRate;
         const nowObj = new Date();
@@ -706,7 +604,6 @@
             selectCategory(activeCategory);
             loadFiscalUI();
             updateCartUI();
-            renderHistory();
 
             bodyEl.classList.remove('hidden-at-start');
             bodyEl.classList.add('visible-app');
@@ -760,17 +657,6 @@
             document.getElementById('history-modal').classList.add('hidden');
         }
 
-        function openInventoryModal() {
-            document.getElementById('dashboard-menu-modal').classList.add('hidden');
-            renderInventoryUI();
-            document.getElementById('inventory-modal').classList.remove('hidden');
-        }
-
-        function closeInventoryModal() {
-            document.getElementById('inventory-modal').classList.add('hidden');
-            saveDataToCloud();
-        }
-
         function openStatsModal() {
             document.getElementById('dashboard-menu-modal').classList.add('hidden');
             renderStatsUI();
@@ -781,442 +667,7 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE ESCÁNER ---
-        function openScannerModal(mode = 'cart') {
-            scannerContextMode = mode;
-            document.getElementById('scanner-modal').classList.remove('hidden');
-            setTimeout(() => {
-                startCameraScanner();
-            }, 400);
-        }
-
-        function closeScannerModal() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    html5QrCode = null;
-                }).catch(err => {
-                    console.error("Error al detener cámara:", err);
-                    html5QrCode = null;
-                });
-            } else {
-                const readerEl = document.getElementById('reader');
-                if (readerEl) readerEl.innerHTML = '';
-            }
-            document.getElementById('scanner-modal').classList.add('hidden');
-        }
-
-        function startCameraScanner() {
-            const readerEl = document.getElementById('reader');
-            if (!readerEl) return;
-            
-            readerEl.innerHTML = '';
-
-            const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-                closeScannerModal();
-                handleScannedBarcode(decodedText);
-            };
-
-            const config = { 
-                fps: 15, 
-                qrbox: { width: 260, height: 160 }
-            };
-
-            try {
-                html5QrCode = new Html5Qrcode("reader");
-                html5QrCode.start(
-                    { facingMode: "environment" }, 
-                    config, 
-                    qrCodeSuccessCallback
-                ).catch(err => {
-                    html5QrCode.start(
-                        { facingMode: "user" }, 
-                        config, 
-                        qrCodeSuccessCallback
-                    ).catch(err2 => {
-                        readerEl.innerHTML = `<p class="text-xs text-rose-400 p-6 font-bold">No se pudo acceder a la cámara. Revisa los permisos de tu navegador.</p>`;
-                    });
-                });
-            } catch (e) {
-                console.error("Excepción al inicializar Html5Qrcode:", e);
-            }
-        }
-
-        // --- REGLA ESTRICTA: ESCANEO Y REGISTRO ORGÁNICO ---
-        function handleScannedBarcode(barcode) {
-            let cleanBarcode = barcode.trim();
-            let foundProdId = barcodeMap[cleanBarcode];
-            let foundProd = null;
-
-            // Buscamos estrictamente por el código exacto en el diccionario
-            if (foundProdId) {
-                for (let cat in products) {
-                    const p = products[cat].find(item => item.id === foundProdId);
-                    if (p) { foundProd = p; break; }
-                }
-            }
-
-            // CASO 1: EL PRODUCTO EXISTE Y SU CÓDIGO ESTÁ REGISTRADO
-            if (foundProd) {
-                if (scannerContextMode === 'inventory') {
-                    // Abre directo el cuadro para actualizar la cantidad en alacena
-                    openQuickInventoryModal(foundProd);
-                } else {
-                    // Suma al carrito de compras
-                    if (!cart[foundProd.id]) {
-                        cart[foundProd.id] = { ...foundProd, qty: 1 };
-                    } else {
-                        cart[foundProd.id].qty += 1;
-                    }
-                    saveDataToCloud();
-                    renderProducts();
-                    renderCategories();
-                    updateCartUI();
-                    alert(`¡Reconocido! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
-                }
-            } else {
-                // CASO 2: EL CÓDIGO NO EXISTE. VA DIRECTO Y ORGÁNICAMENTE AL REGISTRO NUEVO.
-                document.getElementById('edit-prod-id').value = '';
-                document.getElementById('scanned-barcode-val').value = cleanBarcode;
-                document.getElementById('modal-product-title').innerText = 'Registrar Producto Nuevo';
-                document.getElementById('new-prod-name').value = '';
-                document.getElementById('new-prod-price').value = '';
-                document.getElementById('product-modal').classList.remove('hidden');
-            }
-        }
-
-        function openQuickInventoryModal(prod) {
-            document.getElementById('quick-prod-id').value = prod.id;
-            document.getElementById('quick-prod-name').innerText = prod.name;
-            document.getElementById('quick-prod-qty').value = inventory[prod.id] || 0;
-            document.getElementById('quick-inventory-modal').classList.remove('hidden');
-        }
-
-        function closeQuickInventoryModal() {
-            document.getElementById('quick-inventory-modal').classList.add('hidden');
-        }
-
-        function saveQuickInventoryQty() {
-            const prodId = document.getElementById('quick-prod-id').value;
-            const qty = parseInt(document.getElementById('quick-prod-qty').value);
-            
-            if (isNaN(qty) || qty < 0) {
-                alert("Por favor ingresa un número válido.");
-                return;
-            }
-
-            inventory[prodId] = qty;
-            saveDataToCloud();
-            closeQuickInventoryModal();
-            alert("¡Alacena actualizada correctamente!");
-        }
-
-        // --- GESTIÓN DE ALACENA EN CASA (INVENTARIO) ---
-        function renderInventoryUI() {
-            const listEl = document.getElementById('inventory-items-list');
-            let allProdsArray = [];
-
-            for (let cat in products) {
-                products[cat].forEach(p => {
-                    allProdsArray.push({ ...p, categoryId: cat });
-                });
-            }
-
-            if (allProdsArray.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">Aún no hay productos registrados. Usa el botón de escanear o añadir manual arriba.</p>`;
-                return;
-            }
-
-            listEl.innerHTML = allProdsArray.map(prod => {
-                const currentQty = inventory[prod.id] || 0;
-                return `
-                    <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
-                        <div>
-                            <strong class="font-black text-slate-900 block">${prod.name}</strong>
-                            <span class="text-[10px] text-emerald-700 font-bold uppercase">${prod.categoryId}</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-[10px] text-slate-500 font-bold">En casa:</span>
-                            <input type="number" min="0" value="${currentQty}" onchange="updateInventoryQty('${prod.id}', this.value)" class="w-16 bg-white border border-slate-300 rounded-lg px-2 py-1 text-center font-black text-slate-900 text-xs focus:outline-none focus:border-emerald-600">
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateInventoryQty(prodId, val) {
-            const q = parseInt(val);
-            if (isNaN(q) || q < 0) {
-                delete inventory[prodId];
-            } else {
-                inventory[prodId] = q;
-            }
-            saveDataToCloud();
-        }
-
-        function openAddModalForInventory() {
-            document.getElementById('modal-product-title').innerText = 'Añadir Producto a Alacena y Pasillos';
-            document.getElementById('edit-prod-id').value = '';
-            document.getElementById('scanned-barcode-val').value = '';
-            document.getElementById('new-prod-name').value = '';
-            document.getElementById('new-prod-price').value = '';
-            document.getElementById('product-modal').classList.remove('hidden');
-        }
-
-        // --- GRÁFICAS DE CONSUMO MENSUAL ---
-        function renderStatsUI() {
-            const container = document.getElementById('stats-content-bars');
-            if (!purchaseHistory || purchaseHistory.length === 0) {
-                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">No hay suficientes datos de compras en el historial para generar gráficas.</p>`;
-                return;
-            }
-
-            let catTotals = {};
-            let totalGeneral = 0;
-
-            purchaseHistory.forEach(rec => {
-                if (rec.itemsSnapshot) {
-                    rec.itemsSnapshot.forEach(item => {
-                        let catName = 'Otros';
-                        for (let cat in products) {
-                            if (products[cat].some(p => p.name === item.name)) {
-                                catName = cat;
-                                break;
-                            }
-                        }
-                        if (!catTotals[catName]) catTotals[catName] = 0;
-                        catTotals[catName] += item.sub;
-                        totalGeneral += item.sub;
-                    });
-                }
-            });
-
-            if (totalGeneral <= 0) {
-                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">Sin montos registrados en el historial.</p>`;
-                return;
-            }
-
-            let htmlBars = '';
-            for (let cat in catTotals) {
-                const amount = catTotals[cat];
-                const percentage = ((amount / totalGeneral) * 100).toFixed(1);
-                htmlBars += `
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-bold text-slate-800">
-                            <span class="capitalize"><i class="fa-solid fa-tag text-emerald-600 mr-1.5"></i> ${cat}</span>
-                            <span>$${amount.toFixed(2)} (${percentage}%)</span>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
-                            <div class="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }
-            container.innerHTML = htmlBars;
-        }
-
-        // --- LÓGICA DE DATOS Y NUBE ---
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value.trim().toLowerCase();
-            const pin = document.getElementById('auth-pin').value.trim();
-
-            try {
-                const docRef = db.collection("users").doc(email);
-                const doc = await docRef.get();
-
-                if (doc.exists) {
-                    const userData = doc.data();
-                    if (userData.pin === pin) {
-                        currentUser = email;
-                        localStorage.setItem('komprafacil_current_user', currentUser);
-                        initApp();
-                    } else {
-                        alert("PIN de seguridad incorrecto.");
-                    }
-                } else {
-                    alert("Este correo no está registrado. Inscríbete completando el registro inicial.");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Error de conexión con la base de datos.");
-            }
-        }
-
-        function logoutUser() {
-            if (!confirm("¿Deseas cerrar sesión?")) return;
-            showTransitionScreen("Cerrando sesión en <strong class='text-emerald-300 font-extrabold'>DFPfantasy</strong>...", 2000);
-            setTimeout(() => {
-                localStorage.removeItem('komprafacil_current_user');
-                currentUser = null;
-                location.reload();
-            }, 2000);
-        }
-
-        async function deleteAccount() {
-            if (!currentUser) return;
-            if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"?`)) return;
-
-            try {
-                await db.collection("users").doc(currentUser).delete();
-                localStorage.removeItem('komprafacil_current_user');
-                currentUser = null;
-                location.reload();
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        async function saveDataToCloud() {
-            if (!currentUser) return;
-            try {
-                await db.collection("users").doc(currentUser).set({
-                    fiscal: fiscalData,
-                    stores: savedStores,
-                    products: products,
-                    cart: cart,
-                    inventory: inventory,
-                    barcodeMap: barcodeMap,
-                    history: purchaseHistory
-                }, { merge: true });
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        async function loadDataFromCloud() {
-            if (!currentUser) return;
-            try {
-                const doc = await db.collection("users").doc(currentUser).get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    products = data.products || {};
-                    cart = data.cart || {};
-                    inventory = data.inventory || {};
-                    barcodeMap = data.barcodeMap || {};
-                    fiscalData = data.fiscal || null;
-                    savedStores = data.stores || [];
-                    purchaseHistory = data.history || [];
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            localStorage.setItem('komprafacil_dark', isDarkMode);
-            applyTheme();
-        }
-
-        function applyTheme() {
-            const body = document.body;
-            const header = document.getElementById('header-theme');
-            const themeIcon = document.getElementById('theme-icon');
-            
-            const cards = ['search-card', 'fiscal-card', 'aisle-card', 'ticket-card'];
-
-            if (isDarkMode) {
-                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300 overflow-x-hidden visible-app";
-                header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-300";
-                themeIcon.className = "fa-solid fa-sun text-xs";
-                cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-slate-800 rounded-2xl shadow-xs p-4 border border-slate-700 transition-colors duration-300"; });
-            } else {
-                body.className = "app-modern-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden visible-app";
-                header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-300";
-                themeIcon.className = "fa-solid fa-moon text-xs";
-                cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300"; });
-            }
-        }
-
-        function loadFiscalUI() {
-            if (!fiscalData || !fiscalData.storeName) {
-                document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
-                document.getElementById('display-rif-comercio').innerText = '--';
-                return;
-            }
-
-            document.getElementById('display-comercio').innerText = fiscalData.storeName;
-            document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif;
-            document.getElementById('display-cliente').innerText = fiscalData.clientName ? `${fiscalData.clientName} (${fiscalData.clientDoc})` : 'Registrado';
-
-            document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
-            document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
-            document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
-            
-            if (fiscalData.clientName) {
-                document.getElementById('ticket-cliente-name').innerText = fiscalData.clientName;
-                document.getElementById('ticket-cliente-doc').innerText = fiscalData.clientDoc;
-            }
-        }
-
-        function openFiscalModal() {
-            const selectEl = document.getElementById('saved-stores-select');
-            const sectionEl = document.getElementById('saved-stores-section');
-
-            if (savedStores && savedStores.length > 0) {
-                sectionEl.classList.remove('hidden');
-                selectEl.innerHTML = `<option value="">-- Elige un comercio guardado --</option>` + 
-                    savedStores.map(st => `<option value="${st.storeName}">${st.storeName} (${st.storeRif})</option>`).join('');
-            } else {
-                sectionEl.classList.add('hidden');
-            }
-
-            if (fiscalData && fiscalData.storeName) {
-                document.getElementById('store-name').value = fiscalData.storeName;
-                document.getElementById('store-rif').value = fiscalData.storeRif;
-                document.getElementById('store-dir').value = fiscalData.storeDir;
-            } else {
-                document.getElementById('store-name').value = '';
-                document.getElementById('store-rif').value = '';
-                document.getElementById('store-dir').value = '';
-            }
-
-            document.getElementById('fiscal-modal').classList.remove('hidden');
-        }
-
-        function fillSavedStore(storeName) {
-            if (!storeName) return;
-            const found = savedStores.find(st => st.storeName === storeName);
-            if (found) {
-                document.getElementById('store-name').value = found.storeName;
-                document.getElementById('store-rif').value = found.storeRif;
-                document.getElementById('store-dir').value = found.storeDir;
-            }
-        }
-
-        function closeFiscalModal() {
-            document.getElementById('fiscal-modal').classList.add('hidden');
-        }
-
-        function saveFiscalData(e) {
-            e.preventDefault();
-            const name = document.getElementById('store-name').value.trim();
-            const rif = document.getElementById('store-rif').value.trim();
-            const dir = document.getElementById('store-dir').value.trim();
-
-            if (!fiscalData) fiscalData = {};
-            fiscalData.storeName = name;
-            fiscalData.storeRif = rif;
-            fiscalData.storeDir = dir;
-
-            const exists = savedStores.some(st => st.storeName.toLowerCase() === name.toLowerCase());
-            if (!exists) {
-                savedStores.push({ storeName: name, storeRif: rif, storeDir: dir });
-            }
-
-            saveDataToCloud();
-            loadFiscalUI();
-            document.getElementById('fiscal-modal').classList.add('hidden');
-            executePurchaseEmission();
-        }
-
-        function updateExchangeRate(val) {
-            exchangeRate = parseFloat(val) || 0;
-            localStorage.setItem('komprafacil_rate', exchangeRate);
-            updateCartUI();
-        }
-
+        // --- GESTIÓN DE PRODUCTOS MANUALES ---
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => {
@@ -1240,7 +691,7 @@
             renderCategories();
             const catObj = categories.find(c => c.id === catId);
             document.getElementById('current-category-title').innerText = `Pasillo: ${catObj.name}`;
-            document.getElementById('pasillo-subtitle').innerText = catObj.isWeight ? 'Indica los kilos o gramos que marque la báscula' : 'Usa los botones + o - para sumar unidades';
+            document.getElementById('pasillo-subtitle').innerText = catObj.isWeight ? 'Indica los kilos o gramos requeridos' : 'Usa los botones + o - para sumar unidades al carrito';
             renderProducts();
         }
 
@@ -1252,8 +703,8 @@
             if (catProducts.length === 0) {
                 listContainer.innerHTML = `
                     <div class="text-center py-6">
-                        <p class="text-xs text-slate-500 font-semibold mb-2">No hay productos registrados en este pasillo.</p>
-                        <span class="text-xs text-emerald-700 font-bold cursor-pointer hover:underline" onclick="openAddModal()">+ Registrar el primero</span>
+                        <p class="text-xs text-slate-500 font-semibold mb-2">No hay productos en este pasillo.</p>
+                        <span class="text-xs text-emerald-700 font-bold cursor-pointer hover:underline" onclick="openAddModal()">+ Registrar producto nuevo</span>
                     </div>`;
                 return;
             }
@@ -1262,16 +713,6 @@
                 const inCart = cart[prod.id];
                 const qty = inCart ? inCart.qty : 0;
                 const currentPrice = inCart ? inCart.price : prod.price;
-                const inHouseQty = inventory[prod.id] || 0;
-
-                // Buscamos los 2 últimos dígitos del código de barras asociado a este producto (si existe)
-                let barcodeSuffix = '--';
-                for (let code in barcodeMap) {
-                    if (barcodeMap[code] === prod.id) {
-                        barcodeSuffix = code.slice(-2);
-                        break;
-                    }
-                }
 
                 let rightControlHTML = '';
                 if (currentCat.isWeight) {
@@ -1296,7 +737,6 @@
                         <div class="flex-1 pr-2">
                             <div class="flex items-center space-x-2">
                                 <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">${prod.name}</h4>
-                                <span class="text-[9px] font-black bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-600" title="Últimos 2 dígitos del código de barras">[...${barcodeSuffix}]</span>
                                 <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 text-xs transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
                                 <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-xs transition" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
@@ -1305,9 +745,6 @@
                                     <span class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">$</span>
                                     <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 text-xs font-black text-emerald-700 dark:text-emerald-400 focus:outline-none">
                                 </div>
-                                <span class="text-[10px] font-extrabold ${inHouseQty > 0 ? 'text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200' : 'text-slate-400'}">
-                                    <i class="fa-solid fa-house mr-0.5"></i> Alacena: ${inHouseQty}
-                                </span>
                             </div>
                         </div>
                         <div>
@@ -1319,10 +756,9 @@
         }
 
         function openAddModal() {
-            document.getElementById('modal-product-title').innerText = 'Registrar Producto en Pasillo';
+            document.getElementById('modal-product-title').innerText = 'Registrar Producto Nuevo';
             document.getElementById('new-prod-category').value = activeCategory;
             document.getElementById('edit-prod-id').value = '';
-            document.getElementById('scanned-barcode-val').value = '';
             document.getElementById('new-prod-name').value = '';
             document.getElementById('new-prod-price').value = '';
             document.getElementById('product-modal').classList.remove('hidden');
@@ -1336,7 +772,6 @@
             document.getElementById('modal-product-title').innerText = 'Editar Producto';
             document.getElementById('new-prod-category').value = activeCategory;
             document.getElementById('edit-prod-id').value = prod.id;
-            document.getElementById('scanned-barcode-val').value = '';
             document.getElementById('new-prod-name').value = prod.name;
             document.getElementById('new-prod-price').value = prod.price;
             document.getElementById('product-modal').classList.remove('hidden');
@@ -1353,11 +788,9 @@
             const targetCategory = document.getElementById('new-prod-category').value;
             const name = document.getElementById('new-prod-name').value.trim();
             const price = parseFloat(document.getElementById('new-prod-price').value);
-            const barcode = document.getElementById('scanned-barcode-val').value.trim();
 
             if (!products[targetCategory]) products[targetCategory] = [];
 
-            let savedId = '';
             if (editId) {
                 for (let cat in products) {
                     const idx = products[cat].findIndex(p => p.id === editId);
@@ -1368,39 +801,27 @@
                             products[targetCategory].push(products[cat][idx]);
                             products[cat].splice(idx, 1);
                         }
-                        savedId = editId;
                         break;
                     }
                 }
             } else {
-                savedId = `${targetCategory}_${Date.now()}`;
+                const savedId = `${targetCategory}_${Date.now()}`;
                 products[targetCategory].push({ id: savedId, name, price });
-                
-                // Vinculación estricta del código de barras escaneado
-                if (barcode) {
-                    barcodeMap[barcode] = savedId;
-                }
             }
 
             saveDataToCloud();
             closeAddModal();
             selectCategory(targetCategory);
             renderProducts();
-            alert(`¡Producto "${name}" registrado correctamente!`);
+            alert(`¡Producto "${name}" guardado con éxito!`);
         }
 
         function deleteProductFromAisle(prodId) {
-            if (!confirm("¿Estás seguro de eliminar este producto del pasillo?")) return;
+            if (!confirm("¿Estás seguro de eliminar este producto?")) return;
             for (let cat in products) {
                 products[cat] = products[cat].filter(p => p.id !== prodId);
             }
             if (cart[prodId]) delete cart[prodId];
-            if (inventory[prodId]) delete inventory[prodId];
-
-            for (let code in barcodeMap) {
-                if (barcodeMap[code] === prodId) delete barcodeMap[code];
-            }
-
             saveDataToCloud();
             renderProducts();
             renderCategories();
@@ -1544,10 +965,6 @@
 
                 itemsSnapshot.push({ name: item.name, price: item.price, qty: qtyLabel, sub: sub });
 
-                // AUTOMÁTICO: Sumar a la Alacena en Casa al comprar
-                if (!inventory[item.id]) inventory[item.id] = 0;
-                inventory[item.id] += typeof item.qty === 'number' ? Math.round(item.qty) : 1;
-
                 itemsHtml += `<tr>
                     <td style="padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${item.name}<br><span style="font-size:10px; font-weight:normal;">$${item.price.toFixed(2)}</span></td>
                     <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${qtyLabel}</td>
@@ -1583,9 +1000,9 @@
 
             emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
                 .then(() => {
-                    alert("¡Compra guardada, inventario de alacena actualizado y factura enviada con éxito a tu correo!");
+                    alert("¡Compra guardada y factura enviada con éxito a tu correo!");
                 }, (err) => {
-                    alert("Compra guardada y sumada a alacena, pero ocurrió un error al enviar el correo.");
+                    alert("Compra guardada, pero ocurrió un error al enviar el correo.");
                     console.error(err);
                 });
 
@@ -1607,6 +1024,256 @@
             document.getElementById('ticket-number-input').value = '';
             renderProducts();
             renderCategories();
+            updateCartUI();
+        }
+
+        // --- GRÁFICAS DE CONSUMO MENSUAL ---
+        function renderStatsUI() {
+            const container = document.getElementById('stats-content-bars');
+            if (!purchaseHistory || purchaseHistory.length === 0) {
+                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">No hay suficientes datos de compras en el historial para generar gráficas.</p>`;
+                return;
+            }
+
+            let catTotals = {};
+            let totalGeneral = 0;
+
+            purchaseHistory.forEach(rec => {
+                if (rec.itemsSnapshot) {
+                    rec.itemsSnapshot.forEach(item => {
+                        let catName = 'Otros';
+                        for (let cat in products) {
+                            if (products[cat].some(p => p.name === item.name)) {
+                                catName = cat;
+                                break;
+                            }
+                        }
+                        if (!catTotals[catName]) catTotals[catName] = 0;
+                        catTotals[catName] += item.sub;
+                        totalGeneral += item.sub;
+                    });
+                }
+            });
+
+            if (totalGeneral <= 0) {
+                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">Sin montos registrados en el historial.</p>`;
+                return;
+            }
+
+            let htmlBars = '';
+            for (let cat in catTotals) {
+                const amount = catTotals[cat];
+                const percentage = ((amount / totalGeneral) * 100).toFixed(1);
+                htmlBars += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-800">
+                            <span class="capitalize"><i class="fa-solid fa-tag text-emerald-600 mr-1.5"></i> ${cat}</span>
+                            <span>$${amount.toFixed(2)} (${percentage}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                            <div class="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = htmlBars;
+        }
+
+        // --- LÓGICA DE DATOS Y NUBE ---
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim().toLowerCase();
+            const pin = document.getElementById('auth-pin').value.trim();
+
+            try {
+                const docRef = db.collection("users").doc(email);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    const userData = doc.data();
+                    if (userData.pin === pin) {
+                        currentUser = email;
+                        localStorage.setItem('komprafacil_current_user', currentUser);
+                        initApp();
+                    } else {
+                        alert("PIN de seguridad incorrecto.");
+                    }
+                } else {
+                    alert("Este correo no está registrado. Inscríbete completando el registro inicial.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error de conexión con la base de datos.");
+            }
+        }
+
+        function logoutUser() {
+            if (!confirm("¿Deseas cerrar sesión?")) return;
+            showTransitionScreen("Cerrando sesión en <strong class='text-emerald-300 font-extrabold'>DFPfantasy</strong>...", 2000);
+            setTimeout(() => {
+                localStorage.removeItem('komprafacil_current_user');
+                currentUser = null;
+                location.reload();
+            }, 2000);
+        }
+
+        async function deleteAccount() {
+            if (!currentUser) return;
+            if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"?`)) return;
+
+            try {
+                await db.collection("users").doc(currentUser).delete();
+                localStorage.removeItem('komprafacil_current_user');
+                currentUser = null;
+                location.reload();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function saveDataToCloud() {
+            if (!currentUser) return;
+            try {
+                await db.collection("users").doc(currentUser).set({
+                    fiscal: fiscalData,
+                    stores: savedStores,
+                    products: products,
+                    cart: cart,
+                    history: purchaseHistory
+                }, { merge: true });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadDataFromCloud() {
+            if (!currentUser) return;
+            try {
+                const doc = await db.collection("users").doc(currentUser).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    products = data.products || {};
+                    cart = data.cart || {};
+                    fiscalData = data.fiscal || null;
+                    savedStores = data.stores || [];
+                    purchaseHistory = data.history || [];
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('komprafacil_dark', isDarkMode);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            const body = document.body;
+            const header = document.getElementById('header-theme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            const cards = ['fiscal-card', 'aisle-card', 'ticket-card'];
+
+            if (isDarkMode) {
+                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300 overflow-x-hidden visible-app";
+                header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-300";
+                themeIcon.className = "fa-solid fa-sun text-xs";
+                cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-slate-800 rounded-2xl shadow-xs p-4 border border-slate-700 transition-colors duration-300"; });
+            } else {
+                body.className = "app-modern-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden visible-app";
+                header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-300";
+                themeIcon.className = "fa-solid fa-moon text-xs";
+                cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300"; });
+            }
+        }
+
+        function loadFiscalUI() {
+            if (!fiscalData || !fiscalData.storeName) {
+                document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
+                document.getElementById('display-rif-comercio').innerText = '--';
+                return;
+            }
+
+            document.getElementById('display-comercio').innerText = fiscalData.storeName;
+            document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif;
+            document.getElementById('display-cliente').innerText = fiscalData.clientName ? `${fiscalData.clientName} (${fiscalData.clientDoc})` : 'Registrado';
+
+            document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
+            document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
+            document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
+            
+            if (fiscalData.clientName) {
+                document.getElementById('ticket-cliente-name').innerText = fiscalData.clientName;
+                document.getElementById('ticket-cliente-doc').innerText = fiscalData.clientDoc;
+            }
+        }
+
+        function openFiscalModal() {
+            const selectEl = document.getElementById('saved-stores-select');
+            const sectionEl = document.getElementById('saved-stores-section');
+
+            if (savedStores && savedStores.length > 0) {
+                sectionEl.classList.remove('hidden');
+                selectEl.innerHTML = `<option value="">-- Elige un comercio guardado --</option>` + 
+                    savedStores.map(st => `<option value="${st.storeName}">${st.storeName} (${st.storeRif})</option>`).join('');
+            } else {
+                sectionEl.classList.add('hidden');
+            }
+
+            if (fiscalData && fiscalData.storeName) {
+                document.getElementById('store-name').value = fiscalData.storeName;
+                document.getElementById('store-rif').value = fiscalData.storeRif;
+                document.getElementById('store-dir').value = fiscalData.storeDir;
+            } else {
+                document.getElementById('store-name').value = '';
+                document.getElementById('store-rif').value = '';
+                document.getElementById('store-dir').value = '';
+            }
+
+            document.getElementById('fiscal-modal').classList.remove('hidden');
+        }
+
+        function fillSavedStore(storeName) {
+            if (!storeName) return;
+            const found = savedStores.find(st => st.storeName === storeName);
+            if (found) {
+                document.getElementById('store-name').value = found.storeName;
+                document.getElementById('store-rif').value = found.storeRif;
+                document.getElementById('store-dir').value = found.storeDir;
+            }
+        }
+
+        function closeFiscalModal() {
+            document.getElementById('fiscal-modal').classList.add('hidden');
+        }
+
+        function saveFiscalData(e) {
+            e.preventDefault();
+            const name = document.getElementById('store-name').value.trim();
+            const rif = document.getElementById('store-rif').value.trim();
+            const dir = document.getElementById('store-dir').value.trim();
+
+            if (!fiscalData) fiscalData = {};
+            fiscalData.storeName = name;
+            fiscalData.storeRif = rif;
+            fiscalData.storeDir = dir;
+
+            const exists = savedStores.some(st => st.storeName.toLowerCase() === name.toLowerCase());
+            if (!exists) {
+                savedStores.push({ storeName: name, storeRif: rif, storeDir: dir });
+            }
+
+            saveDataToCloud();
+            loadFiscalUI();
+            document.getElementById('fiscal-modal').classList.add('hidden');
+            executePurchaseEmission();
+        }
+
+        function updateExchangeRate(val) {
+            exchangeRate = parseFloat(val) || 0;
+            localStorage.setItem('komprafacil_rate', exchangeRate);
             updateCartUI();
         }
 

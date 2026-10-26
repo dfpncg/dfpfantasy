@@ -231,7 +231,7 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto p-4 space-y-4">
 
-        <!-- BOTÓN DE ESCÁNER PRINCIPAL (OCUPA TODO EL ESPACIO) -->
+        <!-- BOTÓN DE ESCÁNER PRINCIPAL -->
         <section class="bg-white rounded-2xl shadow-xs p-3 border border-emerald-100 transition-colors duration-300" id="search-card">
             <button onclick="openScannerModal('cart')" class="w-full shimmer-btn text-white py-3.5 px-4 rounded-xl text-sm font-black shadow-md flex items-center justify-center space-x-2 transition transform active:scale-95">
                 <i class="fa-solid fa-barcode text-lg"></i>
@@ -344,7 +344,7 @@
 
     </main>
 
-    <!-- MODAL ESCÁNER DE CÁMARA (CORREGIDO PANTALLA NEGRA) -->
+    <!-- MODAL ESCÁNER DE CÁMARA (ROBUSTO) -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -355,7 +355,6 @@
             </div>
             <p class="text-[11px] text-slate-500 font-medium">Apunta la cámara trasera al código de barras.</p>
             
-            <!-- Contenedor limpio con dimensiones forzadas para evitar pantallas negras -->
             <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-900 min-h-[260px] relative flex items-center justify-center"></div>
 
             <button onclick="closeScannerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black shadow-md">
@@ -364,10 +363,33 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVO PRODUCTO / APRENDIZAJE DE CÓDIGO DE BARRAS -->
+    <!-- MODAL DIRECTO PARA ACTUALIZAR CANTIDAD EN ALACENA (SIN FORMULARIOS LARGOS) -->
+    <div id="quick-inventory-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl w-full max-w-xs p-6 shadow-2xl modal-animated space-y-4 text-center">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto text-xl shadow-xs">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div>
+                <h3 class="font-black text-base text-slate-900" id="quick-prod-name">Producto</h3>
+                <p class="text-[11px] text-emerald-700 font-bold">Actualizar unidades en Mi Alacena</p>
+            </div>
+            <input type="hidden" id="quick-prod-id">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-600 mb-1">Cantidad física actual en casa:</label>
+                <input type="number" min="0" id="quick-prod-qty" class="w-28 mx-auto bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-900 focus:outline-none focus:border-emerald-600">
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button type="button" onclick="closeQuickInventoryModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
+                <button type="button" onclick="saveQuickInventoryQty()" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO PRODUCTO (SOLO CUANDO NO ESTÁ REGISTRADO) -->
     <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-3">
-            <h3 class="font-black text-base text-slate-900" id="modal-product-title">Registrar Producto</h3>
+            <h3 class="font-black text-base text-slate-900" id="modal-product-title">Registrar Producto Nuevo</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Este código de barras no está registrado. Ingresa sus datos por única vez:</p>
             <form id="add-product-form" onsubmit="saveProduct(event)">
                 <input type="hidden" id="edit-prod-id">
                 <input type="hidden" id="scanned-barcode-val">
@@ -394,7 +416,7 @@
                 </div>
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Guardar</button>
+                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Registrar</button>
                 </div>
             </form>
         </div>
@@ -759,12 +781,10 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE ESCÁNER ROBUSTA (CORRECCIÓN PANTALLA NEGRA) ---
+        // --- GESTIÓN DE ESCÁNER ROBUSTA ---
         function openScannerModal(mode = 'cart') {
             scannerContextMode = mode;
             document.getElementById('scanner-modal').classList.remove('hidden');
-            
-            // Retardo seguro para garantizar que el DOM del modal esté completamente renderizado antes de iniciar el stream
             setTimeout(() => {
                 startCameraScanner();
             }, 400);
@@ -780,7 +800,6 @@
                     html5QrCode = null;
                 });
             } else {
-                // Limpieza de respaldo del contenedor HTML
                 const readerEl = document.getElementById('reader');
                 if (readerEl) readerEl.innerHTML = '';
             }
@@ -791,7 +810,6 @@
             const readerEl = document.getElementById('reader');
             if (!readerEl) return;
             
-            // Limpiar contenedor previo para evitar conflictos de canvas negros
             readerEl.innerHTML = '';
 
             const qrCodeSuccessCallback = (decodedText, decodedResult) => {
@@ -806,21 +824,16 @@
 
             try {
                 html5QrCode = new Html5Qrcode("reader");
-                
-                // Forzar exclusivamente la cámara trasera ('environment') para evitar pantallas negras en dispositivos móviles
                 html5QrCode.start(
                     { facingMode: "environment" }, 
                     config, 
                     qrCodeSuccessCallback
                 ).catch(err => {
-                    console.warn("Fallo al iniciar cámara trasera, intentando con selector genérico...", err);
-                    // Segundo intento de respaldo con ID de cámara por defecto
                     html5QrCode.start(
                         { facingMode: "user" }, 
                         config, 
                         qrCodeSuccessCallback
                     ).catch(err2 => {
-                        console.error("Error crítico de cámara:", err2);
                         readerEl.innerHTML = `<p class="text-xs text-rose-400 p-6 font-bold">No se pudo acceder a la cámara. Revisa los permisos de tu navegador.</p>`;
                     });
                 });
@@ -842,12 +855,10 @@
 
             if (foundProd) {
                 if (scannerContextMode === 'inventory') {
-                    if (!inventory[foundProd.id]) inventory[foundProd.id] = 0;
-                    inventory[foundProd.id] += 1;
-                    saveDataToCloud();
-                    renderInventoryUI();
-                    alert(`¡Alacena actualizada! Se sumó 1 unidad de "${foundProd.name}". Total en casa: ${inventory[foundProd.id]}`);
+                    // FLUJO ALACENA DIRECTO: Si ya existe, abrir modal rápido de cantidad sin formularios largos
+                    openQuickInventoryModal(foundProd);
                 } else {
+                    // FLUJO CARRITO DE COMPRA
                     if (!cart[foundProd.id]) {
                         cart[foundProd.id] = { ...foundProd, qty: 1 };
                     } else {
@@ -860,13 +871,40 @@
                     alert(`¡Escaneado con éxito! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
                 }
             } else {
+                // FLUJO NUEVO: Producto no registrado
                 document.getElementById('edit-prod-id').value = '';
                 document.getElementById('scanned-barcode-val').value = barcode;
-                document.getElementById('modal-product-title').innerText = scannerContextMode === 'inventory' ? 'Nuevo Producto (Registrar en Alacena)' : 'Nuevo Producto (Escáner)';
+                document.getElementById('modal-product-title').innerText = scannerContextMode === 'inventory' ? 'Registrar Nuevo Producto' : 'Registrar Producto (Escáner)';
                 document.getElementById('new-prod-name').value = '';
                 document.getElementById('new-prod-price').value = '';
                 document.getElementById('product-modal').classList.remove('hidden');
             }
+        }
+
+        function openQuickInventoryModal(prod) {
+            document.getElementById('quick-prod-id').value = prod.id;
+            document.getElementById('quick-prod-name').innerText = prod.name;
+            document.getElementById('quick-prod-qty').value = inventory[prod.id] || 0;
+            document.getElementById('quick-inventory-modal').classList.remove('hidden');
+        }
+
+        function closeQuickInventoryModal() {
+            document.getElementById('quick-inventory-modal').classList.add('hidden');
+        }
+
+        function saveQuickInventoryQty() {
+            const prodId = document.getElementById('quick-prod-id').value;
+            const qty = parseInt(document.getElementById('quick-prod-qty').value);
+            
+            if (isNaN(qty) || qty < 0) {
+                alert("Por favor ingresa un número válido.");
+                return;
+            }
+
+            inventory[prodId] = qty;
+            saveDataToCloud();
+            closeQuickInventoryModal();
+            alert("¡Alacena actualizada correctamente!");
         }
 
         // --- GESTIÓN DE ALACENA EN CASA (INVENTARIO) ---

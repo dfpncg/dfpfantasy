@@ -33,23 +33,64 @@
         .fiscal-ticket {
             font-family: 'Courier New', Courier, monospace;
         }
+        /* ANIMACIONES Y BRILLOS PERSONALIZADOS */
+        @keyframes pulseGlow {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.6));
+            }
+            50% {
+                transform: scale(1.06);
+                filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.9));
+            }
+        }
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .animate-logo-glow {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+        .modal-animated {
+            animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .shimmer-btn {
+            background: linear-gradient(90deg, #059669 0%, #34D399 50%, #059669 100%);
+            background-size: 200% auto;
+            transition: 0.4s;
+        }
+        .shimmer-btn:hover {
+            background-position: right center;
+        }
     </style>
 </head>
-<body class="bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-200" id="body-theme">
+<body class="bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-300" id="body-theme">
 
-    <!-- CABECERA FIJA CON EL LOGOTIPO PERSONALIZADO DFPfantasy Y CONTROLES -->
-    <header class="bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-200" id="header-theme">
+    <!-- CABECERA FIJA CON EL LOGOTIPO PERSONALIZADO DFPfantasy Y BRILLO -->
+    <header class="bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-300" id="header-theme">
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             
-            <!-- LOGOTIPO EXCLUSIVO DFPfantasy -->
-            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="showDashboardMenu()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="42" height="42" class="flex-shrink-0">
-                    <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
-                    <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <circle cx="23" cy="37" r="2.5" fill="#059669"/>
-                    <circle cx="33" cy="37" r="2.5" fill="#059669"/>
-                    <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.85"/>
-                </svg>
+            <!-- LOGOTIPO CON ANIMACIÓN DE BRILLO CONSTANTE -->
+            <div class="flex items-center space-x-2.5 cursor-pointer group" onclick="showDashboardMenu()">
+                <div class="animate-logo-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="42" height="42" class="flex-shrink-0">
+                        <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.35" />
+                        <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="23" cy="37" r="2.5" fill="#059669"/>
+                        <circle cx="33" cy="37" r="2.5" fill="#059669"/>
+                        <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
+                    </svg>
+                </div>
                 <div>
                     <h1 class="text-base font-black tracking-wide text-slate-900 leading-tight" id="header-market-name">
                         <span class="text-emerald-700">DFP</span>fantasy
@@ -60,28 +101,28 @@
 
             <!-- CONTROLES DERECHA (TOTAL Y MODO OSCURO) -->
             <div class="flex items-center space-x-2.5">
-                <div class="text-right bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
+                <div class="text-right bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 shadow-xs">
                     <span class="text-[9px] uppercase tracking-wider block text-emerald-700 font-bold">Total Pagar</span>
                     <span class="text-sm font-black text-emerald-900" id="grand-total">$0.00</span>
                     <span class="text-[10px] font-bold block text-emerald-800" id="grand-total-bs">Bs. 0.00</span>
                 </div>
                 <!-- Botón de Modo Oscuro -->
-                <button onclick="toggleDarkMode()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 w-9 h-9 rounded-xl flex items-center justify-center shadow-xs transition" title="Cambiar Modo Oscuro / Claro">
+                <button onclick="toggleDarkMode()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 w-9 h-9 rounded-xl flex items-center justify-center shadow-xs transition transform hover:scale-105 active:scale-95" title="Cambiar Modo Oscuro / Claro">
                     <i class="fa-solid fa-moon text-xs" id="theme-icon"></i>
                 </button>
             </div>
         </div>
 
         <!-- BARRA SECUNDARIA (INICIO, USUARIO, ELIMINAR CUENTA, TASA) -->
-        <div class="max-w-md mx-auto bg-emerald-600 text-white rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
+        <div class="max-w-md mx-auto bg-emerald-600 text-white rounded-xl p-2.5 flex items-center justify-between text-xs shadow-md">
             <div class="flex items-center space-x-1.5">
-                <button onclick="showDashboardMenu()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition" title="Menú Principal">
+                <button onclick="showDashboardMenu()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition transform hover:scale-105" title="Menú Principal">
                     <i class="fa-solid fa-house mr-1"></i> Menú
                 </button>
-                <button onclick="logoutUser()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition" title="Cerrar sesión">
+                <button onclick="logoutUser()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition transform hover:scale-105" title="Cerrar sesión">
                     <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
                 </button>
-                <button onclick="deleteAccount()" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded-lg border border-rose-500 font-bold transition" title="Eliminar cuenta permanentemente">
+                <button onclick="deleteAccount()" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded-lg border border-rose-500 font-bold transition transform hover:scale-105" title="Eliminar cuenta permanentemente">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>
@@ -92,10 +133,10 @@
         </div>
     </header>
 
-    <!-- PANTALLA FLOTANTE / MENÚ PRINCIPAL DESPUÉS DE INICIAR SESIÓN -->
-    <div id="dashboard-menu-modal" class="fixed inset-0 bg-slate-900/80 z-40 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 text-center space-y-4">
-            <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-xs">
+    <!-- PANTALLA FLOTANTE / MENÚ PRINCIPAL CON ANIMACIÓN -->
+    <div id="dashboard-menu-modal" class="fixed inset-0 bg-slate-900/80 z-40 hidden flex items-center justify-center p-4 backdrop-blur-xs transition-opacity duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 text-center space-y-4 modal-animated">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-md animate-logo-glow">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="36" height="36">
                     <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
                     <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -106,13 +147,13 @@
             </div>
             <div>
                 <h2 class="text-lg font-black text-slate-900">¿Qué deseas hacer hoy?</h2>
-                <p class="text-xs text-slate-500 font-medium mt-0.5">Selecciona una opción para continuar en <span class="text-emerald-700 font-bold">DFP</span>fantasy</p>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">Selecciona una opción en <span class="text-emerald-700 font-bold">DFP</span>fantasy</p>
             </div>
 
             <div class="grid grid-cols-1 gap-3 pt-2">
                 <!-- Botón Nueva Compra -->
-                <button onclick="startNewPurchase()" class="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition text-left group">
-                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg font-bold group-hover:scale-110 transition">
+                <button onclick="startNewPurchase()" class="shimmer-btn text-white p-4 rounded-2xl shadow-md flex items-center space-x-4 transition transform hover:scale-[1.02] active:scale-95 text-left group">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white text-lg font-bold group-hover:rotate-12 transition">
                         <i class="fa-solid fa-cart-shopping"></i>
                     </div>
                     <div>
@@ -121,14 +162,14 @@
                     </div>
                 </button>
 
-                <!-- Botón Historial de Compras -->
-                <button onclick="selectMenuOption('history-view')" class="bg-slate-100 hover:bg-slate-200 text-slate-900 p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition text-left group border border-slate-200">
-                    <div class="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center text-emerald-700 text-lg font-bold group-hover:scale-110 transition">
+                <!-- Botón Historial de Compras (Abre el apartado exclusivo) -->
+                <button onclick="openHistoryModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-900 p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition transform hover:scale-[1.02] active:scale-95 text-left group border border-slate-200">
+                    <div class="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center text-emerald-700 text-lg font-bold group-hover:-rotate-12 transition">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                     </div>
                     <div>
                         <strong class="block text-sm font-black">Historial de Compras</strong>
-                        <span class="text-[11px] text-slate-600 font-medium">Revisa facturas y montos anteriores</span>
+                        <span class="text-[11px] text-slate-600 font-medium">Revisa facturas detalladas y anteriores</span>
                     </div>
                 </button>
             </div>
@@ -139,21 +180,21 @@
     <main class="max-w-md mx-auto p-4 space-y-4">
 
         <!-- SECCIÓN 0.1: BUSCADOR RÁPIDO GLOBAL -->
-        <section class="bg-white rounded-2xl shadow-xs p-3 border border-emerald-100 transition-colors duration-200" id="search-card">
+        <section class="bg-white rounded-2xl shadow-xs p-3 border border-emerald-100 transition-colors duration-300" id="search-card">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-emerald-500 text-xs"></i>
-                <input type="text" id="global-search" oninput="globalSearchProducts(this.value)" placeholder="Buscar producto en cualquier pasillo..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:border-emerald-500">
+                <input type="text" id="global-search" oninput="globalSearchProducts(this.value)" placeholder="Buscar producto en cualquier pasillo..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:border-emerald-500 transition">
             </div>
             <div id="search-results" class="hidden mt-2 space-y-1.5 divide-y divide-slate-100 max-h-40 overflow-y-auto"></div>
         </section>
 
         <!-- SECCIÓN 0: CONFIGURACIÓN FISCAL (COMERCIO Y CLIENTE) -->
-        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200" id="fiscal-card">
+        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300" id="fiscal-card">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-slate-900 text-sm flex items-center" id="fiscal-title-text">
                     <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i> Datos Fiscales (SENIAT)
                 </h3>
-                <button onclick="openFiscalModal()" class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition">
+                <button onclick="openFiscalModal()" class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition transform hover:scale-105">
                     <i class="fa-solid fa-gear mr-1"></i> Seleccionar Comercio
                 </button>
             </div>
@@ -173,13 +214,13 @@
         </section>
 
         <!-- SECCIÓN 2: PRODUCTOS DEL PASILLO -->
-        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200" id="aisle-card">
+        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300" id="aisle-card">
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base" id="current-category-title">Pasillo</h3>
                     <p class="text-[11px] text-slate-500 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos al vuelo</p>
                 </div>
-                <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition">
+                <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition transform hover:scale-105">
                     <i class="fa-solid fa-plus mr-1"></i> Nuevo
                 </button>
             </div>
@@ -191,13 +232,13 @@
         </section>
 
         <!-- SECCIÓN 3: COMPROBANTE RECIBO -->
-        <section class="bg-white rounded-2xl shadow-sm p-4 border border-emerald-200 transition-colors duration-200" id="ticket-card">
+        <section class="bg-white rounded-2xl shadow-sm p-4 border border-emerald-200 transition-colors duration-300" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-100">
                 <h3 class="font-black text-slate-900 text-sm flex items-center" id="ticket-title-text">
                     <i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Comprobante Recibo
                 </h3>
                 <div class="flex space-x-2">
-                    <button onclick="saveAndSendPurchase()" class="text-xs text-white font-bold bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg shadow-xs transition flex items-center" title="Guardar y enviar factura por correo">
+                    <button onclick="saveAndSendPurchase()" class="text-xs text-white font-bold shimmer-btn px-3 py-1.5 rounded-lg shadow-md transition transform hover:scale-105 flex items-center" title="Guardar y enviar factura por correo">
                         <i class="fa-solid fa-paper-plane mr-1"></i> Guardar y Enviar
                     </button>
                     <button onclick="clearCart()" class="text-xs text-rose-600 hover:underline font-bold">Nueva</button>
@@ -205,7 +246,7 @@
             </div>
             
             <!-- ENCABEZADO FISCAL ESTILO TICKET -->
-            <div class="bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200" id="ticket-inner-box">
+            <div class="bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-300" id="ticket-inner-box">
                 <p class="font-black text-slate-950 text-xs" id="ticket-comercio-name">COMERCIO NO SELECCIONADO</p>
                 <p id="ticket-comercio-rif" class="text-slate-900 font-bold">RIF: J-00000000-0</p>
                 <p class="text-[10px] text-slate-700 font-semibold" id="ticket-comercio-dir">Ciudad Bolívar, Venezuela</p>
@@ -237,7 +278,7 @@
                 <p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>
             </div>
 
-            <!-- PIE DE TICKET FISCAL CON LETRAS NEGRAS Y DEFINIDAS -->
+            <!-- PIE DE TICKET FISCAL -->
             <div class="mt-3 pt-3 border-t border-emerald-200 space-y-1.5 fiscal-ticket text-xs font-bold text-slate-900">
                 <div class="flex justify-between" id="sub-usd-row">
                     <span>BASE IMPONIBLE USD:</span>
@@ -259,13 +300,16 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 4: HISTORIAL DE CIERRES DE COMPRA -->
-        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200" id="history-card">
+        <!-- SECCIÓN 4: HISTORIAL DE CIERRES DE COMPRA (PRINCIPAL) -->
+        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300" id="history-card">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-slate-900 text-sm flex items-center" id="history-title-text">
                     <i class="fa-solid fa-clock-rotate-left text-emerald-600 mr-2"></i> Historial de Cierres de Compra
                 </h3>
-                <button onclick="clearHistory()" class="text-xs text-rose-600 hover:underline font-bold">Borrar Historial</button>
+                <div class="space-x-2">
+                    <button onclick="openHistoryModal()" class="text-xs text-emerald-700 font-bold hover:underline">Ver Completo</button>
+                    <button onclick="clearHistory()" class="text-xs text-rose-600 hover:underline font-bold">Borrar</button>
+                </div>
             </div>
             <div class="space-y-2 max-h-48 overflow-y-auto" id="history-list">
                 <p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Aún no hay compras guardadas en el historial.</p>
@@ -274,20 +318,44 @@
 
     </main>
 
-    <!-- PANTALLA COMPLETA DE BIENVENIDA / INICIO DE SESIÓN (SPLASH SCREEN) -->
+    <!-- APARTADO EXCLUSIVO / MODAL DE HISTORIAL COMPLETO DE COMPRAS -->
+    <div id="history-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs transition-opacity duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl border border-emerald-100 max-h-[85vh] overflow-y-auto modal-animated space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-black text-base text-slate-900 flex items-center">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-600 mr-2 text-lg"></i> Apartado de Historial de Compras
+                </h3>
+                <button onclick="closeHistoryModal()" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">Aquí puedes revisar todas las facturas y cierres generados desde el uso de la aplicación:</p>
+            
+            <!-- Listado completo sincronizado -->
+            <div class="space-y-2.5" id="modal-history-list">
+                <p class="text-xs text-center py-8 font-black text-slate-400">No hay registros en el historial.</p>
+            </div>
+
+            <button onclick="closeHistoryModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-black shadow-md transition">
+                Cerrar Historial
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA COMPLETA DE BIENVENIDA / INICIO DE SESIÓN CON ANIMACIÓN (SPLASH SCREEN) -->
     <div id="auth-modal" class="fixed inset-0 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[95vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[95vh] overflow-y-auto modal-animated">
             
             <!-- PASO 1: Ingreso de Correo y PIN -->
             <div id="auth-step-1">
                 <div class="text-center mb-4">
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-3xl shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="36" height="36">
-                            <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-4xl shadow-md animate-logo-glow">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
+                            <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.3" />
                             <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                             <circle cx="23" cy="37" r="2.5" fill="#059669"/>
                             <circle cx="33" cy="37" r="2.5" fill="#059669"/>
-                            <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.85"/>
+                            <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
                         </svg>
                     </div>
                     <h3 class="font-black text-xl text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
@@ -297,15 +365,15 @@
                 <form onsubmit="handleAuthSubmit(event)">
                     <div class="mb-3">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
-                        <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
-                        <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-black shadow-sm transition">
+                    <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md transition transform hover:scale-[1.02]">
                         Continuar
                     </button>
                 </form>
@@ -321,7 +389,7 @@
                 <form onsubmit="handleFiscalRegister(event)">
                     <div class="mb-2.5">
                         <label class="block text-[10px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
-                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                     </div>
 
                     <div class="mb-2.5">
@@ -333,7 +401,7 @@
                                 <option value="J-">J-</option>
                                 <option value="G-">G-</option>
                             </select>
-                            <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border-t border-b border-r border-slate-200 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                            <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border-t border-b border-r border-slate-200 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                         </div>
                     </div>
 
@@ -347,25 +415,25 @@
                                 <option value="0426">0426 (Movilnet)</option>
                                 <option value="0412">0412 (Digitel)</option>
                             </select>
-                            <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600" maxlength="7">
+                            <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition" maxlength="7">
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-black">Registrarse y Enviar Código</button>
+                    <button type="submit" class="w-full shimmer-btn text-white py-2.5 rounded-xl text-xs font-black shadow-md transition transform hover:scale-[1.02]">Registrarse y Enviar Código</button>
                 </form>
             </div>
 
             <!-- PASO 3: Validación del Código de Verificación EmailJS -->
             <div id="auth-step-3" class="hidden text-center">
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl shadow-xs">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-md animate-logo-glow">
                     <i class="fa-solid fa-envelope-circle-check"></i>
                 </div>
                 <h3 class="font-black text-base text-slate-900 mb-1">Verificación de Correo</h3>
                 <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo electrónico. Ingrésalo abajo:</p>
                 
                 <form onsubmit="handleVerificationSubmit(event)">
-                    <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none focus:border-emerald-600">
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black shadow-md">Verificar y Entrar</button>
+                    <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none focus:border-emerald-600 transition">
+                    <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md transition transform hover:scale-[1.02]">Verificar y Entrar</button>
                 </form>
             </div>
 
@@ -373,8 +441,8 @@
     </div>
 
     <!-- MODAL DE CONFIGURACIÓN FISCAL / SELECCIÓN DE COMERCIOS FRECUENTES -->
-    <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+    <div id="fiscal-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs transition-opacity duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[90vh] overflow-y-auto modal-animated">
             <h3 class="font-bold text-lg mb-1 text-slate-900">Comercio Emisor de la Factura</h3>
             <p class="text-[11px] text-slate-500 mb-3 font-semibold">Elige un comercio guardado o ingresa los datos de tu compra.</p>
             
@@ -390,43 +458,43 @@
                 <div class="border-b border-slate-100 pb-3 mb-3">
                     <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Supermercado</label>
-                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                     </div>
                     <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">RIF del Comercio</label>
-                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                     </div>
                     <div class="mb-1">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">Dirección / Ciudad</label>
-                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                     </div>
                 </div>
 
                 <div class="flex space-x-2">
-                    <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Confirmar y Facturar</button>
+                    <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition hover:bg-slate-200">Cancelar</button>
+                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold transition">Confirmar y Facturar</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL PARA AGREGAR O EDITAR PRODUCTO EN EL PASILLO -->
-    <div id="product-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl">
+    <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs transition-opacity duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated">
             <h3 class="font-bold text-lg mb-3 text-slate-900" id="modal-product-title">Agregar Producto al Pasillo</h3>
             <form id="add-product-form" onsubmit="saveProduct(event)">
                 <input type="hidden" id="edit-prod-id">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-700 mb-1" id="price-label-modal">Precio Base ($)</label>
-                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 transition">
                 </div>
                 <div class="flex space-x-2">
-                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Guardar</button>
+                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition hover:bg-slate-200">Cancelar</button>
+                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold transition">Guardar</button>
                 </div>
             </form>
         </div>
@@ -452,8 +520,8 @@
 
         let products = {};
         let cart = {};
-        let fiscalData = null; // Inicia limpio sin comercio predeterminado
-        let savedStores = []; // Base de datos de comercios frecuentes
+        let fiscalData = null;
+        let savedStores = [];
         let purchaseHistory = [];
 
         let tempAuthEmail = '';
@@ -496,7 +564,7 @@
         function startNewPurchase() {
             document.getElementById('dashboard-menu-modal').classList.add('hidden');
             cart = {};
-            fiscalData = null; // Limpiar para que no arrastre nada previo
+            fiscalData = null;
             document.getElementById('ticket-number-input').value = '';
             
             document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
@@ -514,13 +582,21 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // CONTROLADORES DE LOS DOS HISTORIALES (PRINCIPAL Y APARTADO MODAL)
+        function openHistoryModal() {
+            document.getElementById('dashboard-menu-modal').classList.add('hidden');
+            renderModalHistory();
+            document.getElementById('history-modal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('history-modal').classList.add('hidden');
+        }
+
         function selectMenuOption(option) {
             document.getElementById('dashboard-menu-modal').classList.add('hidden');
             if (option === 'history-view') {
-                const historyEl = document.getElementById('history-card');
-                if (historyEl) {
-                    historyEl.scrollIntoView({ behavior: 'smooth' });
-                }
+                openHistoryModal();
             }
         }
 
@@ -683,30 +759,30 @@
             const boxes = ['fiscal-box', 'ticket-inner-box'];
 
             if (isDarkMode) {
-                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-200";
-                header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-200";
+                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300";
+                header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-sun text-xs";
 
                 cards.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-slate-800 rounded-2xl shadow-xs p-4 border border-slate-700 transition-colors duration-200";
+                    if(el) el.className = "bg-slate-800 rounded-2xl shadow-xs p-4 border border-slate-700 transition-colors duration-300";
                 });
                 boxes.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-slate-900 rounded-xl p-3 mb-3 border border-dashed border-slate-600 text-center fiscal-ticket text-[11px] text-slate-100 font-bold space-y-1 transition-colors duration-200";
+                    if(el) el.className = "bg-slate-900 rounded-xl p-3 mb-3 border border-dashed border-slate-600 text-center fiscal-ticket text-[11px] text-slate-100 font-bold space-y-1 transition-colors duration-300";
                 });
             } else {
-                body.className = "bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-200";
-                header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-200";
+                body.className = "bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-300";
+                header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-moon text-xs";
 
                 cards.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200";
+                    if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300";
                 });
                 boxes.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200";
+                    if(el) el.className = "bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-300";
                 });
             }
         }
@@ -775,7 +851,6 @@
             }
         }
 
-        // VENTANA FLOTANTE EXCLUSIVA AL MOMENTO DE DARLE A GUARDAR Y ENVIAR
         function openFiscalModal() {
             const selectEl = document.getElementById('saved-stores-select');
             const sectionEl = document.getElementById('saved-stores-section');
@@ -801,7 +876,6 @@
             document.getElementById('fiscal-modal').classList.remove('hidden');
         }
 
-        // AUTOCOMPLETADO CON UN SOLO CLIC EN EL COMERCIO GUARDADO
         function fillSavedStore(storeName) {
             if (!storeName) return;
             const found = savedStores.find(st => st.storeName === storeName);
@@ -827,7 +901,6 @@
             fiscalData.storeRif = rif;
             fiscalData.storeDir = dir;
 
-            // Guardar automáticamente en la lista de comercios frecuentes si es nuevo
             const exists = savedStores.some(st => st.storeName.toLowerCase() === name.toLowerCase());
             if (!exists) {
                 savedStores.push({ storeName: name, storeRif: rif, storeDir: dir });
@@ -837,7 +910,6 @@
             loadFiscalUI();
             document.getElementById('fiscal-modal').classList.add('hidden');
 
-            // Una vez guardado el comercio, ejecutamos el envío definitivo de la compra
             executePurchaseEmission();
         }
 
@@ -850,7 +922,7 @@
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => `
-                <button onclick="selectCategory('${cat.id}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition ${activeCategory === cat.id ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border-emerald-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-emerald-50/50'}">
+                <button onclick="selectCategory('${cat.id}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition transform hover:scale-105 ${activeCategory === cat.id ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border-emerald-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-emerald-50/50'}">
                     <i class="fa-solid ${cat.icon} text-lg mb-1 text-emerald-600"></i>
                     <span class="text-[11px] truncate w-full text-center">${cat.name}</span>
                 </button>
@@ -896,22 +968,22 @@
                 } else {
                     rightControlHTML = `
                         <div class="flex items-center space-x-1.5">
-                            <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-800 dark:text-slate-100 font-black shadow-xs text-sm">-</button>
+                            <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-800 dark:text-slate-100 font-black shadow-xs text-sm transition transform active:scale-90">-</button>
                             <span class="text-sm font-black w-8 text-center text-slate-950 dark:text-slate-100">${qty}</span>
-                            <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-black shadow-xs text-sm">+</button>
+                            <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-black shadow-xs text-sm transition transform active:scale-90">+</button>
                         </div>
                     `;
                 }
 
                 return `
-                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-slate-700 transition-colors duration-200">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-slate-700 transition-colors duration-300">
                         <div class="flex-1 pr-2">
                             <div class="flex items-center space-x-2">
                                 <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">${prod.name}</h4>
-                                <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs" title="Editar nombre">
+                                <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs transition" title="Editar nombre">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
-                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-xs" title="Eliminar producto">
+                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-xs transition" title="Eliminar producto">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
@@ -1087,7 +1159,6 @@
                 document.getElementById('fiscal-base-usd').innerText = '$0.00';
                 document.getElementById('fiscal-iva-usd').innerText = '$0.00';
                 document.getElementById('fiscal-total-bs').innerText = 'Bs. 0.00';
-                document.getElementById('item-count').innerText = '0 ítems';
                 return;
             }
 
@@ -1131,10 +1202,8 @@
             document.getElementById('fiscal-iva-usd').innerText = `$${ivaAmount.toFixed(2)}`;
             document.getElementById('fiscal-tasa').innerText = `Bs. ${exchangeRate.toFixed(2)}`;
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('item-count').innerText = `${cartKeys.length} ítems`;
         }
 
-        // AL DARLE A GUARDAR Y ENVIAR, VERIFICAMOS SI YA TENEMOS EL COMERCIO; SI NO, ABRIMOS LA VENTANA FLOTANTE
         function saveAndSendPurchase() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
@@ -1150,7 +1219,6 @@
             executePurchaseEmission();
         }
 
-        // FUNCIÓN QUE EJECUTA EL ENVÍO POR EMAIL Y REGISTRA LA HORA EXACTA
         function executePurchaseEmission() {
             const cartKeys = Object.keys(cart);
             let baseTotal = 0;
@@ -1223,6 +1291,7 @@
             renderHistory();
         }
 
+        // RENDERIZADO DEL HISTORIAL PRINCIPAL Y DEL APARTADO MODAL EXCLUSIVO
         function renderHistory() {
             const historyList = document.getElementById('history-list');
             if (purchaseHistory.length === 0) {
@@ -1230,7 +1299,7 @@
                 return;
             }
 
-            historyList.innerHTML = purchaseHistory.map(rec => `
+            historyList.innerHTML = purchaseHistory.slice(0, 3).map(rec => `
                 <div class="bg-emerald-50/50 dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-slate-700 flex justify-between items-center text-xs">
                     <div>
                         <strong class="font-black block" style="color: #000000 !important;">${rec.store} (Fac: #${rec.facNumber})</strong>
@@ -1244,11 +1313,34 @@
             `).join('');
         }
 
+        function renderModalHistory() {
+            const modalList = document.getElementById('modal-history-list');
+            if (purchaseHistory.length === 0) {
+                modalList.innerHTML = `<p class="text-xs text-center py-8 font-black text-slate-400">Aún no hay compras registradas en el historial.</p>`;
+                return;
+            }
+
+            modalList.innerHTML = purchaseHistory.map(rec => `
+                <div class="bg-emerald-50/70 p-3 rounded-2xl border border-emerald-200 flex justify-between items-center text-xs shadow-xs">
+                    <div>
+                        <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>
+                        <span class="text-[11px] font-bold text-emerald-800 block">Factura: #${rec.facNumber}</span>
+                        <span class="text-[10px] text-slate-500 font-semibold">${rec.date} • ${rec.itemsCount} ítems</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-black text-emerald-700 text-sm block">$${rec.totalUsd.toFixed(2)}</span>
+                        <span class="text-[10px] font-extrabold text-slate-700 block">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function clearHistory() {
             if (!confirm("¿Deseas borrar todo el historial de compras?")) return;
             purchaseHistory = [];
             saveDataToCloud();
             renderHistory();
+            renderModalHistory();
         }
 
         function clearCart() {

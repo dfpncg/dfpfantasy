@@ -70,11 +70,11 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 1: SELECTOR DE PASILLOS -->
+        <!-- SECCIÓN 1: SELECTOR DE PASILLOS (INCLUYE "OTROS") -->
         <section>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3">Pasillos del Supermercado</h2>
             <div class="grid grid-cols-4 gap-2" id="categories-container">
-                <!-- Se cargan dinámicamente -->
+                <!-- Se cargan dinámicamente incluyendo Otros -->
             </div>
         </section>
 
@@ -138,7 +138,7 @@
                 <span class="col-span-1"></span>
             </div>
 
-            <!-- LISTADO DETALLADO FORZADO CON COLOR NEGRO PURO Y NEGRITA -->
+            <!-- LISTADO DETALLADO CON COLOR NEGRO PURO Y NEGRITA -->
             <div class="divide-y divide-slate-200 max-h-52 overflow-y-auto px-1" id="cart-list">
                 <p class="text-sm text-black text-center py-4 font-black">Sin ítems registrados en el recibo.</p>
             </div>
@@ -180,13 +180,11 @@
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN FISCAL (DATOS COMERCIO Y CLIENTE) -->
+    <!-- MODAL DE CONFIGURACIÓN FISCAL -->
     <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-lg mb-3 text-slate-900">Configuración Fiscal SENIAT</h3>
             <form id="fiscal-form" onsubmit="saveFiscalData(event)">
-                
-                <!-- Datos del Comercio -->
                 <div class="border-b border-slate-200 pb-3 mb-3">
                     <h4 class="text-xs font-bold text-emerald-700 uppercase mb-2">1. Datos del Comercio / Supermercado</h4>
                     <div class="mb-2">
@@ -203,7 +201,6 @@
                     </div>
                 </div>
 
-                <!-- Datos del Comprador -->
                 <div class="mb-4">
                     <h4 class="text-xs font-bold text-emerald-700 uppercase mb-2">2. Datos del Comprador (Cliente)</h4>
                     <div class="mb-2">
@@ -259,7 +256,8 @@
             { id: 'frios', name: 'Fríos', icon: 'fa-fish' },
             { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot', isWeight: true },
             { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
-            { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' }
+            { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' },
+            { id: 'otros', name: 'Otros', icon: 'fa-box-open' }
         ];
 
         let activeCategory = 'secos';
@@ -273,7 +271,6 @@
 
         document.getElementById('exchange-rate').value = exchangeRate;
 
-        // Mostrar fecha actual
         const today = new Date();
         document.getElementById('ticket-date').innerText = `Fecha: ${today.toLocaleDateString()}`;
 
@@ -665,7 +662,7 @@
         function updateCartUI() {
             const cartList = document.getElementById('cart-list');
             const cartKeys = Object.keys(cart);
-            let baseTotal = 0; // Base imponible
+            let baseTotal = 0;
 
             if (cartKeys.length === 0) {
                 cartList.innerHTML = `<p class="text-sm text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>`;
@@ -678,7 +675,6 @@
                 return;
             }
 
-            // AQUÍ ES EXACTAMENTE DONDE SE CAMBIA EL COLOR Y NEGRITA DE LOS ÍTEMS DEL RECIBO:
             cartList.innerHTML = cartKeys.map(key => {
                 const item = cart[key];
                 const subtotal = item.price * item.qty;
@@ -708,7 +704,6 @@
                 `;
             }).join('');
 
-            // Cálculo del IVA (16%)
             const ivaAmount = baseTotal * 0.16;
             const grandTotalUsd = baseTotal + ivaAmount;
             const totalBs = grandTotalUsd * exchangeRate;
@@ -770,7 +765,7 @@
                 return;
             }
 
-            historyList.innerHTML = historyHistoryContent = purchaseHistory.map(rec => `
+            historyList.innerHTML = purchaseHistory.map(rec => `
                 <div class="bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs">
                     <div>
                         <strong class="font-black block" style="color: #000000 !important;">${rec.store} (Fac: #${rec.facNumber})</strong>

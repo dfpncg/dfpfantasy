@@ -41,7 +41,7 @@
     <header class="bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-200" id="header-theme">
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             
-            <!-- LOGOTIPO EXCLUSIVO DFPfantasy (Opción 1 adaptada) -->
+            <!-- LOGOTIPO EXCLUSIVO DFPfantasy -->
             <div class="flex items-center space-x-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="42" height="42" class="flex-shrink-0">
                     <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
@@ -72,13 +72,15 @@
             </div>
         </div>
 
-        <!-- BARRA SECUNDARIA (USUARIO, TASA Y ÍTEMS) -->
+        <!-- BARRA SECUNDARIA (USUARIO, ELIMINAR CUENTA, TASA Y ÍTEMS) -->
         <div class="max-w-md mx-auto bg-emerald-600 text-white rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1.5">
                 <button onclick="logoutUser()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition" title="Cerrar sesión">
                     <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
                 </button>
-                <span class="text-[11px] text-emerald-100 font-bold" id="item-count">0 ítems</span>
+                <button onclick="deleteAccount()" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded-lg border border-rose-500 font-bold transition" title="Eliminar cuenta permanentemente de la base de datos">
+                    <i class="fa-solid fa-trash-can mr-1"></i> Eliminar
+                </button>
             </div>
             <div class="flex items-center space-x-1.5">
                 <span class="text-[11px] text-emerald-100 font-bold">Tasa ($):</span>
@@ -109,7 +111,7 @@
                     <i class="fa-solid fa-gear mr-1"></i> Configurar Comercio
                 </button>
             </div>
-            <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100" id="fiscal-box">
+            <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-emerald-100" id="fiscal-box">
                 <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se solicitará al guardar factura</span></p>
                 <p><strong class="text-slate-900 font-bold">RIF Comercio:</strong> <span id="display-rif-comercio" class="font-semibold">--</span></p>
                 <p><strong class="text-slate-900 font-bold">Cliente / Comprador:</strong> <span id="display-cliente" class="font-semibold">Registrado</span></p>
@@ -226,18 +228,18 @@
 
     </main>
 
-    <!-- MODAL DE INICIO DE SESIÓN / REGISTRO ESTRICTO CON VERIFICACIÓN EMAILJS -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[90vh] overflow-y-auto">
+    <!-- PANTALLA COMPLETA DE BIENVENIDA / INICIO DE SESIÓN (SPLASH SCREEN) -->
+    <div id="auth-modal" class="fixed inset-0 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[95vh] overflow-y-auto">
             
             <!-- PASO 1: Ingreso de Correo y PIN -->
             <div id="auth-step-1">
                 <div class="text-center mb-4">
-                    <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-xs">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-3xl shadow-sm">
                         <i class="fa-solid fa-basket-shopping"></i>
                     </div>
-                    <h3 class="font-black text-lg text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
-                    <p class="text-[11px] text-slate-500 font-semibold mt-0.5">Control Fiscal e Inteligente (Venezuela)</p>
+                    <h3 class="font-black text-xl text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
+                    <p class="text-[11px] text-slate-500 font-semibold mt-1">Control Fiscal e Inteligente (Venezuela)</p>
                 </div>
                 
                 <form onsubmit="handleAuthSubmit(event)">
@@ -311,7 +313,7 @@
                 
                 <form onsubmit="handleVerificationSubmit(event)">
                     <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none focus:border-emerald-600">
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black shadow-sm">Verificar y Entrar</button>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black shadow-md">Verificar y Entrar</button>
                 </form>
             </div>
 
@@ -514,6 +516,27 @@
             localStorage.removeItem('komprafacil_current_user');
             currentUser = null;
             location.reload();
+        }
+
+        // FUNCIÓN NUEVA: ELIMINAR CUENTA DE LA BASE DE DATOS Y DEL LOCAL
+        async function deleteAccount() {
+            if (!currentUser) return;
+            if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"? Se borrará toda tu información tanto de la base de datos como del dispositivo de forma permanente.`)) return;
+
+            try {
+                // Borrar documento de Firestore
+                await db.collection("users").doc(currentUser).delete();
+                
+                // Limpiar almacenamiento local
+                localStorage.removeItem('komprafacil_current_user');
+                currentUser = null;
+
+                alert("Cuenta eliminada con éxito. Volviendo al inicio.");
+                location.reload();
+            } catch (err) {
+                console.error("Error al eliminar la cuenta en Firebase:", err);
+                alert("Hubo un error al eliminar la cuenta de la base de datos.");
+            }
         }
 
         async function saveDataToCloud() {

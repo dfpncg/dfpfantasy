@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DFPFantasy - Mercado Inteligente</title>
-    <!-- Tailwind CSS para un diseño moderno y limpio estilo app móvil -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("KZlNPXhPilNfN8Br_");
+        })();
+    </script>
     <style>
         .fiscal-ticket {
             font-family: 'Courier New', Courier, monospace;
@@ -15,11 +22,16 @@
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans pb-32 transition-colors duration-200" id="body-theme">
 
-    <!-- CABECERA FIJA CON EL TOTAL ACUMULADO, TASA Y MODO OSCURO -->
-    <header class="bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md transition-colors duration-200" id="header-theme">
+    <!-- CABECERA FIJA CON EL TOTAL ACUMULADO, TASA, USUARIO Y MODO OSCURO -->
+    <header class="bg-emerald-600 text-white p-4 sticky top-0 z-40 shadow-md transition-colors duration-200" id="header-theme">
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             <div>
-                <h1 class="text-base font-bold tracking-wide" id="header-market-name">DFPFantasy Market</h1>
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-base font-bold tracking-wide" id="header-market-name">DFPFantasy Market</h1>
+                    <button onclick="logoutUser()" class="text-[10px] bg-emerald-700/80 hover:bg-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-500 transition" title="Cerrar sesión">
+                        <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
+                    </button>
+                </div>
                 <p class="text-[11px] text-emerald-100 font-semibold" id="item-count">0 ítems en recibo</p>
             </div>
             <div class="flex items-center space-x-3">
@@ -70,11 +82,11 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 1: SELECTOR DE PASILLOS (INCLUYE "OTROS") -->
+        <!-- SECCIÓN 1: SELECTOR DE PASILLOS -->
         <section>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3">Pasillos del Supermercado</h2>
             <div class="grid grid-cols-4 gap-2" id="categories-container">
-                <!-- Se cargan dinámicamente incluyendo Otros -->
+                <!-- Se cargan dinámicamente -->
             </div>
         </section>
 
@@ -103,8 +115,8 @@
                     <i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Comprobante Recibo
                 </h3>
                 <div class="flex space-x-2">
-                    <button onclick="savePurchaseHistory()" class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition" title="Guardar y limpiar recibo">
-                        <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar
+                    <button onclick="saveAndSendPurchase()" class="text-xs text-white font-bold bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg shadow-sm transition flex items-center" title="Guardar y enviar factura por correo">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Guardar y Enviar
                     </button>
                     <button onclick="clearCart()" class="text-xs text-rose-600 hover:underline font-bold">Nueva</button>
                 </div>
@@ -140,7 +152,7 @@
 
             <!-- LISTADO DETALLADO CON COLOR NEGRO PURO Y NEGRITA -->
             <div class="divide-y divide-slate-200 max-h-52 overflow-y-auto px-1" id="cart-list">
-                <p class="text-sm text-black text-center py-4 font-black">Sin ítems registrados en el recibo.</p>
+                <p class="text-sm text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>
             </div>
 
             <!-- PIE DE TICKET FISCAL CON LETRAS NEGRAS Y DEFINIDAS -->
@@ -174,13 +186,105 @@
                 <button onclick="clearHistory()" class="text-xs text-rose-600 hover:underline font-bold">Borrar Historial</button>
             </div>
             <div class="space-y-2 max-h-48 overflow-y-auto" id="history-list">
-                <p class="text-xs text-black text-center py-4 font-black">Aún no hay compras guardadas en el historial.</p>
+                <p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Aún no hay compras guardadas en el historial.</p>
             </div>
         </section>
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN FISCAL -->
+    <!-- MODAL DE INICIO DE SESIÓN / REGISTRO ESTRICTO CON VERIFICACIÓN EMAILJS -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            
+            <!-- PASO 1: Ingreso de Correo y PIN -->
+            <div id="auth-step-1">
+                <div class="text-center mb-4">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl shadow-inner">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+                    <h3 class="font-black text-lg text-slate-900">DFPFantasy Market</h3>
+                    <p class="text-[11px] text-slate-500 font-semibold mt-0.5">Control Fiscal e Inteligente (Venezuela)</p>
+                </div>
+                
+                <form onsubmit="handleAuthSubmit(event)">
+                    <div class="mb-3">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
+                        <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
+                        <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-black shadow-md transition">
+                        Continuar
+                    </button>
+                </form>
+            </div>
+
+            <!-- PASO 2: Registro de Datos Fiscales SENIAT (Solo para cuentas nuevas) -->
+            <div id="auth-step-2" class="hidden">
+                <div class="text-center mb-3">
+                    <h3 class="font-black text-base text-slate-900">Registro Fiscal Obligatorio</h3>
+                    <p class="text-[10px] text-emerald-700 font-bold">Completa tus datos una sola vez para las facturas</p>
+                </div>
+                
+                <form onsubmit="handleFiscalRegister(event)">
+                    <div class="mb-2.5">
+                        <label class="block text-[10px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
+                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    </div>
+
+                    <div class="mb-2.5">
+                        <label class="block text-[10px] font-bold text-slate-700 mb-1">Cédula o RIF (Número)</label>
+                        <div class="flex">
+                            <select id="reg-doc-type" class="bg-slate-100 border border-slate-300 rounded-l-xl px-2 py-2 text-xs font-bold text-slate-900 focus:outline-none">
+                                <option value="V-">V-</option>
+                                <option value="E-">E-</option>
+                                <option value="J-">J-</option>
+                                <option value="G-">G-</option>
+                            </select>
+                            <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border-t border-b border-r border-slate-300 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="block text-[10px] font-bold text-slate-700 mb-1">Teléfono (Operadora Venezuela)</label>
+                        <div class="flex space-x-1">
+                            <select id="reg-phone-op" class="bg-slate-100 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold text-slate-900 focus:outline-none">
+                                <option value="0414">0414 (Movistar)</option>
+                                <option value="0424">0424 (Movistar)</option>
+                                <option value="0416">0416 (Movilnet)</option>
+                                <option value="0426">0426 (Movilnet)</option>
+                                <option value="0412">0412 (Digitel)</option>
+                            </select>
+                            <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600" maxlength="7">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-black">Registrarse y Enviar Código</button>
+                </form>
+            </div>
+
+            <!-- PASO 3: Validación del Código de Verificación EmailJS -->
+            <div id="auth-step-3" class="hidden text-center">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl shadow-inner">
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+                </div>
+                <h3 class="font-black text-base text-slate-900 mb-1">Verificación de Correo</h3>
+                <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo electrónico. Ingrésalo abajo:</p>
+                
+                <form onsubmit="handleVerificationSubmit(event)">
+                    <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none focus:border-emerald-600">
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black shadow-md">Verificar y Entrar</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIGURACIÓN FISCAL (EDITAR COMERCIO/DATOS) -->
     <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-lg mb-3 text-slate-900">Configuración Fiscal SENIAT</h3>
@@ -201,25 +305,9 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <h4 class="text-xs font-bold text-emerald-700 uppercase mb-2">2. Datos del Comprador (Cliente)</h4>
-                    <div class="mb-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
-                        <input type="text" id="client-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
-                    </div>
-                    <div class="mb-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Cédula o RIF</label>
-                        <input type="text" id="client-doc" required placeholder="Ej. V-20123456" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
-                    </div>
-                    <div class="mb-1">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Teléfono de Contacto</label>
-                        <input type="text" id="client-phone" required placeholder="Ej. 0414-1234567" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
-                    </div>
-                </div>
-
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Guardar Datos</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Guardar</button>
                 </div>
             </form>
         </div>
@@ -247,7 +335,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE JAVASCRIPT LOCAL -->
+    <!-- LÓGICA DE JAVASCRIPT -->
     <script>
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
@@ -260,27 +348,142 @@
             { id: 'otros', name: 'Otros', icon: 'fa-box-open' }
         ];
 
+        let currentUser = localStorage.getItem('komprafacil_current_user') || null;
         let activeCategory = 'secos';
         let exchangeRate = parseFloat(localStorage.getItem('komprafacil_rate')) || 36.50;
         let isDarkMode = localStorage.getItem('komprafacil_dark') === 'true';
 
-        let products = JSON.parse(localStorage.getItem('komprafacil_products')) || {};
-        let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
-        let fiscalData = JSON.parse(localStorage.getItem('komprafacil_fiscal')) || null;
-        let purchaseHistory = JSON.parse(localStorage.getItem('komprafacil_history')) || [];
+        let products = {};
+        let cart = {};
+        let fiscalData = null;
+        let purchaseHistory = [];
+
+        // Variables temporales para el proceso de registro
+        let tempAuthEmail = '';
+        let tempAuthPin = '';
+        let generatedVerificationCode = '';
 
         document.getElementById('exchange-rate').value = exchangeRate;
-
         const today = new Date();
         document.getElementById('ticket-date').innerText = `Fecha: ${today.toLocaleDateString()}`;
 
         function initApp() {
+            if (!currentUser) {
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('auth-step-1').classList.remove('hidden');
+                document.getElementById('auth-step-2').classList.add('hidden');
+                document.getElementById('auth-step-3').classList.add('hidden');
+                return;
+            }
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('current-user-badge').innerText = currentUser;
+
+            const userKey = `_user_${currentUser.toLowerCase().trim()}`;
+            products = JSON.parse(localStorage.getItem(`komprafacil_products${userKey}`)) || {};
+            cart = JSON.parse(localStorage.getItem(`komprafacil_cart${userKey}`)) || {};
+            fiscalData = JSON.parse(localStorage.getItem(`komprafacil_fiscal${userKey}`)) || null;
+            purchaseHistory = JSON.parse(localStorage.getItem(`komprafacil_history${userKey}`)) || [];
+
             applyTheme();
             renderCategories();
             selectCategory(activeCategory);
             loadFiscalUI();
             updateCartUI();
             renderHistory();
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim().toLowerCase();
+            const pin = document.getElementById('auth-pin').value.trim();
+
+            const userKey = `_user_${email}`;
+            const storedPin = localStorage.getItem(`komprafacil_pin${userKey}`);
+
+            if (storedPin) {
+                // Ya existe el usuario, verificar PIN
+                if (storedPin === pin) {
+                    currentUser = email;
+                    localStorage.setItem('komprafacil_current_user', currentUser);
+                    initApp();
+                } else {
+                    alert("PIN de seguridad incorrecto.");
+                }
+            } else {
+                // Usuario nuevo, pasar a registrar datos fiscales
+                tempAuthEmail = email;
+                tempAuthPin = pin;
+                document.getElementById('auth-step-1').classList.add('hidden');
+                document.getElementById('auth-step-2').classList.remove('hidden');
+            }
+        }
+
+        function handleFiscalRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const docType = document.getElementById('reg-doc-type').value;
+            const docNum = document.getElementById('reg-doc-num').value.trim();
+            const phoneOp = document.getElementById('reg-phone-op').value;
+            const phoneNum = document.getElementById('reg-phone-num').value.trim();
+
+            fiscalData = {
+                storeName: "Supermercado DFPFantasy",
+                storeRif: "J-31234567-8",
+                storeDir: "Ciudad Bolívar, Venezuela",
+                clientName: name,
+                clientDoc: docType + docNum,
+                clientPhone: phoneOp + "-" + phoneNum
+            };
+
+            // Generar código de 4 dígitos para verificación EmailJS
+            generatedVerificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+            // Enviar correo de verificación con EmailJS
+            emailjs.send("service_s3hefmh", "template_y21oljk", {
+                to_name: name,
+                to_email: tempAuthEmail,
+                verification_code: generatedVerificationCode
+            }).then(() => {
+                document.getElementById('auth-step-2').classList.add('hidden');
+                document.getElementById('auth-step-3').classList.remove('hidden');
+            }, (error) => {
+                alert("Error al enviar el correo de verificación. Verifica tus datos de EmailJS.");
+                console.error(error);
+            });
+        }
+
+        function handleVerificationSubmit(e) {
+            e.preventDefault();
+            const entered = document.getElementById('entered-code').value.trim();
+
+            if (entered === generatedVerificationCode) {
+                currentUser = tempAuthEmail;
+                const userKey = `_user_${currentUser}`;
+                localStorage.setItem('komprafacil_current_user', currentUser);
+                localStorage.setItem(`komprafacil_pin${userKey}`, tempAuthPin);
+                localStorage.setItem(`komprafacil_fiscal${userKey}`, JSON.stringify(fiscalData));
+
+                alert("¡Cuenta verificada y registrada con éxito!");
+                initApp();
+            } else {
+                alert("Código incorrecto. Inténtalo de nuevo.");
+            }
+        }
+
+        function logoutUser() {
+            if (!confirm("¿Deseas cerrar sesión?")) return;
+            localStorage.removeItem('komprafacil_current_user');
+            currentUser = null;
+            location.reload();
+        }
+
+        function saveDataToStorage() {
+            if (!currentUser) return;
+            const userKey = `_user_${currentUser.toLowerCase().trim()}`;
+            localStorage.setItem(`komprafacil_products${userKey}`, JSON.stringify(products));
+            localStorage.setItem(`komprafacil_cart${userKey}`, JSON.stringify(cart));
+            localStorage.setItem(`komprafacil_fiscal${userKey}`, JSON.stringify(fiscalData));
+            localStorage.setItem(`komprafacil_history${userKey}`, JSON.stringify(purchaseHistory));
         }
 
         function toggleDarkMode() {
@@ -299,7 +502,7 @@
 
             if (isDarkMode) {
                 body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-200";
-                header.className = "bg-slate-800 text-white p-4 sticky top-0 z-50 shadow-md transition-colors duration-200";
+                header.className = "bg-slate-800 text-white p-4 sticky top-0 z-40 shadow-md transition-colors duration-200";
                 themeIcon.className = "fa-solid fa-sun";
 
                 cards.forEach(id => {
@@ -312,7 +515,7 @@
                 });
             } else {
                 body.className = "bg-slate-100 text-slate-900 font-sans pb-32 transition-colors duration-200";
-                header.className = "bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md transition-colors duration-200";
+                header.className = "bg-emerald-600 text-white p-4 sticky top-0 z-40 shadow-md transition-colors duration-200";
                 themeIcon.className = "fa-solid fa-moon";
 
                 cards.forEach(id => {
@@ -370,10 +573,7 @@
         }
 
         function loadFiscalUI() {
-            if (!fiscalData) {
-                openFiscalModal();
-                return;
-            }
+            if (!fiscalData) return;
 
             document.getElementById('display-comercio').innerText = fiscalData.storeName;
             document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif;
@@ -393,30 +593,22 @@
                 document.getElementById('store-name').value = fiscalData.storeName;
                 document.getElementById('store-rif').value = fiscalData.storeRif;
                 document.getElementById('store-dir').value = fiscalData.storeDir;
-                document.getElementById('client-name').value = fiscalData.clientName;
-                document.getElementById('client-doc').value = fiscalData.clientDoc;
-                document.getElementById('client-phone').value = fiscalData.clientPhone;
             }
             document.getElementById('fiscal-modal').classList.remove('hidden');
         }
 
         function closeFiscalModal() {
-            if (!fiscalData) return;
             document.getElementById('fiscal-modal').classList.add('hidden');
         }
 
         function saveFiscalData(e) {
             e.preventDefault();
-            fiscalData = {
-                storeName: document.getElementById('store-name').value.trim(),
-                storeRif: document.getElementById('store-rif').value.trim(),
-                storeDir: document.getElementById('store-dir').value.trim(),
-                clientName: document.getElementById('client-name').value.trim(),
-                clientDoc: document.getElementById('client-doc').value.trim(),
-                clientPhone: document.getElementById('client-phone').value.trim()
-            };
+            if (!fiscalData) fiscalData = {};
+            fiscalData.storeName = document.getElementById('store-name').value.trim();
+            fiscalData.storeRif = document.getElementById('store-rif').value.trim();
+            fiscalData.storeDir = document.getElementById('store-dir').value.trim();
 
-            localStorage.setItem('komprafacil_fiscal', JSON.stringify(fiscalData));
+            saveDataToStorage();
             loadFiscalUI();
             document.getElementById('fiscal-modal').classList.add('hidden');
         }
@@ -466,7 +658,6 @@
                 const currentPrice = inCart ? inCart.price : prod.price;
 
                 let rightControlHTML = '';
-
                 if (currentCat.isWeight) {
                     rightControlHTML = `
                         <div class="flex items-center space-x-1">
@@ -557,14 +748,13 @@
                 if (cart[editId]) {
                     cart[editId].name = name;
                     cart[editId].price = price;
-                    localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
                 }
             } else {
                 const newId = `${activeCategory}_${Date.now()}`;
                 products[activeCategory].push({ id: newId, name, price });
             }
 
-            localStorage.setItem('komprafacil_products', JSON.stringify(products));
+            saveDataToStorage();
             closeAddModal();
             renderProducts();
             updateCartUI();
@@ -575,14 +765,12 @@
 
             if (products[activeCategory]) {
                 products[activeCategory] = products[activeCategory].filter(p => p.id !== prodId);
-                localStorage.setItem('komprafacil_products', JSON.stringify(products));
             }
-
             if (cart[prodId]) {
                 delete cart[prodId];
-                localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
             }
 
+            saveDataToStorage();
             renderProducts();
             updateCartUI();
         }
@@ -605,7 +793,7 @@
                 delete cart[prodId];
             }
 
-            localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
+            saveDataToStorage();
             renderProducts();
             updateCartUI();
         }
@@ -628,7 +816,7 @@
                 cart[prodId].qty = weight;
             }
 
-            localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
+            saveDataToStorage();
             renderProducts();
             updateCartUI();
         }
@@ -638,23 +826,23 @@
             
             if (cart[prodId]) {
                 cart[prodId].price = newPrice;
-                localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
-                updateCartUI();
             }
 
             for (let cat in products) {
                 const p = products[cat].find(item => item.id === prodId);
                 if (p) {
                     p.price = newPrice;
-                    localStorage.setItem('komprafacil_products', JSON.stringify(products));
                     break;
                 }
             }
+
+            saveDataToStorage();
+            updateCartUI();
         }
 
         function removeCartItem(prodId) {
             delete cart[prodId];
-            localStorage.setItem('komprafacil_cart', JSON.stringify(cart));
+            saveDataToStorage();
             renderProducts();
             updateCartUI();
         }
@@ -718,7 +906,7 @@
             document.getElementById('item-count').innerText = `${cartKeys.length} ítems en recibo`;
         }
 
-        function savePurchaseHistory() {
+        function saveAndSendPurchase() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
                 alert("No hay productos en el recibo para guardar.");
@@ -726,8 +914,19 @@
             }
 
             let baseTotal = 0;
+            let itemsHtml = '';
             cartKeys.forEach(key => {
-                baseTotal += cart[key].price * cart[key].qty;
+                const item = cart[key];
+                const sub = item.price * item.qty;
+                baseTotal += sub;
+                let isWeightItem = key.startsWith('hortalizas');
+                let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
+
+                itemsHtml += `<tr>
+                    <td style="padding: 4px 0; border-bottom: 1px dashed #eee;"><strong>${item.name}</strong><br><span style="font-size:10px;">$${item.price.toFixed(2)}</span></td>
+                    <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #eee;">${qtyLabel}</td>
+                    <td style="text-align: right; padding: 4px 0; border-bottom: 1px dashed #eee;">$${sub.toFixed(2)}</td>
+                </tr>`;
             });
 
             const ivaAmount = baseTotal * 0.16;
@@ -735,10 +934,38 @@
             const totalBs = grandTotalUsd * exchangeRate;
             const facNumber = document.getElementById('ticket-number-input').value.trim() || 'S/N';
 
+            // Parámetros para EmailJS (Plantilla Factura)
+            const templateParams = {
+                to_email: currentUser,
+                store_name: fiscalData.storeName,
+                store_rif: fiscalData.storeRif,
+                store_dir: fiscalData.storeDir,
+                client_name: fiscalData.clientName,
+                client_doc: fiscalData.clientDoc,
+                client_phone: fiscalData.clientPhone,
+                invoice_date: new Date().toLocaleDateString(),
+                fac_number: facNumber,
+                invoice_items_html: itemsHtml,
+                base_usd: `$${baseTotal.toFixed(2)}`,
+                iva_usd: `$${ivaAmount.toFixed(2)}`,
+                tasa_bcv: `Bs. ${exchangeRate.toFixed(2)}`,
+                total_bs: `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                total_usd: `$${grandTotalUsd.toFixed(2)}`
+            };
+
+            // Enviar factura por EmailJS
+            emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
+                .then(() => {
+                    alert("¡Compra guardada y factura enviada con éxito a tu correo!");
+                }, (err) => {
+                    alert("Compra guardada localmente, pero ocurrió un error al enviar el correo.");
+                    console.error(err);
+                });
+
             const record = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString(),
-                store: fiscalData ? fiscalData.storeName : 'Comercio',
+                store: fiscalData.storeName,
                 facNumber: facNumber,
                 totalUsd: grandTotalUsd,
                 totalBs: totalBs,
@@ -746,16 +973,13 @@
             };
 
             purchaseHistory.unshift(record);
-            localStorage.setItem('komprafacil_history', JSON.stringify(purchaseHistory));
-            renderHistory();
-
             cart = {};
-            localStorage.removeItem('komprafacil_cart');
+            saveDataToStorage();
+
             document.getElementById('ticket-number-input').value = '';
             renderProducts();
             updateCartUI();
-
-            alert("¡Compra guardada con éxito! El recibo se ha limpiado para el próximo mercado.");
+            renderHistory();
         }
 
         function renderHistory() {
@@ -782,13 +1006,13 @@
         function clearHistory() {
             if (!confirm("¿Deseas borrar todo el historial de compras?")) return;
             purchaseHistory = [];
-            localStorage.removeItem('komprafacil_history');
+            saveDataToStorage();
             renderHistory();
         }
 
         function clearCart() {
             cart = {};
-            localStorage.removeItem('komprafacil_cart');
+            saveDataToStorage();
             document.getElementById('ticket-number-input').value = '';
             renderProducts();
             updateCartUI();

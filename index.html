@@ -42,7 +42,7 @@
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             
             <!-- LOGOTIPO EXCLUSIVO DFPfantasy -->
-            <div class="flex items-center space-x-2.5">
+            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="showDashboardMenu()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="42" height="42" class="flex-shrink-0">
                     <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
                     <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -72,14 +72,17 @@
             </div>
         </div>
 
-        <!-- BARRA SECUNDARIA (USUARIO, ELIMINAR CUENTA, TASA Y ÍTEMS) -->
+        <!-- BARRA SECUNDARIA (INICIO, USUARIO, ELIMINAR CUENTA, TASA) -->
         <div class="max-w-md mx-auto bg-emerald-600 text-white rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
             <div class="flex items-center space-x-1.5">
+                <button onclick="showDashboardMenu()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition" title="Menú Principal">
+                    <i class="fa-solid fa-house mr-1"></i> Menú
+                </button>
                 <button onclick="logoutUser()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition" title="Cerrar sesión">
                     <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
                 </button>
-                <button onclick="deleteAccount()" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded-lg border border-rose-500 font-bold transition" title="Eliminar cuenta permanentemente de la base de datos">
-                    <i class="fa-solid fa-trash-can mr-1"></i> Eliminar
+                <button onclick="deleteAccount()" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded-lg border border-rose-500 font-bold transition" title="Eliminar cuenta permanentemente">
+                    <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>
             <div class="flex items-center space-x-1.5">
@@ -88,6 +91,49 @@
             </div>
         </div>
     </header>
+
+    <!-- PANTALLA FLOTANTE / MENÚ PRINCIPAL DESPUÉS DE INICIAR SESIÓN -->
+    <div id="dashboard-menu-modal" class="fixed inset-0 bg-slate-900/80 z-40 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 text-center space-y-4">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="36" height="36">
+                    <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
+                    <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="23" cy="37" r="2.5" fill="#059669"/>
+                    <circle cx="33" cy="37" r="2.5" fill="#059669"/>
+                    <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.85"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-lg font-black text-slate-900">¿Qué deseas hacer hoy?</h2>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">Selecciona una opción para continuar en <span class="text-emerald-700 font-bold">DFP</span>fantasy</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 pt-2">
+                <!-- Botón Nueva Compra -->
+                <button onclick="selectMenuOption('new-purchase')" class="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition text-left group">
+                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg font-bold group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-sm font-black">Nueva Compra</strong>
+                        <span class="text-[11px] text-emerald-100 font-medium">Arma tu carrito, pasillos y factura</span>
+                    </div>
+                </button>
+
+                <!-- Botón Historial de Compras -->
+                <button onclick="selectMenuOption('history-view')" class="bg-slate-100 hover:bg-slate-200 text-slate-900 p-4 rounded-2xl shadow-sm flex items-center space-x-4 transition text-left group border border-slate-200">
+                    <div class="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center text-emerald-700 text-lg font-bold group-hover:scale-110 transition">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-sm font-black">Historial de Compras</strong>
+                        <span class="text-[11px] text-slate-600 font-medium">Revisa facturas y montos anteriores</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto p-4 space-y-4">
@@ -236,7 +282,13 @@
             <div id="auth-step-1">
                 <div class="text-center mb-4">
                     <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-3xl shadow-sm">
-                        <i class="fa-solid fa-basket-shopping"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="36" height="36">
+                            <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
+                            <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            <circle cx="23" cy="37" r="2.5" fill="#059669"/>
+                            <circle cx="33" cy="37" r="2.5" fill="#059669"/>
+                            <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.85"/>
+                        </svg>
                     </div>
                     <h3 class="font-black text-xl text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
                     <p class="text-[11px] text-slate-500 font-semibold mt-1">Control Fiscal e Inteligente (Venezuela)</p>
@@ -422,6 +474,29 @@
             loadFiscalUI();
             updateCartUI();
             renderHistory();
+
+            // Mostrar la pantalla flotante de opciones al iniciar sesión
+            showDashboardMenu();
+        }
+
+        // FUNCIONES DE CONTROL DE LA PANTALLA FLOTANTE / MENÚ PRINCIPAL
+        function showDashboardMenu() {
+            if (!currentUser) return;
+            document.getElementById('dashboard-menu-modal').classList.remove('hidden');
+        }
+
+        function selectMenuOption(option) {
+            document.getElementById('dashboard-menu-modal').classList.add('hidden');
+            if (option === 'new-purchase') {
+                // Desplazarse hacia la sección de pasillos o carrito
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (option === 'history-view') {
+                // Desplazarse directo a la sección de historial abajo
+                const historyEl = document.getElementById('history-card');
+                if (historyEl) {
+                    historyEl.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         }
 
         async function handleAuthSubmit(e) {
@@ -518,16 +593,12 @@
             location.reload();
         }
 
-        // FUNCIÓN NUEVA: ELIMINAR CUENTA DE LA BASE DE DATOS Y DEL LOCAL
         async function deleteAccount() {
             if (!currentUser) return;
             if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"? Se borrará toda tu información tanto de la base de datos como del dispositivo de forma permanente.`)) return;
 
             try {
-                // Borrar documento de Firestore
                 await db.collection("users").doc(currentUser).delete();
-                
-                // Limpiar almacenamiento local
                 localStorage.removeItem('komprafacil_current_user');
                 currentUser = null;
 
@@ -998,6 +1069,7 @@
                 return;
             }
 
+            // Exigir datos del comercio estrictamente al momento de guardar y enviar
             if (!fiscalData || !fiscalData.storeName) {
                 alert("Para guardar y enviar la factura, debes indicar los datos fiscales del comercio emisor.");
                 openFiscalModal();

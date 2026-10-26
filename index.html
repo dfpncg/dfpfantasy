@@ -61,13 +61,21 @@
         .shimmer-btn:hover {
             background-position: right center;
         }
+        /* FONDO TEMÁTICO FAMILIAR Y DE HOGAR */
+        .market-hero-bg {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.92) 0%, rgba(4, 120, 87, 0.95) 50%, rgba(6, 78, 59, 0.98) 100%),
+                        url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80');
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+        }
     </style>
 </head>
 <body class="bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-300" id="body-theme">
 
-    <!-- PANTALLA DE TRANSICIÓN ANIMADA (BIENVENIDA / DESPEDIDA) -->
-    <div id="transition-screen" class="fixed inset-0 bg-emerald-900/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity duration-300">
-        <div class="bg-white rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated">
+    <!-- PANTALLA DE TRANSICIÓN ANIMADA CON TOQUE FAMILIAR Y DE UNIÓN -->
+    <div id="transition-screen" class="fixed inset-0 market-hero-bg z-50 hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity duration-300">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated border border-emerald-100">
             <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-4xl shadow-md animate-logo-glow">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
                     <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.3" />
@@ -77,8 +85,8 @@
                     <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
                 </svg>
             </div>
-            <h3 class="font-black text-lg text-slate-900" id="transition-msg">¡Bienvenido a tu supermercado!</h3>
-            <p class="text-xs text-emerald-700 font-bold"><span class="text-emerald-700">DFP</span>fantasy</p>
+            <h3 class="font-black text-lg text-slate-900" id="transition-msg">¡Bienvenido a tu supermercado, DFPfantasy!</h3>
+            <p class="text-[11px] text-emerald-700 font-bold">Experiencia, amor y unión en cada hogar</p>
         </div>
     </div>
 
@@ -204,15 +212,13 @@
             </div>
         </section>
 
-        <!-- PASILLOS (CON CONTADOR DE RUBROS SELECCIONADOS) -->
+        <!-- PASILLOS -->
         <section>
             <h2 class="text-xs font-black uppercase tracking-wider text-slate-600 mb-2.5 px-1">Pasillos del Supermercado</h2>
-            <div class="grid grid-cols-4 gap-2" id="categories-container">
-                <!-- Se cargan dinámicamente con sus contadores -->
-            </div>
+            <div class="grid grid-cols-4 gap-2" id="categories-container"></div>
         </section>
 
-        <!-- PRODUCTOS DEL PASILLO (COLORES CLAROS Y LIMPIOS) -->
+        <!-- PRODUCTOS -->
         <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300" id="aisle-card">
             <div class="flex justify-between items-center mb-3">
                 <div>
@@ -311,7 +317,7 @@
 
     </main>
 
-    <!-- APARTADO DE HISTORIAL COMPLETO DE COMPRAS (CON VISTA DE DETALLE DE FACTURA) -->
+    <!-- APARTADO DE HISTORIAL COMPLETO -->
     <div id="history-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl border border-emerald-100 max-h-[85vh] overflow-y-auto modal-animated space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
@@ -334,24 +340,23 @@
         </div>
     </div>
 
-    <!-- MODAL PARA VER EL COMPROBANTE DE UNA FACTURA HISTÓRICA -->
+    <!-- MODAL DETALLE DE FACTURA -->
     <div id="invoice-detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[90vh] overflow-y-auto modal-animated space-y-3">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                 <h3 class="font-black text-sm text-slate-900">Detalle de Factura Histórica</h3>
                 <button onclick="closeInvoiceDetailModal()" class="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="invoice-detail-content" class="bg-emerald-50/50 p-3 rounded-xl border border-dashed border-emerald-300 fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1">
-                <!-- Se inyecta la factura -->
-            </div>
+            <div id="invoice-detail-content" class="bg-emerald-50/50 p-3 rounded-xl border border-dashed border-emerald-300 fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1"></div>
             <button onclick="closeInvoiceDetailModal()" class="w-full bg-slate-800 text-white py-2 rounded-xl text-xs font-bold">Cerrar Detalle</button>
         </div>
     </div>
 
-    <!-- PANTALLA DE INICIO DE SESIÓN -->
-    <div id="auth-modal" class="fixed inset-0 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[95vh] overflow-y-auto modal-animated">
+    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO FAMILIAR Y DE HOGAR -->
+    <div id="auth-modal" class="fixed inset-0 market-hero-bg z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[95vh] overflow-y-auto modal-animated">
             
+            <!-- PASO 1: Ingreso y Opción de Olvidó Clave -->
             <div id="auth-step-1">
                 <div class="text-center mb-4">
                     <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-3 text-4xl shadow-md animate-logo-glow">
@@ -364,7 +369,7 @@
                         </svg>
                     </div>
                     <h3 class="font-black text-xl text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
-                    <p class="text-[11px] text-slate-500 font-semibold mt-1">Control Fiscal e Inteligente (Venezuela)</p>
+                    <p class="text-[11px] text-slate-500 font-semibold mt-1">Hogar, unión y control fiscal en Venezuela</p>
                 </div>
                 
                 <form onsubmit="handleAuthSubmit(event)">
@@ -373,15 +378,20 @@
                         <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
                         <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    </div>
+
+                    <div class="text-right mb-4">
+                        <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-emerald-700 font-bold hover:underline">¿Olvidaste tu PIN?</button>
                     </div>
 
                     <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md">Continuar</button>
                 </form>
             </div>
 
+            <!-- PASO 2: Registro -->
             <div id="auth-step-2" class="hidden">
                 <div class="text-center mb-3">
                     <h3 class="font-black text-base text-slate-900">Registro de Datos Personales</h3>
@@ -391,7 +401,7 @@
                 <form onsubmit="handleFiscalRegister(event)">
                     <div class="mb-2.5">
                         <label class="block text-[10px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
-                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none">
+                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                     </div>
 
                     <div class="mb-2.5">
@@ -425,12 +435,13 @@
                 </form>
             </div>
 
+            <!-- PASO 3: Verificación -->
             <div id="auth-step-3" class="hidden text-center">
                 <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-md animate-logo-glow">
                     <i class="fa-solid fa-envelope-circle-check"></i>
                 </div>
                 <h3 class="font-black text-base text-slate-900 mb-1">Verificación de Correo</h3>
-                <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo electrónico:</p>
+                <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo:</p>
                 
                 <form onsubmit="handleVerificationSubmit(event)">
                     <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none">
@@ -438,6 +449,37 @@
                 </form>
             </div>
 
+        </div>
+    </div>
+
+    <!-- MODAL DE RECUPERACIÓN / OLVIDO DE CLAVE -->
+    <div id="forgot-password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-4">
+            <div class="text-center">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-sm">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 class="font-black text-base text-slate-900">Recuperación de PIN</h3>
+                <p class="text-xs text-slate-500 mt-1">Ingresa tu correo para enviarte un código de verificación y restablecer tu clave:</p>
+            </div>
+
+            <div id="forgot-step-1">
+                <form onsubmit="handleForgotSendCode(event)">
+                    <input type="email" id="forgot-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 mb-3 focus:outline-none">
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="closeForgotModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
+                        <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Enviar Código</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="forgot-step-2" class="hidden">
+                <form onsubmit="handleForgotVerifyAndReset(event)">
+                    <input type="number" id="forgot-entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-center text-base font-black tracking-widest text-slate-900 mb-2 focus:outline-none">
+                    <input type="number" id="forgot-new-pin" required placeholder="Nuevo PIN numérico" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 mb-3 focus:outline-none">
+                    <button type="submit" class="w-full shimmer-btn text-white py-2.5 rounded-xl text-xs font-black">Actualizar PIN</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -458,20 +500,20 @@
                 <div class="border-b border-slate-100 pb-3 mb-3">
                     <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Supermercado</label>
-                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none">
+                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                     </div>
                     <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">RIF del Comercio</label>
-                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none">
+                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                     </div>
                     <div class="mb-1">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">Dirección / Ciudad</label>
-                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none">
+                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                     </div>
                 </div>
 
                 <div class="flex space-x-2">
-                    <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-200">Cancelar</button>
+                    <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
                     <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Confirmar y Facturar</button>
                 </div>
             </form>
@@ -486,21 +528,21 @@
                 <input type="hidden" id="edit-prod-id">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900">
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-700 mb-1" id="price-label-modal">Precio Base ($)</label>
-                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none">
+                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900">
                 </div>
                 <div class="flex space-x-2">
-                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-200">Cancelar</button>
+                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
                     <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA Y ANIMACIONES -->
+    <!-- SCRIPT DE LÓGICA -->
     <script>
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
@@ -528,6 +570,9 @@
         let tempAuthPin = '';
         let generatedVerificationCode = '';
         let tempClientData = null;
+
+        let forgotTargetEmail = '';
+        let forgotGeneratedCode = '';
 
         document.getElementById('exchange-rate').value = exchangeRate;
         const nowObj = new Date();
@@ -601,14 +646,72 @@
             document.getElementById('history-modal').classList.add('hidden');
         }
 
-        function selectMenuOption(option) {
-            document.getElementById('dashboard-menu-modal').classList.add('hidden');
-            if (option === 'history-view') {
-                openHistoryModal();
+        // LÓGICA DE RECUPERACIÓN DE CLAVE / PIN
+        function openForgotPasswordModal() {
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('forgot-step-1').classList.remove('hidden');
+            document.getElementById('forgot-step-2').classList.add('hidden');
+            document.getElementById('forgot-password-modal').classList.remove('hidden');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('forgot-password-modal').classList.add('hidden');
+        }
+
+        async function handleForgotSendCode(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+
+            try {
+                const docRef = db.collection("users").doc(email);
+                const doc = await docRef.get();
+                if (!doc.exists) {
+                    alert("Este correo no está registrado en la base de datos.");
+                    return;
+                }
+
+                forgotTargetEmail = email;
+                forgotGeneratedCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+                emailjs.send("service_s3hefmh", "template_y21oljk", {
+                    to_name: "Usuario",
+                    to_email: forgotTargetEmail,
+                    verification_code: forgotGeneratedCode
+                }).then(() => {
+                    document.getElementById('forgot-step-1').classList.add('hidden');
+                    document.getElementById('forgot-step-2').classList.remove('hidden');
+                    alert("Código de recuperación enviado a tu correo.");
+                }, (err) => {
+                    alert("Error al enviar el correo de recuperación.");
+                    console.error(err);
+                });
+            } catch (err) {
+                console.error(err);
+                alert("Error al verificar el correo.");
             }
         }
 
-        // VER DETALLE DE FACTURA DESDE EL HISTORIAL
+        async function handleForgotVerifyAndReset(e) {
+            e.preventDefault();
+            const entered = document.getElementById('forgot-entered-code').value.trim();
+            const newPin = document.getElementById('forgot-new-pin').value.trim();
+
+            if (entered === forgotGeneratedCode) {
+                try {
+                    await db.collection("users").doc(forgotTargetEmail).update({
+                        pin: newPin
+                    });
+                    alert("¡PIN actualizado con éxito! Ya puedes iniciar sesión.");
+                    closeForgotModal();
+                } catch (err) {
+                    console.error(err);
+                    alert("Error al actualizar el PIN en la nube.");
+                }
+            } else {
+                alert("Código de verificación incorrecto.");
+            }
+        }
+
         function viewInvoiceDetail(recordId) {
             const rec = purchaseHistory.find(r => r.id === recordId);
             if (!rec) return;
@@ -664,8 +767,8 @@
                     document.getElementById('auth-step-2').classList.remove('hidden');
                 }
             } catch (err) {
-                console.error("Error conectando con Firestore:", err);
-                alert("Error de conexión con la base de datos.");
+                console.error(err);
+                alert("Error de conexión.");
             }
         }
 
@@ -693,7 +796,7 @@
                 document.getElementById('auth-step-2').classList.add('hidden');
                 document.getElementById('auth-step-3').classList.remove('hidden');
             }, (error) => {
-                alert("Error al enviar el correo de verificación. Verifica tus datos de EmailJS.");
+                alert("Error al enviar el correo de verificación.");
                 console.error(error);
             });
         }
@@ -715,15 +818,12 @@
                         cart: {},
                         history: []
                     });
-
-                    alert("¡Cuenta verificada y registrada con éxito!");
                     initApp();
                 } catch (err) {
-                    console.error("Error al registrar en Firestore:", err);
-                    alert("Error al guardar en la nube.");
+                    console.error(err);
                 }
             } else {
-                alert("Código incorrecto. Inténtalo de nuevo.");
+                alert("Código incorrecto.");
             }
         }
 
@@ -745,12 +845,9 @@
                 await db.collection("users").doc(currentUser).delete();
                 localStorage.removeItem('komprafacil_current_user');
                 currentUser = null;
-
-                alert("Cuenta eliminada con éxito.");
                 location.reload();
             } catch (err) {
                 console.error(err);
-                alert("Error al eliminar la cuenta.");
             }
         }
 
@@ -961,16 +1058,12 @@
             updateCartUI();
         }
 
-        // RENDERIZADO DE PASILLOS CON CONTADOR DE RUBROS SELECCIONADOS
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => {
-                // Contar cuántos ítems de este pasillo están en el carrito
                 let count = 0;
                 for (let key in cart) {
-                    if (key.startsWith(cat.id)) {
-                        count += 1;
-                    }
+                    if (key.startsWith(cat.id)) count += 1;
                 }
 
                 return `
@@ -1006,7 +1099,6 @@
                 return;
             }
 
-            // CORRECCIÓN DE COLORES: FONDOS CLAROS Y LIMPIOS EN LUGAR DE OSCUROS
             listContainer.innerHTML = catProducts.map((prod) => {
                 const inCart = cart[prod.id];
                 const qty = inCart ? inCart.qty : 0;
@@ -1230,10 +1322,11 @@
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
+        // VALIDACIÓN ESTRICTA: NO SE PUEDE GUARDAR NI ENVIAR FACTURAS EN BLANCO SIN PRODUCTOS
         function saveAndSendPurchase() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
-                alert("No hay productos en el recibo para guardar.");
+                alert("⚠️ ¡Atención! No se puede guardar ni enviar una factura en blanco sin productos seleccionados.");
                 return;
             }
             if (!fiscalData || !fiscalData.storeName) {

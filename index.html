@@ -371,7 +371,7 @@
             </div>
             <div>
                 <h3 class="font-black text-base text-slate-900" id="quick-prod-name">Producto</h3>
-                <p class="text-[11px] text-emerald-700 font-bold">Actualizar unidades en Mi Alacena</p>
+                <p class="text-[11px] text-emerald-700 font-bold">Actualizar existencias en Mi Alacena</p>
             </div>
             <input type="hidden" id="quick-prod-id">
             <div>
@@ -781,7 +781,7 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE ESCÁNER ROBUSTA ---
+        // --- GESTIÓN DE ESCÁNER ROBUSTO ---
         function openScannerModal(mode = 'cart') {
             scannerContextMode = mode;
             document.getElementById('scanner-modal').classList.remove('hidden');
@@ -853,12 +853,13 @@
                 }
             }
 
+            // Si el producto ya existe en los registros:
             if (foundProd) {
                 if (scannerContextMode === 'inventory') {
-                    // FLUJO ALACENA DIRECTO: Si ya existe, abrir modal rápido de cantidad sin formularios largos
+                    // MODO ALACENA: Abre directo el cuadro para colocar la cantidad física actual
                     openQuickInventoryModal(foundProd);
                 } else {
-                    // FLUJO CARRITO DE COMPRA
+                    // MODO CARRITO DE COMPRAS: Agrega 1 unidad al carrito y avisa
                     if (!cart[foundProd.id]) {
                         cart[foundProd.id] = { ...foundProd, qty: 1 };
                     } else {
@@ -871,10 +872,10 @@
                     alert(`¡Escaneado con éxito! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
                 }
             } else {
-                // FLUJO NUEVO: Producto no registrado
+                // Si el producto NO existe (nuevo): Pedir registro
                 document.getElementById('edit-prod-id').value = '';
                 document.getElementById('scanned-barcode-val').value = barcode;
-                document.getElementById('modal-product-title').innerText = scannerContextMode === 'inventory' ? 'Registrar Nuevo Producto' : 'Registrar Producto (Escáner)';
+                document.getElementById('modal-product-title').innerText = 'Registrar Producto Nuevo';
                 document.getElementById('new-prod-name').value = '';
                 document.getElementById('new-prod-price').value = '';
                 document.getElementById('product-modal').classList.remove('hidden');

@@ -96,7 +96,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 3: COMPROBANTE RECIBO CON LETRAS 100% NEGRAS Y VISIBLES -->
+        <!-- SECCIÓN 3: COMPROBANTE RECIBO -->
         <section class="bg-white rounded-2xl shadow-md p-4 border border-slate-300 transition-colors duration-200" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
                 <h3 class="font-black text-slate-900 text-base flex items-center" id="ticket-title-text">
@@ -138,7 +138,7 @@
                 <span class="col-span-1"></span>
             </div>
 
-            <!-- Listado detallado con color negro sólido absoluto -->
+            <!-- LISTADO DETALLADO FORZADO CON COLOR NEGRO PURO Y NEGRITA -->
             <div class="divide-y divide-slate-200 max-h-52 overflow-y-auto px-1" id="cart-list">
                 <p class="text-sm text-black text-center py-4 font-black">Sin ítems registrados en el recibo.</p>
             </div>
@@ -174,7 +174,7 @@
                 <button onclick="clearHistory()" class="text-xs text-rose-600 hover:underline font-bold">Borrar Historial</button>
             </div>
             <div class="space-y-2 max-h-48 overflow-y-auto" id="history-list">
-                <p class="text-xs text-black text-center py-4 font-bold">Aún no hay compras guardadas en el historial.</p>
+                <p class="text-xs text-black text-center py-4 font-black">Aún no hay compras guardadas en el historial.</p>
             </div>
         </section>
 
@@ -668,7 +668,7 @@
             let baseTotal = 0; // Base imponible
 
             if (cartKeys.length === 0) {
-                cartList.innerHTML = `<p class="text-sm text-black text-center py-4 font-black">Sin ítems registrados en el recibo.</p>`;
+                cartList.innerHTML = `<p class="text-sm text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>`;
                 document.getElementById('grand-total').innerText = '$0.00';
                 document.getElementById('grand-total-bs').innerText = 'Bs. 0.00';
                 document.getElementById('fiscal-base-usd').innerText = '$0.00';
@@ -678,6 +678,7 @@
                 return;
             }
 
+            // AQUÍ ES EXACTAMENTE DONDE SE CAMBIA EL COLOR Y NEGRITA DE LOS ÍTEMS DEL RECIBO:
             cartList.innerHTML = cartKeys.map(key => {
                 const item = cart[key];
                 const subtotal = item.price * item.qty;
@@ -689,17 +690,17 @@
                 return `
                     <div class="py-3 grid grid-cols-12 items-center text-xs fiscal-ticket border-b border-slate-300">
                         <div class="col-span-5 pr-1">
-                            <span class="text-black dark:text-white font-black text-xs block">${item.name}</span>
-                            <span class="text-[11px] text-black dark:text-slate-200 font-extrabold block">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
+                            <span class="font-black text-xs block" style="color: #000000 !important;">${item.name}</span>
+                            <span class="text-[11px] font-black block" style="color: #000000 !important;">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
                         </div>
-                        <div class="col-span-3 text-center font-black text-black dark:text-white text-xs">
+                        <div class="col-span-3 text-center font-black text-xs" style="color: #000000 !important;">
                             ${qtyLabel}
                         </div>
-                        <div class="col-span-3 text-right font-black text-black dark:text-white text-xs">
+                        <div class="col-span-3 text-right font-black text-xs" style="color: #000000 !important;">
                             $${subtotal.toFixed(2)}
                         </div>
                         <div class="col-span-1 text-right">
-                            <button onclick="removeCartItem('${item.id}')" class="text-black hover:text-rose-600 p-1 font-bold">
+                            <button onclick="removeCartItem('${item.id}')" class="p-1 font-bold" style="color: #000000 !important;">
                                 <i class="fa-solid fa-trash-can text-sm"></i>
                             </button>
                         </div>
@@ -765,19 +766,19 @@
         function renderHistory() {
             const historyList = document.getElementById('history-list');
             if (purchaseHistory.length === 0) {
-                historyList.innerHTML = `<p class="text-xs text-black text-center py-4 font-black">Aún no hay compras guardadas en el historial.</p>`;
+                historyList.innerHTML = `<p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Aún no hay compras guardadas en el historial.</p>`;
                 return;
             }
 
-            historyList.innerHTML = purchaseHistory.map(rec => `
+            historyList.innerHTML = historyHistoryContent = purchaseHistory.map(rec => `
                 <div class="bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs">
                     <div>
-                        <strong class="text-black dark:text-white font-black block">${rec.store} (Fac: #${rec.facNumber})</strong>
-                        <span class="text-[10px] text-black dark:text-slate-200 font-bold">${rec.date} • ${rec.itemsCount} ítems</span>
+                        <strong class="font-black block" style="color: #000000 !important;">${rec.store} (Fac: #${rec.facNumber})</strong>
+                        <span class="text-[10px] font-bold" style="color: #000000 !important;">${rec.date} • ${rec.itemsCount} ítems</span>
                     </div>
                     <div class="text-right">
                         <span class="font-black text-emerald-700 dark:text-emerald-400 block">$${rec.totalUsd.toFixed(2)}</span>
-                        <span class="text-[10px] text-black dark:text-white font-black">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <span class="text-[10px] font-black" style="color: #000000 !important;">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                 </div>
             `).join('');

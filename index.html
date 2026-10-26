@@ -61,24 +61,33 @@
         .shimmer-btn:hover {
             background-position: right center;
         }
-        /* FONDO FAMILIAR MUY DIFUMINADO (BLUR) Y FIJO SIN SCROLL */
+        /* FONDO FAMILIAR PROFUNDAMENTE BORROSO Y FIJO SIN SCROLL */
         .market-hero-bg {
-            background: linear-gradient(135deg, rgba(4, 120, 87, 0.88) 0%, rgba(6, 78, 59, 0.92) 100%),
+            background: linear-gradient(135deg, rgba(4, 120, 87, 0.85) 0%, rgba(2, 44, 34, 0.95) 100%),
                         url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80');
             background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
-        /* DEGRADADO INTERNO ELEGANTE PARA LA APLICACIÓN */
-        .app-inner-gradient {
-            background: linear-gradient(180deg, rgba(236, 253, 245, 0.7) 0%, rgba(209, 250, 229, 0.3) 100%);
+        /* DEGRADADO COLORIDO, FLUIDO Y BONITO DENTRO DE LA APLICACIÓN */
+        .app-modern-gradient {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%);
+            background-attachment: fixed;
         }
     </style>
 </head>
-<body class="app-inner-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden" id="body-theme">
+<body class="app-modern-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
+
+    <style>
+        /* EVITAR CUALQUIER PARPADEO INICIAL OCULTANDO EL BODY HASTA QUE EL SCRIPT DECIDA */
+        body.hidden-at-start { opacity: 0; }
+        body.visible-app { opacity: 1; transition: opacity 0.4s ease-in; }
+    </style>
 
     <!-- PANTALLA DE TRANSICIÓN ANIMADA -->
-    <div id="transition-screen" class="fixed inset-0 market-hero-bg backdrop-blur-xl z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
+    <div id="transition-screen" class="fixed inset-0 market-hero-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated border border-emerald-100">
             <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-4xl shadow-md animate-logo-glow">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
@@ -238,7 +247,7 @@
             </div>
         </section>
 
-        <!-- COMPROBANTE RECIBO (BOTÓN DUPLICADO ELIMINADO) -->
+        <!-- COMPROBANTE RECIBO (BOTÓN DUBLICADO ELIMINADO DEFINITIVAMENTE) -->
         <section class="bg-white rounded-2xl shadow-sm p-4 border border-emerald-200 transition-colors duration-300" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-100">
                 <h3 class="font-black text-slate-900 text-sm flex items-center" id="ticket-title-text">
@@ -248,7 +257,6 @@
                     <button onclick="saveAndSendPurchase()" class="text-xs text-white font-bold shimmer-btn px-3 py-1.5 rounded-lg shadow-md transition flex items-center" title="Guardar y enviar factura">
                         <i class="fa-solid fa-paper-plane mr-1"></i> Guardar y Enviar
                     </button>
-                    <button onclick="clearCart()" class="text-xs text-rose-600 hover:underline font-bold">Nueva</button>
                 </div>
             </div>
             
@@ -356,8 +364,8 @@
         </div>
     </div>
 
-    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO DIFUMINADO Y COPYRIGHT OFICIAL -->
-    <div id="auth-modal" class="fixed inset-0 market-hero-bg backdrop-blur-md z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
+    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO DIFUMINADO Y COPYRIGHT SOLICITADO -->
+    <div id="auth-modal" class="fixed inset-0 market-hero-bg z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
         <div class="flex-1 w-full flex items-center justify-center">
             <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[85vh] overflow-y-auto modal-animated">
                 
@@ -457,7 +465,7 @@
             </div>
         </div>
 
-        <!-- PIE DE PÁGINA OFICIAL EN LA PANTALLA DE INICIO -->
+        <!-- PIE DE PÁGINA OFICIAL -->
         <footer class="w-full text-center py-2 text-[10px] text-emerald-100 font-semibold tracking-wide drop-shadow-md">
             DFPFantasy CorVe, C.A Copyright ©2026 DFPfantasy Market VE. Todos los derechos reservados.
         </footer>
@@ -553,7 +561,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA -->
+    <!-- SCRIPT DE LÓGICA Y CONTROL DE PANTALLAS -->
     <script>
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
@@ -590,13 +598,17 @@
         document.getElementById('ticket-date').innerText = `Fecha: ${nowObj.toLocaleDateString()} ${nowObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
         async function initApp() {
+            const bodyEl = document.body;
             if (!currentUser) {
                 document.getElementById('auth-modal').classList.remove('hidden');
                 document.getElementById('auth-step-1').classList.remove('hidden');
                 document.getElementById('auth-step-2').classList.add('hidden');
                 document.getElementById('auth-step-3').classList.add('hidden');
+                bodyEl.classList.remove('hidden-at-start');
+                bodyEl.classList.add('visible-app');
                 return;
             }
+
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('current-user-badge').innerText = currentUser;
 
@@ -607,6 +619,9 @@
             loadFiscalUI();
             updateCartUI();
             renderHistory();
+
+            bodyEl.classList.remove('hidden-at-start');
+            bodyEl.classList.add('visible-app');
 
             showTransitionScreen("¡Bienvenido a tu supermercado, DFPfantasy!", 2000);
             setTimeout(() => { showDashboardMenu(); }, 2000);
@@ -900,7 +915,7 @@
         }
 
         function applyTheme() {
-            const body = document.getElementById('body-theme');
+            const body = document.body;
             const header = document.getElementById('header-theme');
             const themeIcon = document.getElementById('theme-icon');
             
@@ -908,7 +923,7 @@
             const boxes = ['fiscal-box', 'ticket-inner-box'];
 
             if (isDarkMode) {
-                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300 overflow-x-hidden";
+                body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-300 overflow-x-hidden visible-app";
                 header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-sun text-xs";
 
@@ -921,7 +936,7 @@
                     if(el) el.className = "bg-slate-900 rounded-xl p-3 mb-3 border border-dashed border-slate-600 text-center fiscal-ticket text-[11px] text-slate-100 font-bold space-y-1";
                 });
             } else {
-                body.className = "app-inner-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden";
+                body.className = "app-modern-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden visible-app";
                 header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-moon text-xs";
 

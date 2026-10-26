@@ -35,36 +35,55 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans pb-32 transition-colors duration-200" id="body-theme">
+<body class="bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-200" id="body-theme">
 
-    <!-- CABECERA FIJA CON EL TOTAL ACUMULADO, TASA, USUARIO Y MODO OSCURO -->
-    <header class="bg-emerald-600 text-white p-4 sticky top-0 z-40 shadow-md transition-colors duration-200" id="header-theme">
+    <!-- CABECERA FIJA CON EL LOGOTIPO PERSONALIZADO DFPfantasy Y CONTROLES -->
+    <header class="bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-200" id="header-theme">
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
-            <div>
-                <div class="flex items-center space-x-2">
-                    <h1 class="text-base font-bold tracking-wide" id="header-market-name">DFPFantasy Market</h1>
-                    <button onclick="logoutUser()" class="text-[10px] bg-emerald-700/80 hover:bg-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-500 transition" title="Cerrar sesión">
-                        <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
-                    </button>
+            
+            <!-- LOGOTIPO EXCLUSIVO DFPfantasy (Opción 1 adaptada) -->
+            <div class="flex items-center space-x-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="42" height="42" class="flex-shrink-0">
+                    <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
+                    <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="23" cy="37" r="2.5" fill="#059669"/>
+                    <circle cx="33" cy="37" r="2.5" fill="#059669"/>
+                    <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.85"/>
+                </svg>
+                <div>
+                    <h1 class="text-base font-black tracking-wide text-slate-900 leading-tight" id="header-market-name">
+                        <span class="text-emerald-700">DFP</span>fantasy
+                    </h1>
+                    <p class="text-[10px] font-extrabold text-emerald-600 tracking-wider uppercase">MARKET HOGAR</p>
                 </div>
-                <p class="text-[11px] text-emerald-100 font-semibold" id="item-count">0 ítems en recibo</p>
             </div>
-            <div class="flex items-center space-x-3">
-                <div class="text-right">
-                    <span class="text-[10px] uppercase tracking-wider block text-emerald-200 font-bold">Total a Pagar</span>
-                    <span class="text-xl font-black" id="grand-total">$0.00</span>
-                    <span class="text-xs font-bold block text-emerald-100" id="grand-total-bs">Bs. 0.00</span>
+
+            <!-- CONTROLES DERECHA (TOTAL Y MODO OSCURO) -->
+            <div class="flex items-center space-x-2.5">
+                <div class="text-right bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
+                    <span class="text-[9px] uppercase tracking-wider block text-emerald-700 font-bold">Total Pagar</span>
+                    <span class="text-sm font-black text-emerald-900" id="grand-total">$0.00</span>
+                    <span class="text-[10px] font-bold block text-emerald-800" id="grand-total-bs">Bs. 0.00</span>
                 </div>
                 <!-- Botón de Modo Oscuro -->
-                <button onclick="toggleDarkMode()" class="bg-emerald-700/80 hover:bg-emerald-700 text-white w-9 h-9 rounded-xl flex items-center justify-center shadow-sm transition" title="Cambiar Modo Oscuro / Claro">
-                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                <button onclick="toggleDarkMode()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 w-9 h-9 rounded-xl flex items-center justify-center shadow-xs transition" title="Cambiar Modo Oscuro / Claro">
+                    <i class="fa-solid fa-moon text-xs" id="theme-icon"></i>
                 </button>
             </div>
         </div>
-        <!-- Selector de Tasa de Cambio Bs/$ -->
-        <div class="max-w-md mx-auto bg-emerald-700/60 rounded-xl p-2 flex items-center justify-between text-xs">
-            <span class="text-emerald-100 font-bold">Tasa BCV / Día ($):</span>
-            <input type="number" step="0.01" id="exchange-rate" value="36.50" onchange="updateExchangeRate(this.value)" class="w-24 bg-white text-slate-900 font-black px-2 py-1 rounded-lg text-right focus:outline-none">
+
+        <!-- BARRA SECUNDARIA (USUARIO, TASA Y ÍTEMS) -->
+        <div class="max-w-md mx-auto bg-emerald-600 text-white rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
+            <div class="flex items-center space-x-2">
+                <button onclick="logoutUser()" class="text-[10px] bg-emerald-700 hover:bg-emerald-800 px-2 py-1 rounded-lg border border-emerald-500 font-bold transition" title="Cerrar sesión">
+                    <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
+                </button>
+                <span class="text-[11px] text-emerald-100 font-bold" id="item-count">0 ítems</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+                <span class="text-[11px] text-emerald-100 font-bold">Tasa ($):</span>
+                <input type="number" step="0.01" id="exchange-rate" value="36.50" onchange="updateExchangeRate(this.value)" class="w-20 bg-white text-slate-900 font-black px-2 py-0.5 rounded-lg text-right text-xs focus:outline-none">
+            </div>
         </div>
     </header>
 
@@ -72,16 +91,16 @@
     <main class="max-w-md mx-auto p-4 space-y-4">
 
         <!-- SECCIÓN 0.1: BUSCADOR RÁPIDO GLOBAL -->
-        <section class="bg-white rounded-2xl shadow-sm p-3 border border-slate-200 transition-colors duration-200" id="search-card">
+        <section class="bg-white rounded-2xl shadow-xs p-3 border border-emerald-100 transition-colors duration-200" id="search-card">
             <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
-                <input type="text" id="global-search" oninput="globalSearchProducts(this.value)" placeholder="Buscar producto en cualquier pasillo..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:border-emerald-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-emerald-500 text-xs"></i>
+                <input type="text" id="global-search" oninput="globalSearchProducts(this.value)" placeholder="Buscar producto en cualquier pasillo..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:border-emerald-500">
             </div>
-            <div id="search-results" class="hidden mt-2 space-y-1.5 divide-y divide-slate-200 max-h-40 overflow-y-auto"></div>
+            <div id="search-results" class="hidden mt-2 space-y-1.5 divide-y divide-slate-100 max-h-40 overflow-y-auto"></div>
         </section>
 
         <!-- SECCIÓN 0: CONFIGURACIÓN FISCAL (COMERCIO Y CLIENTE) -->
-        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-200" id="fiscal-card">
+        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200" id="fiscal-card">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-slate-900 text-sm flex items-center" id="fiscal-title-text">
                     <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i> Datos Fiscales (SENIAT)
@@ -90,8 +109,8 @@
                     <i class="fa-solid fa-gear mr-1"></i> Configurar Comercio
                 </button>
             </div>
-            <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-200" id="fiscal-box">
-                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold">Se solicitará al guardar factura</span></p>
+            <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100" id="fiscal-box">
+                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se solicitará al guardar factura</span></p>
                 <p><strong class="text-slate-900 font-bold">RIF Comercio:</strong> <span id="display-rif-comercio" class="font-semibold">--</span></p>
                 <p><strong class="text-slate-900 font-bold">Cliente / Comprador:</strong> <span id="display-cliente" class="font-semibold">Registrado</span></p>
             </div>
@@ -99,18 +118,18 @@
 
         <!-- SECCIÓN 1: SELECTOR DE PASILLOS -->
         <section>
-            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-3">Pasillos del Supermercado</h2>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-600 mb-2.5 px-1">Pasillos del Supermercado</h2>
             <div class="grid grid-cols-4 gap-2" id="categories-container">
                 <!-- Se cargan dinámicamente -->
             </div>
         </section>
 
         <!-- SECCIÓN 2: PRODUCTOS DEL PASILLO -->
-        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-200" id="aisle-card">
-            <div class="flex justify-between items-center mb-4">
+        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200" id="aisle-card">
+            <div class="flex justify-between items-center mb-3">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base" id="current-category-title">Pasillo</h3>
-                    <p class="text-xs text-slate-600 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos al vuelo</p>
+                    <p class="text-[11px] text-slate-500 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos al vuelo</p>
                 </div>
                 <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition">
                     <i class="fa-solid fa-plus mr-1"></i> Nuevo
@@ -118,19 +137,19 @@
             </div>
 
             <!-- Lista de productos visibles en este pasillo -->
-            <div class="space-y-3" id="products-list">
-                <p class="text-sm text-slate-500 text-center py-6 font-medium">Elige un pasillo arriba para ver los productos.</p>
+            <div class="space-y-2.5" id="products-list">
+                <p class="text-xs text-slate-400 text-center py-6 font-medium">Elige un pasillo arriba para ver los productos.</p>
             </div>
         </section>
 
         <!-- SECCIÓN 3: COMPROBANTE RECIBO -->
-        <section class="bg-white rounded-2xl shadow-md p-4 border border-slate-300 transition-colors duration-200" id="ticket-card">
-            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
-                <h3 class="font-black text-slate-900 text-base flex items-center" id="ticket-title-text">
+        <section class="bg-white rounded-2xl shadow-sm p-4 border border-emerald-200 transition-colors duration-200" id="ticket-card">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-100">
+                <h3 class="font-black text-slate-900 text-sm flex items-center" id="ticket-title-text">
                     <i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Comprobante Recibo
                 </h3>
                 <div class="flex space-x-2">
-                    <button onclick="saveAndSendPurchase()" class="text-xs text-white font-bold bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg shadow-sm transition flex items-center" title="Guardar y enviar factura por correo">
+                    <button onclick="saveAndSendPurchase()" class="text-xs text-white font-bold bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg shadow-xs transition flex items-center" title="Guardar y enviar factura por correo">
                         <i class="fa-solid fa-paper-plane mr-1"></i> Guardar y Enviar
                     </button>
                     <button onclick="clearCart()" class="text-xs text-rose-600 hover:underline font-bold">Nueva</button>
@@ -138,27 +157,27 @@
             </div>
             
             <!-- ENCABEZADO FISCAL ESTILO TICKET -->
-            <div class="bg-slate-50 rounded-xl p-3 mb-3 border border-dashed border-slate-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200" id="ticket-inner-box">
+            <div class="bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200" id="ticket-inner-box">
                 <p class="font-black text-slate-950 text-xs" id="ticket-comercio-name">COMERCIO NO CONFIGURADO</p>
                 <p id="ticket-comercio-rif" class="text-slate-900 font-bold">RIF: J-00000000-0</p>
-                <p class="text-[10px] text-slate-800 font-semibold" id="ticket-comercio-dir">Ciudad Bolívar, Venezuela</p>
+                <p class="text-[10px] text-slate-700 font-semibold" id="ticket-comercio-dir">Ciudad Bolívar, Venezuela</p>
                 
-                <div class="pt-1 border-t border-slate-300 text-left space-y-0.5 text-[10px]">
+                <div class="pt-1 border-t border-emerald-200 text-left space-y-0.5 text-[10px]">
                     <p><strong class="text-slate-950 font-black">CLIENTE:</strong> <span id="ticket-cliente-name" class="font-bold">---</span></p>
                     <p><strong class="text-slate-950 font-black">CÉDULA/RIF:</strong> <span id="ticket-cliente-doc" class="font-bold">---</span></p>
                 </div>
 
-                <div class="flex justify-between px-1 pt-1 border-t border-slate-300 text-[10px] text-slate-900 font-bold">
+                <div class="flex justify-between px-1 pt-1 border-t border-emerald-200 text-[10px] text-slate-900 font-bold">
                     <span id="ticket-date">Fecha: --/--/----</span>
                     <div class="flex items-center space-x-1">
                         <span>Nro Fac:</span>
-                        <input type="text" id="ticket-number-input" placeholder="Ej: 0012345" class="w-20 bg-white border border-slate-400 rounded px-1 text-[10px] text-center font-black text-slate-950 focus:outline-none focus:border-emerald-600" title="Colocar número de factura fiscal al finalizar">
+                        <input type="text" id="ticket-number-input" placeholder="Ej: 0012345" class="w-20 bg-white border border-emerald-300 rounded px-1 text-[10px] text-center font-black text-slate-950 focus:outline-none focus:border-emerald-600" title="Colocar número de factura fiscal al finalizar">
                     </div>
                 </div>
             </div>
 
             <!-- Cabecera de columnas de la factura -->
-            <div class="grid grid-cols-12 text-[10px] font-black text-slate-900 uppercase pb-2 border-b border-slate-300 px-1">
+            <div class="grid grid-cols-12 text-[10px] font-black text-slate-700 uppercase pb-2 border-b border-slate-200 px-1">
                 <span class="col-span-5">Descripción</span>
                 <span class="col-span-3 text-center">Cant/Peso</span>
                 <span class="col-span-3 text-right">Total $</span>
@@ -166,12 +185,12 @@
             </div>
 
             <!-- LISTADO DETALLADO CON COLOR NEGRO PURO Y NEGRITA -->
-            <div class="divide-y divide-slate-200 max-h-52 overflow-y-auto px-1" id="cart-list">
-                <p class="text-sm text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>
+            <div class="divide-y divide-slate-100 max-h-52 overflow-y-auto px-1" id="cart-list">
+                <p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>
             </div>
 
             <!-- PIE DE TICKET FISCAL CON LETRAS NEGRAS Y DEFINIDAS -->
-            <div class="mt-4 pt-3 border-t border-slate-300 space-y-1.5 fiscal-ticket text-xs font-bold text-slate-900">
+            <div class="mt-3 pt-3 border-t border-emerald-200 space-y-1.5 fiscal-ticket text-xs font-bold text-slate-900">
                 <div class="flex justify-between" id="sub-usd-row">
                     <span>BASE IMPONIBLE USD:</span>
                     <span id="fiscal-base-usd" class="font-black text-slate-950">$0.00</span>
@@ -184,16 +203,16 @@
                     <span>TASA CAMBIO BCV:</span>
                     <span id="fiscal-tasa" class="font-black text-slate-950">Bs. 36.50</span>
                 </div>
-                <div class="flex justify-between text-slate-950 font-black text-sm pt-1 border-t border-dashed border-slate-400" id="total-bs-row">
+                <div class="flex justify-between text-slate-950 font-black text-sm pt-1 border-t border-dashed border-emerald-400" id="total-bs-row">
                     <span>TOTAL GENERAL BS:</span>
                     <span id="fiscal-total-bs" class="text-emerald-700 font-black">Bs. 0.00</span>
                 </div>
-                <p class="text-[9px] text-center text-slate-900 font-black pt-2">*** COMPROBANTE RECIBO - IVA 16% SENIAT ***</p>
+                <p class="text-[9px] text-center text-slate-700 font-black pt-2">*** COMPROBANTE RECIBO - IVA 16% SENIAT ***</p>
             </div>
         </section>
 
         <!-- SECCIÓN 4: HISTORIAL DE CIERRES DE COMPRA -->
-        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-200" id="history-card">
+        <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200" id="history-card">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-slate-900 text-sm flex items-center" id="history-title-text">
                     <i class="fa-solid fa-clock-rotate-left text-emerald-600 mr-2"></i> Historial de Cierres de Compra
@@ -208,37 +227,37 @@
     </main>
 
     <!-- MODAL DE INICIO DE SESIÓN / REGISTRO ESTRICTO CON VERIFICACIÓN EMAILJS -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[90vh] overflow-y-auto">
             
             <!-- PASO 1: Ingreso de Correo y PIN -->
             <div id="auth-step-1">
                 <div class="text-center mb-4">
-                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl shadow-inner">
-                        <i class="fa-solid fa-user-lock"></i>
+                    <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl shadow-xs">
+                        <i class="fa-solid fa-basket-shopping"></i>
                     </div>
-                    <h3 class="font-black text-lg text-slate-900">DFPFantasy Market</h3>
+                    <h3 class="font-black text-lg text-slate-900"><span class="text-emerald-700">DFP</span>fantasy Market</h3>
                     <p class="text-[11px] text-slate-500 font-semibold mt-0.5">Control Fiscal e Inteligente (Venezuela)</p>
                 </div>
                 
                 <form onsubmit="handleAuthSubmit(event)">
                     <div class="mb-3">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
-                        <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
-                        <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-black shadow-md transition">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-black shadow-sm transition">
                         Continuar
                     </button>
                 </form>
             </div>
 
-            <!-- PASO 2: Registro de Datos del Comprador (Sin solicitar comercio todavía) -->
+            <!-- PASO 2: Registro de Datos del Comprador -->
             <div id="auth-step-2" class="hidden">
                 <div class="text-center mb-3">
                     <h3 class="font-black text-base text-slate-900">Registro de Datos Personales</h3>
@@ -248,33 +267,33 @@
                 <form onsubmit="handleFiscalRegister(event)">
                     <div class="mb-2.5">
                         <label class="block text-[10px] font-bold text-slate-700 mb-1">Nombre / Razón Social</label>
-                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="reg-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
 
                     <div class="mb-2.5">
                         <label class="block text-[10px] font-bold text-slate-700 mb-1">Cédula o RIF (Número)</label>
                         <div class="flex">
-                            <select id="reg-doc-type" class="bg-slate-100 border border-slate-300 rounded-l-xl px-2 py-2 text-xs font-bold text-slate-900 focus:outline-none">
+                            <select id="reg-doc-type" class="bg-slate-100 border border-slate-200 rounded-l-xl px-2 py-2 text-xs font-bold text-slate-900 focus:outline-none">
                                 <option value="V-">V-</option>
                                 <option value="E-">E-</option>
                                 <option value="J-">J-</option>
                                 <option value="G-">G-</option>
                             </select>
-                            <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border-t border-b border-r border-slate-300 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                            <input type="number" id="reg-doc-num" required placeholder="20123456" class="w-full border-t border-b border-r border-slate-200 rounded-r-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="block text-[10px] font-bold text-slate-700 mb-1">Teléfono (Operadora Venezuela)</label>
                         <div class="flex space-x-1">
-                            <select id="reg-phone-op" class="bg-slate-100 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold text-slate-900 focus:outline-none">
+                            <select id="reg-phone-op" class="bg-slate-100 border border-slate-200 rounded-xl px-2 py-2 text-xs font-bold text-slate-900 focus:outline-none">
                                 <option value="0414">0414 (Movistar)</option>
                                 <option value="0424">0424 (Movistar)</option>
                                 <option value="0416">0416 (Movilnet)</option>
                                 <option value="0426">0426 (Movilnet)</option>
                                 <option value="0412">0412 (Digitel)</option>
                             </select>
-                            <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600" maxlength="7">
+                            <input type="number" id="reg-phone-num" required placeholder="1234567" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600" maxlength="7">
                         </div>
                     </div>
 
@@ -284,39 +303,39 @@
 
             <!-- PASO 3: Validación del Código de Verificación EmailJS -->
             <div id="auth-step-3" class="hidden text-center">
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl shadow-inner">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl shadow-xs">
                     <i class="fa-solid fa-envelope-circle-check"></i>
                 </div>
                 <h3 class="font-black text-base text-slate-900 mb-1">Verificación de Correo</h3>
                 <p class="text-xs text-slate-500 mb-4 font-medium">Hemos enviado un código de seguridad a tu correo electrónico. Ingrésalo abajo:</p>
                 
                 <form onsubmit="handleVerificationSubmit(event)">
-                    <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none focus:border-emerald-600">
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black shadow-md">Verificar y Entrar</button>
+                    <input type="number" id="entered-code" required placeholder="Código de 4 dígitos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-center text-lg font-black tracking-widest text-slate-900 mb-3 focus:outline-none focus:border-emerald-600">
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black shadow-sm">Verificar y Entrar</button>
                 </form>
             </div>
 
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURACIÓN FISCAL (DATOS DEL COMERCIO - SE SOLICITA AL GUARDAR O DESDE EL BOTÓN) -->
+    <!-- MODAL DE CONFIGURACIÓN FISCAL (DATOS DEL COMERCIO) -->
     <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-lg mb-1 text-slate-900">Datos Fiscales del Comercio</h3>
             <p class="text-[11px] text-slate-500 mb-3 font-semibold">Requerido para generar y enviar el comprobante fiscal.</p>
             <form id="fiscal-form" onsubmit="saveFiscalData(event)">
-                <div class="border-b border-slate-200 pb-3 mb-3">
+                <div class="border-b border-slate-100 pb-3 mb-3">
                     <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Comercio</label>
-                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPFantasy" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
                     <div class="mb-2">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">RIF del Comercio</label>
-                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
                     <div class="mb-1">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">Dirección / Ciudad</label>
-                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
                 </div>
 
@@ -336,11 +355,11 @@
                 <input type="hidden" id="edit-prod-id">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina Pan, Tomate..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-700 mb-1" id="price-label-modal">Precio Base ($)</label>
-                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
+                    <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                 </div>
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold">Cancelar</button>
@@ -370,7 +389,7 @@
 
         let products = {};
         let cart = {};
-        let fiscalData = null; // Guardará cliente y comercio
+        let fiscalData = null;
         let purchaseHistory = [];
 
         let tempAuthEmail = '';
@@ -441,7 +460,6 @@
             const phoneOp = document.getElementById('reg-phone-op').value;
             const phoneNum = document.getElementById('reg-phone-num').value.trim();
 
-            // Solo guardamos los datos del cliente inicialmente (sin exigir comercio aún)
             tempClientData = {
                 clientName: name,
                 clientDoc: docType + docNum,
@@ -474,7 +492,7 @@
                 try {
                     await db.collection("users").doc(currentUser).set({
                         pin: tempAuthPin,
-                        fiscal: tempClientData, // Guardamos los datos del cliente
+                        fiscal: tempClientData,
                         products: {},
                         cart: {},
                         history: []
@@ -544,29 +562,29 @@
 
             if (isDarkMode) {
                 body.className = "bg-slate-900 text-slate-100 font-sans pb-32 transition-colors duration-200";
-                header.className = "bg-slate-800 text-white p-4 sticky top-0 z-40 shadow-md transition-colors duration-200";
-                themeIcon.className = "fa-solid fa-sun";
+                header.className = "bg-slate-800 text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-700 transition-colors duration-200";
+                themeIcon.className = "fa-solid fa-sun text-xs";
 
                 cards.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-700 transition-colors duration-200";
+                    if(el) el.className = "bg-slate-800 rounded-2xl shadow-xs p-4 border border-slate-700 transition-colors duration-200";
                 });
                 boxes.forEach(id => {
                     const el = document.getElementById(id);
                     if(el) el.className = "bg-slate-900 rounded-xl p-3 mb-3 border border-dashed border-slate-600 text-center fiscal-ticket text-[11px] text-slate-100 font-bold space-y-1 transition-colors duration-200";
                 });
             } else {
-                body.className = "bg-slate-100 text-slate-900 font-sans pb-32 transition-colors duration-200";
-                header.className = "bg-emerald-600 text-white p-4 sticky top-0 z-40 shadow-md transition-colors duration-200";
-                themeIcon.className = "fa-solid fa-moon";
+                body.className = "bg-emerald-50/40 text-slate-900 font-sans pb-32 transition-colors duration-200";
+                header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-emerald-100 transition-colors duration-200";
+                themeIcon.className = "fa-solid fa-moon text-xs";
 
                 cards.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-200";
+                    if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-200";
                 });
                 boxes.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.className = "bg-slate-50 rounded-xl p-3 mb-3 border border-dashed border-slate-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200";
+                    if(el) el.className = "bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1 transition-colors duration-200";
                 });
             }
         }
@@ -592,7 +610,7 @@
 
             if (matches.length === 0) {
                 resultsContainer.classList.remove('hidden');
-                resultsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-2 font-semibold">No se encontró ningún producto.</p>`;
+                resultsContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2 font-semibold">No se encontró ningún producto.</p>`;
                 return;
             }
 
@@ -601,7 +619,7 @@
                 <div class="py-2 flex justify-between items-center text-xs">
                     <div>
                         <strong class="text-slate-900 dark:text-slate-100 font-bold">${prod.name}</strong>
-                        <span class="text-[10px] text-slate-600 dark:text-slate-400 font-semibold block">$${prod.price.toFixed(2)}</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold block">$${prod.price.toFixed(2)}</span>
                     </div>
                     <button onclick="jumpToProduct('${prod.categoryId}', '${prod.id}')" class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg font-bold border border-emerald-200">Ir al Pasillo</button>
                 </div>
@@ -622,7 +640,6 @@
             document.getElementById('display-cliente').innerText = fiscalData.clientName ? `${fiscalData.clientName} (${fiscalData.clientDoc})` : 'Registrado';
 
             if (fiscalData.storeName) {
-                document.getElementById('header-market-name').innerText = fiscalData.storeName;
                 document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
                 document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
                 document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
@@ -667,8 +684,8 @@
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => `
-                <button onclick="selectCategory('${cat.id}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition ${activeCategory === cat.id ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-bold shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50'}">
-                    <i class="fa-solid ${cat.icon} text-xl mb-1"></i>
+                <button onclick="selectCategory('${cat.id}')" class="flex flex-col items-center justify-center p-3 rounded-2xl border transition ${activeCategory === cat.id ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border-emerald-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-emerald-50/50'}">
+                    <i class="fa-solid ${cat.icon} text-lg mb-1 text-emerald-600"></i>
                     <span class="text-[11px] truncate w-full text-center">${cat.name}</span>
                 </button>
             `).join('');
@@ -691,7 +708,7 @@
             if (catProducts.length === 0) {
                 listContainer.innerHTML = `
                     <div class="text-center py-6">
-                        <p class="text-sm text-slate-600 font-semibold mb-2">No hay productos registrados en este pasillo.</p>
+                        <p class="text-xs text-slate-500 font-semibold mb-2">No hay productos registrados en este pasillo.</p>
                         <span class="text-xs text-emerald-700 font-bold cursor-pointer hover:underline" onclick="openAddModal()">+ Registrar el primero</span>
                     </div>`;
                 return;
@@ -706,35 +723,35 @@
                 if (currentCat.isWeight) {
                     rightControlHTML = `
                         <div class="flex items-center space-x-1">
-                            <input type="number" step="0.05" value="${qty > 0 ? qty : ''}" placeholder="0.0" onchange="updateWeightQty('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1 text-xs font-black text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600">
-                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">kg</span>
+                            <input type="number" step="0.05" value="${qty > 0 ? qty : ''}" placeholder="0.0" onchange="updateWeightQty('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 text-xs font-black text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">kg</span>
                         </div>
                     `;
                 } else {
                     rightControlHTML = `
                         <div class="flex items-center space-x-1.5">
-                            <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-900 dark:text-slate-100 font-black shadow-sm text-sm">-</button>
+                            <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-800 dark:text-slate-100 font-black shadow-xs text-sm">-</button>
                             <span class="text-sm font-black w-8 text-center text-slate-950 dark:text-slate-100">${qty}</span>
-                            <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-black shadow-sm text-sm">+</button>
+                            <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-black shadow-xs text-sm">+</button>
                         </div>
                     `;
                 }
 
                 return `
-                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors duration-200">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-slate-700 transition-colors duration-200">
                         <div class="flex-1 pr-2">
                             <div class="flex items-center space-x-2">
                                 <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">${prod.name}</h4>
-                                <button onclick="openEditProductModal('${prod.id}')" class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-xs" title="Editar nombre">
+                                <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs" title="Editar nombre">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
-                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-500 hover:text-rose-600 text-xs" title="Eliminar producto">
+                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-xs" title="Eliminar producto">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 mt-1">
-                                <span class="text-xs text-slate-700 dark:text-slate-300 font-semibold">${currentCat.isWeight ? 'Precio/kg ($):' : 'Precio ($):'}</span>
-                                <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-1.5 py-0.5 text-xs font-black text-emerald-700 dark:text-emerald-400 focus:outline-none focus:border-emerald-600">
+                                <span class="text-xs text-slate-600 dark:text-slate-300 font-semibold">${currentCat.isWeight ? 'Precio/kg ($):' : 'Precio ($):'}</span>
+                                <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 text-xs font-black text-emerald-700 dark:text-emerald-400 focus:outline-none focus:border-emerald-600">
                             </div>
                         </div>
                         <div>
@@ -898,13 +915,13 @@
             let baseTotal = 0;
 
             if (cartKeys.length === 0) {
-                cartList.innerHTML = `<p class="text-sm text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>`;
+                cartList.innerHTML = `<p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>`;
                 document.getElementById('grand-total').innerText = '$0.00';
                 document.getElementById('grand-total-bs').innerText = 'Bs. 0.00';
                 document.getElementById('fiscal-base-usd').innerText = '$0.00';
                 document.getElementById('fiscal-iva-usd').innerText = '$0.00';
                 document.getElementById('fiscal-total-bs').innerText = 'Bs. 0.00';
-                document.getElementById('item-count').innerText = '0 ítems en recibo';
+                document.getElementById('item-count').innerText = '0 ítems';
                 return;
             }
 
@@ -917,10 +934,10 @@
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 return `
-                    <div class="py-3 grid grid-cols-12 items-center text-xs fiscal-ticket border-b border-slate-300">
+                    <div class="py-2.5 grid grid-cols-12 items-center text-xs fiscal-ticket border-b border-emerald-100">
                         <div class="col-span-5 pr-1">
                             <span class="font-black text-xs block" style="color: #000000 !important;">${item.name}</span>
-                            <span class="text-[11px] font-black block" style="color: #000000 !important;">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
+                            <span class="text-[10px] font-black block" style="color: #000000 !important;">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
                         </div>
                         <div class="col-span-3 text-center font-black text-xs" style="color: #000000 !important;">
                             ${qtyLabel}
@@ -948,10 +965,9 @@
             document.getElementById('fiscal-iva-usd').innerText = `$${ivaAmount.toFixed(2)}`;
             document.getElementById('fiscal-tasa').innerText = `Bs. ${exchangeRate.toFixed(2)}`;
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('item-count').innerText = `${cartKeys.length} ítems en recibo`;
+            document.getElementById('item-count').innerText = `${cartKeys.length} ítems`;
         }
 
-        // AQUÍ ESTÁ LA MAGIA: Al presionar "Guardar y Enviar", si no hay comercio configurado, se solicita estrictamente en ese momento.
         function saveAndSendPurchase() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
@@ -959,7 +975,6 @@
                 return;
             }
 
-            // Validar si el comercio está configurado; si no, abrir el modal fiscal obligatorio en este momento
             if (!fiscalData || !fiscalData.storeName) {
                 alert("Para guardar y enviar la factura, debes indicar los datos fiscales del comercio emisor.");
                 openFiscalModal();
@@ -1041,7 +1056,7 @@
             }
 
             historyList.innerHTML = purchaseHistory.map(rec => `
-                <div class="bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs">
+                <div class="bg-emerald-50/50 dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-slate-700 flex justify-between items-center text-xs">
                     <div>
                         <strong class="font-black block" style="color: #000000 !important;">${rec.store} (Fac: #${rec.facNumber})</strong>
                         <span class="text-[10px] font-bold" style="color: #000000 !important;">${rec.date} • ${rec.itemsCount} ítems</span>

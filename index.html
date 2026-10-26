@@ -344,7 +344,7 @@
 
     </main>
 
-    <!-- MODAL ESCÁNER DE CÁMARA (BLINDADO) -->
+    <!-- MODAL ESCÁNER DE CÁMARA -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -385,17 +385,17 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVO PRODUCTO (SOLO SI NUNCA HA SIDO REGISTRADO) -->
+    <!-- MODAL NUEVO PRODUCTO (SÓLO SI EL CÓDIGO ES 100% NUEVO) -->
     <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-3">
             <h3 class="font-black text-base text-slate-900" id="modal-product-title">Registrar Producto Nuevo</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Este código de barras es totalmente nuevo. Ingresa sus datos por única vez:</p>
+            <p class="text-[11px] text-slate-500 font-medium">Este código de barras no existe en tus registros. Ingresa sus datos por única vez:</p>
             <form id="add-product-form" onsubmit="saveProduct(event)">
                 <input type="hidden" id="edit-prod-id">
                 <input type="hidden" id="scanned-barcode-val">
                 <div class="mb-2.5">
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Arroz Primor" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina PAN" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                 </div>
                 <div class="mb-2.5">
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">Pasillo / Categoría</label>
@@ -781,7 +781,7 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE ESCÁNER ROBUSTO ---
+        // --- GESTIÓN DE ESCÁNER ---
         function openScannerModal(mode = 'cart') {
             scannerContextMode = mode;
             document.getElementById('scanner-modal').classList.remove('hidden');
@@ -842,12 +842,12 @@
             }
         }
 
-        // --- BÚSQUEDA INTELIGENTE Y BLINDADA DE CÓDIGOS DE BARRAS ---
+        // --- LÓGICA DE ESCANEO PRECISA (SIN ADIVINAR PRODUCTOS) ---
         function handleScannedBarcode(barcode) {
             let foundProdId = barcodeMap[barcode];
             let foundProd = null;
 
-            // 1. Intentar buscar por coincidencia exacta en el mapa de barras
+            // Buscamos estrictamente si el código de barras exacto pertenece a un producto
             if (foundProdId) {
                 for (let cat in products) {
                     const p = products[cat].find(item => item.id === foundProdId);
@@ -855,27 +855,10 @@
                 }
             }
 
-            // 2. SEGURO INTELIGENTE: Si no está en el mapa exacto, buscamos en TODOS los pasillos 
-            // por si el producto ya fue creado pero faltaba enlazar el código de barras.
-            if (!foundProd) {
-                for (let cat in products) {
-                    if (products[cat] && products[cat].length > 0) {
-                        // Si tienes productos creados y quieres asociar este código al primer producto o buscar similitud:
-                        // Enlazamos automáticamente con el último producto creado para evitar molestarte con registros nuevos si ya usas la app
-                        foundProd = products[cat][products[cat].length - 1];
-                        if (foundProd) {
-                            barcodeMap[barcode] = foundProd.id; // Vinculamos para siempre
-                            saveDataToCloud();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // SI LO ENCONTRÓ (Ya existe en tus pasillos):
+            // SI EL PRODUCTO EXISTE Y SU CÓDIGO ESTÁ REGISTRADO:
             if (foundProd) {
                 if (scannerContextMode === 'inventory') {
-                    // MODO ALACENA: Abre directo el cajetín para actualizar cuántas unidades tienes
+                    // MODO ALACENA: Abre directo el cuadro para colocar la cantidad física actual
                     openQuickInventoryModal(foundProd);
                 } else {
                     // MODO CARRITO: Agrega 1 unidad al carrito de compras
@@ -891,7 +874,7 @@
                     alert(`¡Reconocido! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
                 }
             } else {
-                // SÓLO si tus pasillos están totalmente vacíos y nunca has registrado nada, abre el formulario de registro
+                // SÓLO SI EL CÓDIGO ES TOTALMENTE NUEVO: Abre el formulario para registrarlo por única vez
                 document.getElementById('edit-prod-id').value = '';
                 document.getElementById('scanned-barcode-val').value = barcode;
                 document.getElementById('modal-product-title').innerText = 'Registrar Producto Nuevo';
@@ -1382,6 +1365,7 @@
                 savedId = `${targetCategory}_${Date.now()}`;
                 products[targetCategory].push({ id: savedId, name, price });
                 
+                // Enlazamos correctamente el código de barras exacto de este producto nuevo
                 if (barcode) {
                     barcodeMap[barcode] = savedId;
                 }
@@ -1391,7 +1375,7 @@
             closeAddModal();
             selectCategory(targetCategory);
             renderProducts();
-            alert(`¡Producto "${name}" guardado y vinculado correctamente!`);
+            alert(`¡Producto "${name}" guardado y vinculado correctamente a su código de barras!`);
         }
 
         function deleteProductFromAisle(prodId) {

@@ -20,7 +20,7 @@
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             <div>
                 <h1 class="text-base font-bold tracking-wide" id="header-market-name">DFPFantasy Market</h1>
-                <p class="text-[11px] text-emerald-100" id="item-count">0 ítems en ticket fiscal</p>
+                <p class="text-[11px] text-emerald-100" id="item-count">0 ítems en recibo</p>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right">
@@ -44,7 +44,7 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto p-4 space-y-4">
 
-        <!-- SECCIÓN 0.1: BUSCADOR RÁPIDO GLOBAL (OPCIÓN 4) -->
+        <!-- SECCIÓN 0.1: BUSCADOR RÁPIDO GLOBAL -->
         <section class="bg-white rounded-2xl shadow-sm p-3 border border-slate-100 transition-colors duration-200" id="search-card">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
@@ -96,14 +96,14 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 3: TICKET / FACTURA FISCAL ESTILO VENEZOLANO -->
+        <!-- SECCIÓN 3: COMPROBANTE RECIBO CON CÁLCULO DE IVA (16%) -->
         <section class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 transition-colors duration-200" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
                 <h3 class="font-bold text-slate-700 text-base flex items-center" id="ticket-title-text">
-                    <i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Comprobante Fiscal (SENIAT)
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Comprobante Recibo
                 </h3>
                 <div class="flex space-x-2">
-                    <button onclick="savePurchaseHistory()" class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition" title="Guardar en Historial">
+                    <button onclick="savePurchaseHistory()" class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition" title="Guardar y limpiar recibo">
                         <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar
                     </button>
                     <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline font-medium">Nueva</button>
@@ -140,14 +140,18 @@
 
             <!-- Listado detallado fiscal -->
             <div class="divide-y divide-slate-50 max-h-52 overflow-y-auto px-1" id="cart-list">
-                <p class="text-sm text-slate-400 text-center py-4">Sin ítems registrados en el ticket.</p>
+                <p class="text-sm text-slate-400 text-center py-4">Sin ítems registrados en el recibo.</p>
             </div>
 
-            <!-- PIE DE TICKET FISCAL CON TOTALES OFICIALES -->
+            <!-- PIE DE TICKET FISCAL CON IVA (16%) Y TOTALES -->
             <div class="mt-4 pt-3 border-t border-slate-200 space-y-1.5 fiscal-ticket text-xs">
                 <div class="flex justify-between text-slate-600" id="sub-usd-row">
-                    <span>SUB-TOTAL USD:</span>
-                    <span id="fiscal-sub-usd" class="font-bold">$0.00</span>
+                    <span>BASE IMPONIBLE USD:</span>
+                    <span id="fiscal-base-usd" class="font-bold">$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-600" id="iva-usd-row">
+                    <span>IVA (16%):</span>
+                    <span id="fiscal-iva-usd" class="font-bold">$0.00</span>
                 </div>
                 <div class="flex justify-between text-slate-600" id="tasa-row">
                     <span>TASA CAMBIO BCV:</span>
@@ -157,11 +161,11 @@
                     <span>TOTAL GENERAL BS:</span>
                     <span id="fiscal-total-bs" class="text-emerald-600">Bs. 0.00</span>
                 </div>
-                <p class="text-[9px] text-center text-slate-400 pt-2">*** INTRODUZCA EL NÚMERO DE FACTURA FISCAL AL EMITIRSE ***</p>
+                <p class="text-[9px] text-center text-slate-400 pt-2">*** COMPROBANTE RECIBO - IVA 16% SENIAT ***</p>
             </div>
         </section>
 
-        <!-- SECCIÓN 4: HISTORIAL DE COMPRAS (OPCIÓN 1) -->
+        <!-- SECCIÓN 4: HISTORIAL DE CIERRES DE COMPRA -->
         <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100 transition-colors duration-200" id="history-card">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-slate-700 text-sm flex items-center" id="history-title-text">
@@ -282,7 +286,6 @@
             renderHistory();
         }
 
-        // OPCIÓN 3: MODO OSCURO
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             localStorage.setItem('komprafacil_dark', isDarkMode);
@@ -326,7 +329,6 @@
             }
         }
 
-        // OPCIÓN 4: BUSCADOR RÁPIDO GLOBAL
         function globalSearchProducts(query) {
             const resultsContainer = document.getElementById('search-results');
             const q = query.trim().toLowerCase();
@@ -663,22 +665,23 @@
         function updateCartUI() {
             const cartList = document.getElementById('cart-list');
             const cartKeys = Object.keys(cart);
-            let grandTotal = 0;
+            let baseTotal = 0; // Base imponible
 
             if (cartKeys.length === 0) {
-                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Sin ítems registrados en el ticket.</p>`;
+                cartList.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Sin ítems registrados en el recibo.</p>`;
                 document.getElementById('grand-total').innerText = '$0.00';
                 document.getElementById('grand-total-bs').innerText = 'Bs. 0.00';
-                document.getElementById('fiscal-sub-usd').innerText = '$0.00';
+                document.getElementById('fiscal-base-usd').innerText = '$0.00';
+                document.getElementById('fiscal-iva-usd').innerText = '$0.00';
                 document.getElementById('fiscal-total-bs').innerText = 'Bs. 0.00';
-                document.getElementById('item-count').innerText = '0 ítems en ticket fiscal';
+                document.getElementById('item-count').innerText = '0 ítems en recibo';
                 return;
             }
 
             cartList.innerHTML = cartKeys.map(key => {
                 const item = cart[key];
                 const subtotal = item.price * item.qty;
-                grandTotal += subtotal;
+                baseTotal += subtotal;
 
                 let isWeightItem = key.startsWith('hortalizas');
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
@@ -704,31 +707,37 @@
                 `;
             }).join('');
 
-            const totalBs = grandTotal * exchangeRate;
+            // Cálculo del IVA (16%)
+            const ivaAmount = baseTotal * 0.16;
+            const grandTotalUsd = baseTotal + ivaAmount;
+            const totalBs = grandTotalUsd * exchangeRate;
 
-            document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
+            document.getElementById('grand-total').innerText = `$${grandTotalUsd.toFixed(2)}`;
             document.getElementById('grand-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             
-            document.getElementById('fiscal-sub-usd').innerText = `$${grandTotal.toFixed(2)}`;
+            document.getElementById('fiscal-base-usd').innerText = `$${baseTotal.toFixed(2)}`;
+            document.getElementById('fiscal-iva-usd').innerText = `$${ivaAmount.toFixed(2)}`;
             document.getElementById('fiscal-tasa').innerText = `Bs. ${exchangeRate.toFixed(2)}`;
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('item-count').innerText = `${cartKeys.length} ítems en ticket fiscal`;
+            document.getElementById('item-count').innerText = `${cartKeys.length} ítems en recibo`;
         }
 
-        // OPCIÓN 1: HISTORIAL DE CIERRES DE COMPRA
+        // GUARDAR COMPRA Y LIMPIAR RECIBO AUTOMÁTICAMENTE
         function savePurchaseHistory() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
-                alert("No hay productos en el ticket para guardar.");
+                alert("No hay productos en el recibo para guardar.");
                 return;
             }
 
-            let grandTotal = 0;
+            let baseTotal = 0;
             cartKeys.forEach(key => {
-                grandTotal += cart[key].price * cart[key].qty;
+                baseTotal += cart[key].price * cart[key].qty;
             });
 
-            const totalBs = grandTotal * exchangeRate;
+            const ivaAmount = baseTotal * 0.16;
+            const grandTotalUsd = baseTotal + ivaAmount;
+            const totalBs = grandTotalUsd * exchangeRate;
             const facNumber = document.getElementById('ticket-number-input').value.trim() || 'S/N';
 
             const record = {
@@ -736,15 +745,23 @@
                 date: new Date().toLocaleDateString(),
                 store: fiscalData ? fiscalData.storeName : 'Comercio',
                 facNumber: facNumber,
-                totalUsd: grandTotal,
+                totalUsd: grandTotalUsd,
                 totalBs: totalBs,
                 itemsCount: cartKeys.length
             };
 
-            purchaseHistory.unshift(record); // Agregar al inicio
+            purchaseHistory.unshift(record);
             localStorage.setItem('komprafacil_history', JSON.stringify(purchaseHistory));
             renderHistory();
-            alert("¡Compra guardada con éxito en el historial!");
+
+            // LIMPIAR TODO EL RECIBO Y NÚMERO DE FACTURA PARA EL PRÓXIMO MERCADO
+            cart = {};
+            localStorage.removeItem('komprafacil_cart');
+            document.getElementById('ticket-number-input').value = '';
+            renderProducts();
+            updateCartUI();
+
+            alert("¡Compra guardada con éxito! El recibo se ha limpiado para el próximo mercado.");
         }
 
         function renderHistory() {
@@ -778,6 +795,7 @@
         function clearCart() {
             cart = {};
             localStorage.removeItem('komprafacil_cart');
+            document.getElementById('ticket-number-input').value = '';
             renderProducts();
             updateCartUI();
         }

@@ -76,6 +76,13 @@
             background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%);
             background-attachment: fixed;
         }
+        /* FRANJA INFERIOR ESTILIZADA CON EFECTO CRISTAL ESMERILADO */
+        .footer-glass-banner {
+            background: rgba(2, 44, 34, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(52, 211, 153, 0.3);
+        }
     </style>
 </head>
 <body class="app-modern-gradient text-slate-900 font-sans pb-32 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
@@ -86,21 +93,30 @@
         body.visible-app { opacity: 1; transition: opacity 0.4s ease-in; }
     </style>
 
-    <!-- PANTALLA DE TRANSICIÓN ANIMADA -->
-    <div id="transition-screen" class="fixed inset-0 market-hero-bg z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated border border-emerald-100">
-            <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-4xl shadow-md animate-logo-glow">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
-                    <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.3" />
-                    <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <circle cx="23" cy="37" r="2.5" fill="#059669"/>
-                    <circle cx="33" cy="37" r="2.5" fill="#059669"/>
-                    <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
-                </svg>
+    <!-- PANTALLA DE TRANSICIÓN ANIMADA (BIENVENIDA / CIERRE DE SESIÓN) -->
+    <div id="transition-screen" class="fixed inset-0 market-hero-bg z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
+        <div class="flex-1 w-full flex items-center justify-center">
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated border border-emerald-100">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-4xl shadow-md animate-logo-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="44" height="44">
+                        <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.3" />
+                        <path d="M15 18H21L25 32H35L38 21H20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="23" cy="37" r="2.5" fill="#059669"/>
+                        <circle cx="33" cy="37" r="2.5" fill="#059669"/>
+                        <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#F43F5E" opacity="0.9"/>
+                    </svg>
+                </div>
+                <h3 class="font-black text-lg text-slate-900" id="transition-msg">¡Bienvenido a <span class="text-emerald-700 font-extrabold">DFPfantasy</span> Market!</h3>
+                <p class="text-[11px] text-emerald-700 font-bold">Experiencia, amor y unión en cada hogar</p>
             </div>
-            <h3 class="font-black text-lg text-slate-900" id="transition-msg">¡Bienvenido a tu supermercado, DFPfantasy!</h3>
-            <p class="text-[11px] text-emerald-700 font-bold">Experiencia, amor y unión en cada hogar</p>
         </div>
+
+        <!-- FRANJA INFERIOR EN ANIMACIÓN DE TRANSICIÓN -->
+        <footer class="w-full footer-glass-banner text-center py-3 px-4 rounded-2xl max-w-lg mb-2 shadow-lg">
+            <p class="text-[10px] text-emerald-100 font-medium tracking-wide">
+                <strong class="text-emerald-300 font-black">DFPfantasy CorVe, C.A</strong> Copyright ©2026 <strong class="text-emerald-300 font-black">DFPfantasy Market VE</strong>. Todos los derechos reservados.
+            </p>
+        </footer>
     </div>
 
     <!-- CABECERA FIJA -->
@@ -247,7 +263,7 @@
             </div>
         </section>
 
-        <!-- COMPROBANTE RECIBO (BOTÓN DUBLICADO ELIMINADO DEFINITIVAMENTE) -->
+        <!-- COMPROBANTE RECIBO -->
         <section class="bg-white rounded-2xl shadow-sm p-4 border border-emerald-200 transition-colors duration-300" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-100">
                 <h3 class="font-black text-slate-900 text-sm flex items-center" id="ticket-title-text">
@@ -364,7 +380,7 @@
         </div>
     </div>
 
-    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO DIFUMINADO Y COPYRIGHT SOLICITADO -->
+    <!-- PANTALLA DE INICIO DE SESIÓN CON FONDO DIFUMINADO Y FRANJA OFICIAL CON COPYRIGHT -->
     <div id="auth-modal" class="fixed inset-0 market-hero-bg z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
         <div class="flex-1 w-full flex items-center justify-center">
             <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 max-h-[85vh] overflow-y-auto modal-animated">
@@ -465,9 +481,11 @@
             </div>
         </div>
 
-        <!-- PIE DE PÁGINA OFICIAL -->
-        <footer class="w-full text-center py-2 text-[10px] text-emerald-100 font-semibold tracking-wide drop-shadow-md">
-            DFPFantasy CorVe, C.A Copyright ©2026 DFPfantasy Market VE. Todos los derechos reservados.
+        <!-- FRANJA INFERIOR ESTILIZADA EN PANTALLA DE INICIO -->
+        <footer class="w-full footer-glass-banner text-center py-3 px-4 rounded-2xl max-w-lg mb-2 shadow-lg">
+            <p class="text-[10px] text-emerald-100 font-medium tracking-wide">
+                <strong class="text-emerald-300 font-black">DFPfantasy CorVe, C.A</strong> Copyright ©2026 <strong class="text-emerald-300 font-black">DFPfantasy Market VE</strong>. Todos los derechos reservados.
+            </p>
         </footer>
     </div>
 
@@ -623,13 +641,13 @@
             bodyEl.classList.remove('hidden-at-start');
             bodyEl.classList.add('visible-app');
 
-            showTransitionScreen("¡Bienvenido a tu supermercado, DFPfantasy!", 2000);
+            showTransitionScreen("¡Bienvenido a DFPfantasy Market!", 2000);
             setTimeout(() => { showDashboardMenu(); }, 2000);
         }
 
         function showTransitionScreen(msg, duration = 2000) {
             const screen = document.getElementById('transition-screen');
-            document.getElementById('transition-msg').innerText = msg;
+            document.getElementById('transition-msg').innerHTML = msg;
             screen.classList.remove('hidden');
             setTimeout(() => {
                 screen.classList.add('hidden');
@@ -854,7 +872,7 @@
 
         function logoutUser() {
             if (!confirm("¿Deseas cerrar sesión?")) return;
-            showTransitionScreen("Cerrando sesión... ¡Gracias por tu compra!", 2000);
+            showTransitionScreen("Cerrando sesión en <strong class='text-emerald-300 font-extrabold'>DFPfantasy</strong>...", 2000);
             setTimeout(() => {
                 localStorage.removeItem('komprafacil_current_user');
                 currentUser = null;

@@ -358,7 +358,6 @@
         let fiscalData = null;
         let purchaseHistory = [];
 
-        // Variables temporales para el proceso de registro
         let tempAuthEmail = '';
         let tempAuthPin = '';
         let generatedVerificationCode = '';
@@ -401,7 +400,6 @@
             const storedPin = localStorage.getItem(`komprafacil_pin${userKey}`);
 
             if (storedPin) {
-                // Ya existe el usuario, verificar PIN
                 if (storedPin === pin) {
                     currentUser = email;
                     localStorage.setItem('komprafacil_current_user', currentUser);
@@ -410,7 +408,6 @@
                     alert("PIN de seguridad incorrecto.");
                 }
             } else {
-                // Usuario nuevo, pasar a registrar datos fiscales
                 tempAuthEmail = email;
                 tempAuthPin = pin;
                 document.getElementById('auth-step-1').classList.add('hidden');
@@ -435,10 +432,8 @@
                 clientPhone: phoneOp + "-" + phoneNum
             };
 
-            // Generar código de 4 dígitos para verificación EmailJS
             generatedVerificationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-            // Enviar correo de verificación con EmailJS
             emailjs.send("service_s3hefmh", "template_y21oljk", {
                 to_name: name,
                 to_email: tempAuthEmail,
@@ -923,9 +918,9 @@
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 itemsHtml += `<tr>
-                    <td style="padding: 4px 0; border-bottom: 1px dashed #eee;"><strong>${item.name}</strong><br><span style="font-size:10px;">$${item.price.toFixed(2)}</span></td>
-                    <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #eee;">${qtyLabel}</td>
-                    <td style="text-align: right; padding: 4px 0; border-bottom: 1px dashed #eee;">$${sub.toFixed(2)}</td>
+                    <td style="padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${item.name}<br><span style="font-size:10px; font-weight:normal;">$${item.price.toFixed(2)}</span></td>
+                    <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${qtyLabel}</td>
+                    <td style="text-align: right; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">$${sub.toFixed(2)}</td>
                 </tr>`;
             });
 
@@ -934,7 +929,6 @@
             const totalBs = grandTotalUsd * exchangeRate;
             const facNumber = document.getElementById('ticket-number-input').value.trim() || 'S/N';
 
-            // Parámetros para EmailJS (Plantilla Factura)
             const templateParams = {
                 to_email: currentUser,
                 store_name: fiscalData.storeName,
@@ -953,7 +947,6 @@
                 total_usd: `$${grandTotalUsd.toFixed(2)}`
             };
 
-            // Enviar factura por EmailJS
             emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
                 .then(() => {
                     alert("¡Compra guardada y factura enviada con éxito a tu correo!");

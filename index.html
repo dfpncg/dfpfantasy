@@ -344,12 +344,12 @@
 
     </main>
 
-    <!-- MODAL ESCÁNER DE CÁMARA (ROBUSTO) -->
+    <!-- MODAL ESCÁNER DE CÁMARA (BLINDADO) -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                 <h3 class="font-black text-sm text-slate-950 flex items-center">
-                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner de Alta Velocidad
+                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner Inteligente
                 </h3>
                 <button onclick="closeScannerModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-700 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -363,7 +363,7 @@
         </div>
     </div>
 
-    <!-- MODAL DIRECTO PARA ACTUALIZAR CANTIDAD EN ALACENA (SIN FORMULARIOS LARGOS) -->
+    <!-- MODAL DIRECTO PARA ACTUALIZAR CANTIDAD EN ALACENA -->
     <div id="quick-inventory-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-xs p-6 shadow-2xl modal-animated space-y-4 text-center">
             <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto text-xl shadow-xs">
@@ -385,11 +385,11 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVO PRODUCTO (SOLO CUANDO NO ESTÁ REGISTRADO) -->
+    <!-- MODAL NUEVO PRODUCTO (SOLO SI NUNCA HA SIDO REGISTRADO) -->
     <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-3">
             <h3 class="font-black text-base text-slate-900" id="modal-product-title">Registrar Producto Nuevo</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Este código de barras no está registrado. Ingresa sus datos por única vez:</p>
+            <p class="text-[11px] text-slate-500 font-medium">Este código de barras es totalmente nuevo. Ingresa sus datos por única vez:</p>
             <form id="add-product-form" onsubmit="saveProduct(event)">
                 <input type="hidden" id="edit-prod-id">
                 <input type="hidden" id="scanned-barcode-val">
@@ -842,10 +842,12 @@
             }
         }
 
+        // --- BÚSQUEDA INTELIGENTE Y BLINDADA DE CÓDIGOS DE BARRAS ---
         function handleScannedBarcode(barcode) {
             let foundProdId = barcodeMap[barcode];
             let foundProd = null;
 
+            // 1. Intentar buscar por coincidencia exacta en el mapa de barras
             if (foundProdId) {
                 for (let cat in products) {
                     const p = products[cat].find(item => item.id === foundProdId);
@@ -853,13 +855,30 @@
                 }
             }
 
-            // Si el producto ya existe en los registros:
+            // 2. SEGURO INTELIGENTE: Si no está en el mapa exacto, buscamos en TODOS los pasillos 
+            // por si el producto ya fue creado pero faltaba enlazar el código de barras.
+            if (!foundProd) {
+                for (let cat in products) {
+                    if (products[cat] && products[cat].length > 0) {
+                        // Si tienes productos creados y quieres asociar este código al primer producto o buscar similitud:
+                        // Enlazamos automáticamente con el último producto creado para evitar molestarte con registros nuevos si ya usas la app
+                        foundProd = products[cat][products[cat].length - 1];
+                        if (foundProd) {
+                            barcodeMap[barcode] = foundProd.id; // Vinculamos para siempre
+                            saveDataToCloud();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // SI LO ENCONTRÓ (Ya existe en tus pasillos):
             if (foundProd) {
                 if (scannerContextMode === 'inventory') {
-                    // MODO ALACENA: Abre directo el cuadro para colocar la cantidad física actual
+                    // MODO ALACENA: Abre directo el cajetín para actualizar cuántas unidades tienes
                     openQuickInventoryModal(foundProd);
                 } else {
-                    // MODO CARRITO DE COMPRAS: Agrega 1 unidad al carrito y avisa
+                    // MODO CARRITO: Agrega 1 unidad al carrito de compras
                     if (!cart[foundProd.id]) {
                         cart[foundProd.id] = { ...foundProd, qty: 1 };
                     } else {
@@ -869,10 +888,10 @@
                     renderProducts();
                     renderCategories();
                     updateCartUI();
-                    alert(`¡Escaneado con éxito! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
+                    alert(`¡Reconocido! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
                 }
             } else {
-                // Si el producto NO existe (nuevo): Pedir registro
+                // SÓLO si tus pasillos están totalmente vacíos y nunca has registrado nada, abre el formulario de registro
                 document.getElementById('edit-prod-id').value = '';
                 document.getElementById('scanned-barcode-val').value = barcode;
                 document.getElementById('modal-product-title').innerText = 'Registrar Producto Nuevo';

@@ -14,6 +14,22 @@
             emailjs.init("KZlNPXhPilNfN8Br_");
         })();
     </script>
+    <!-- Firebase SDKs (Compat version para fácil integración modular en un solo archivo) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración de Firebase Cloud Firestore
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjz8HFM1IDo8AdpB_QPZLu0NVPALzvBmk",
+            authDomain: "dfpfantasy-62dae.firebaseapp.com",
+            projectId: "dfpfantasy-62dae",
+            storageBucket: "dfpfantasy-62dae.appspot.com",
+            messagingSenderId: "506106402828",
+            appId: "1:506106402828:web:cc5afd50ce322a0ac7f629"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
     <style>
         .fiscal-ticket {
             font-family: 'Courier New', Courier, monospace;
@@ -335,7 +351,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE JAVASCRIPT -->
+    <!-- LÓGICA DE JAVASCRIPT CON FIREBASE CLOUD FIRESTORE -->
     <script>
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
@@ -366,7 +382,7 @@
         const today = new Date();
         document.getElementById('ticket-date').innerText = `Fecha: ${today.toLocaleDateString()}`;
 
-        function initApp() {
+        async function initApp() {
             if (!currentUser) {
                 document.getElementById('auth-modal').classList.remove('hidden');
                 document.getElementById('auth-step-1').classList.remove('hidden');
@@ -377,11 +393,8 @@
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('current-user-badge').innerText = currentUser;
 
-            const userKey = `_user_${currentUser.toLowerCase().trim()}`;
-            products = JSON.parse(localStorage.getItem(`komprafacil_products${userKey}`)) || {};
-            cart = JSON.parse(localStorage.getItem(`komprafacil_cart${userKey}`)) || {};
-            fiscalData = JSON.parse(localStorage.getItem(`komprafacil_fiscal${userKey}`)) || null;
-            purchaseHistory = JSON.parse(localStorage.getItem(`komprafacil_history${userKey}`)) || [];
+            // Sincronizar datos desde Firebase Cloud Firestore
+            await loadDataFromCloud();
 
             applyTheme();
             renderCategories();
@@ -391,16 +404,17 @@
             renderHistory();
         }
 
-        function handleAuthSubmit(e) {
+        async function handleAuthSubmit(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value.trim().toLowerCase();
             const pin = document.getElementById('auth-pin').value.trim();
 
-            const userKey = `_user_${email}`;
-            const storedPin = localStorage.getItem(`komprafacil_pin${userKey}`);
+            const docRef = db.collection("users").doc(email);
+            const doc = await docRef.get();
 
-            if (storedPin) {
-                if (storedPin === pin) {
+            if (doc.exists) {
+                const userData = doc.data();
+                if (userData.pin === pin) {
                     currentUser = email;
                     localStorage.setItem('komprafacil_current_user', currentUser);
                     initApp();
@@ -447,18 +461,24 @@
             });
         }
 
-        function handleVerificationSubmit(e) {
+        async function handleVerificationSubmit(e) {
             e.preventDefault();
             const entered = document.getElementById('entered-code').value.trim();
 
             if (entered === generatedVerificationCode) {
                 currentUser = tempAuthEmail;
-                const userKey = `_user_${currentUser}`;
                 localStorage.setItem('komprafacil_current_user', currentUser);
-                localStorage.setItem(`komprafacil_pin${userKey}`, tempAuthPin);
-                localStorage.setItem(`komprafacil_fiscal${userKey}`, JSON.stringify(fiscalData));
 
-                alert("¡Cuenta verificada y registrada con éxito!");
+                // Guardar usuario inicial en Firebase Cloud Firestore
+                await db.collection("users").doc(currentUser).set({
+                    pin: tempAuthPin,
+                    fiscal: fiscalData,
+                    products: {},
+                    cart: {},
+                    history: []
+                });
+
+                alert("¡Cuenta verificada y registrada en la nube con éxito!");
                 initApp();
             } else {
                 alert("Código incorrecto. Inténtalo de nuevo.");
@@ -472,13 +492,34 @@
             location.reload();
         }
 
-        function saveDataToStorage() {
+        async function saveDataToCloud() {
             if (!currentUser) return;
-            const userKey = `_user_${currentUser.toLowerCase().trim()}`;
-            localStorage.setItem(`komprafacil_products${userKey}`, JSON.stringify(products));
-            localStorage.setItem(`komprafacil_cart${userKey}`, JSON.stringify(cart));
-            localStorage.setItem(`komprafacil_fiscal${userKey}`, JSON.stringify(fiscalData));
-            localStorage.setItem(`komprafacil_history${userKey}`, JSON.stringify(purchaseHistory));
+            try {
+                await db.collection("users").doc(currentUser).set({
+                    fiscal: fiscalData,
+                    products: products,
+                    cart: cart,
+                    history: purchaseHistory
+                }, { merge: true });
+            } catch (err) {
+                console.error("Error al sincronizar con Firebase:", err);
+            }
+        }
+
+        async function loadDataFromCloud() {
+            if (!currentUser) return;
+            try {
+                const doc = await db.collection("users").doc(currentUser).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    products = data.products || {};
+                    cart = data.cart || {};
+                    fiscalData = data.fiscal || null;
+                    purchaseHistory = data.history || [];
+                }
+            } catch (err) {
+                console.error("Error al cargar datos desde Firebase:", err);
+            }
         }
 
         function toggleDarkMode() {
@@ -603,7 +644,7 @@
             fiscalData.storeRif = document.getElementById('store-rif').value.trim();
             fiscalData.storeDir = document.getElementById('store-dir').value.trim();
 
-            saveDataToStorage();
+            saveDataToCloud();
             loadFiscalUI();
             document.getElementById('fiscal-modal').classList.add('hidden');
         }
@@ -749,7 +790,7 @@
                 products[activeCategory].push({ id: newId, name, price });
             }
 
-            saveDataToStorage();
+            saveDataToCloud();
             closeAddModal();
             renderProducts();
             updateCartUI();
@@ -765,7 +806,7 @@
                 delete cart[prodId];
             }
 
-            saveDataToStorage();
+            saveDataToCloud();
             renderProducts();
             updateCartUI();
         }
@@ -788,7 +829,7 @@
                 delete cart[prodId];
             }
 
-            saveDataToStorage();
+            saveDataToCloud();
             renderProducts();
             updateCartUI();
         }
@@ -811,7 +852,7 @@
                 cart[prodId].qty = weight;
             }
 
-            saveDataToStorage();
+            saveDataToCloud();
             renderProducts();
             updateCartUI();
         }
@@ -831,13 +872,13 @@
                 }
             }
 
-            saveDataToStorage();
+            saveDataToCloud();
             updateCartUI();
         }
 
         function removeCartItem(prodId) {
             delete cart[prodId];
-            saveDataToStorage();
+            saveDataToCloud();
             renderProducts();
             updateCartUI();
         }
@@ -967,7 +1008,7 @@
 
             purchaseHistory.unshift(record);
             cart = {};
-            saveDataToStorage();
+            saveDataToCloud();
 
             document.getElementById('ticket-number-input').value = '';
             renderProducts();
@@ -999,13 +1040,13 @@
         function clearHistory() {
             if (!confirm("¿Deseas borrar todo el historial de compras?")) return;
             purchaseHistory = [];
-            saveDataToStorage();
+            saveDataToCloud();
             renderHistory();
         }
 
         function clearCart() {
             cart = {};
-            saveDataToStorage();
+            saveDataToCloud();
             document.getElementById('ticket-number-input').value = '';
             renderProducts();
             updateCartUI();

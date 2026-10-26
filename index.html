@@ -7,7 +7,6 @@
     <!-- Tailwind CSS para un diseño moderno y limpio estilo app móvil -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fuente tipo máquina de escribir o simulación de ticket fiscal -->
     <style>
         .fiscal-ticket {
             font-family: 'Courier New', Courier, monospace;
@@ -20,7 +19,7 @@
     <header class="bg-emerald-600 text-white p-4 sticky top-0 z-50 shadow-md">
         <div class="max-w-md mx-auto flex justify-between items-center mb-2">
             <div>
-                <h1 class="text-base font-bold tracking-wide">DFPFantasy Market</h1>
+                <h1 class="text-base font-bold tracking-wide" id="header-market-name">DFPFantasy Market</h1>
                 <p class="text-[11px] text-emerald-100" id="item-count">0 ítems en ticket fiscal</p>
             </div>
             <div class="text-right">
@@ -38,6 +37,23 @@
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto p-4 space-y-4">
+
+        <!-- SECCIÓN 0: CONFIGURACIÓN FISCAL (COMERCIO Y CLIENTE) -->
+        <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-100">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-slate-700 text-sm flex items-center">
+                    <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i> Datos Fiscales (SENIAT)
+                </h3>
+                <button onclick="openFiscalModal()" class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition">
+                    <i class="fa-solid fa-gear mr-1"></i> Configurar / Cambiar
+                </button>
+            </div>
+            <div class="text-xs text-slate-500 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                <p><strong class="text-slate-700">Comercio:</strong> <span id="display-comercio">No configurado</span></p>
+                <p><strong class="text-slate-700">RIF Comercio:</strong> <span id="display-rif-comercio">--</span></p>
+                <p><strong class="text-slate-700">Cliente / Comprador:</strong> <span id="display-cliente">No configurado</span></p>
+            </div>
+        </section>
 
         <!-- SECCIÓN 1: SELECTOR DE PASILLOS -->
         <section>
@@ -76,11 +92,21 @@
             
             <!-- ENCABEZADO FISCAL ESTILO TICKET -->
             <div class="bg-slate-50 rounded-xl p-3 mb-3 border border-dashed border-slate-200 text-center fiscal-ticket text-[11px] text-slate-600 space-y-1">
-                <p class="font-bold text-slate-800 text-xs">DFPFANTASY MARKET, C.A.</p>
-                <p>RIF: J-40123456-7 | Ciudad Bolívar, Edo. Bolívar</p>
-                <div class="flex justify-between px-2 pt-1 border-t border-slate-200 text-[10px] text-slate-500">
+                <p class="font-bold text-slate-800 text-xs" id="ticket-comercio-name">COMERCIO NO CONFIGURADO</p>
+                <p id="ticket-comercio-rif">RIF: J-00000000-0</p>
+                <p class="text-[10px] text-slate-500" id="ticket-comercio-dir">Ciudad Bolívar, Venezuela</p>
+                
+                <div class="pt-1 border-t border-slate-200 text-left space-y-0.5 text-[10px]">
+                    <p><strong class="text-slate-700">CLIENTE:</strong> <span id="ticket-cliente-name">---</span></p>
+                    <p><strong class="text-slate-700">CÉDULA/RIF:</strong> <span id="ticket-cliente-doc">---</span></p>
+                </div>
+
+                <div class="flex justify-between px-1 pt-1 border-t border-slate-200 text-[10px] text-slate-500">
                     <span id="ticket-date">Fecha: --/--/----</span>
-                    <span id="ticket-number">Nro: #000001</span>
+                    <div class="flex items-center space-x-1">
+                        <span>Nro Fac:</span>
+                        <input type="text" id="ticket-number-input" placeholder="Ej: 0012345" class="w-20 bg-white border border-slate-300 rounded px-1 text-[10px] text-center font-bold text-slate-800 focus:outline-none focus:border-emerald-500" title="Colocar número de factura fiscal al finalizar">
+                    </div>
                 </div>
             </div>
 
@@ -111,11 +137,59 @@
                     <span>TOTAL GENERAL BS:</span>
                     <span id="fiscal-total-bs" class="text-emerald-600">Bs. 0.00</span>
                 </div>
-                <p class="text-[9px] text-center text-slate-400 pt-2">*** DOCUMENTO EMITIDO CON FINES DE CONTROL INTERNO ***</p>
+                <p class="text-[9px] text-center text-slate-400 pt-2">*** INTRODUZCA EL NÚMERO DE FACTURA FISCAL AL EMITIRSE ***</p>
             </div>
         </section>
 
     </main>
+
+    <!-- MODAL DE CONFIGURACIÓN FISCAL (DATOS COMERCIO Y CLIENTE) -->
+    <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-lg mb-3 text-slate-800">Configuración Fiscal SENIAT</h3>
+            <form id="fiscal-form" onsubmit="saveFiscalData(event)">
+                
+                <!-- Datos del Comercio -->
+                <div class="border-b border-slate-100 pb-3 mb-3">
+                    <h4 class="text-xs font-bold text-emerald-600 uppercase mb-2">1. Datos del Comercio / Supermercado</h4>
+                    <div class="mb-2">
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nombre del Comercio</label>
+                        <input type="text" id="store-name" required placeholder="Ej. Supermercado El Diamante" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="mb-2">
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">RIF del Comercio</label>
+                        <input type="text" id="store-rif" required placeholder="Ej. J-12345678-9" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="mb-1">
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Dirección / Ciudad</label>
+                        <input type="text" id="store-dir" required placeholder="Ej. Av. Principal, Ciudad Bolívar" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <!-- Datos del Comprador -->
+                <div class="mb-4">
+                    <h4 class="text-xs font-bold text-emerald-600 uppercase mb-2">2. Datos del Comprador (Cliente)</h4>
+                    <div class="mb-2">
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nombre / Razón Social</label>
+                        <input type="text" id="client-name" required placeholder="Ej. Dhermes Pérez" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="mb-2">
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Cédula o RIF</label>
+                        <input type="text" id="client-doc" required placeholder="Ej. V-20123456" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="mb-1">
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Teléfono de Contacto</label>
+                        <input type="text" id="client-phone" required placeholder="Ej. 0414-1234567" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-semibold">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-semibold">Guardar Datos</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- MODAL PARA AGREGAR O EDITAR PRODUCTO EN EL PASILLO -->
     <div id="product-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
@@ -156,17 +230,72 @@
 
         let products = JSON.parse(localStorage.getItem('komprafacil_products')) || {};
         let cart = JSON.parse(localStorage.getItem('komprafacil_cart')) || {};
+        let fiscalData = JSON.parse(localStorage.getItem('komprafacil_fiscal')) || null;
 
         document.getElementById('exchange-rate').value = exchangeRate;
 
-        // Mostrar fecha actual en el formato del ticket
+        // Mostrar fecha actual
         const today = new Date();
         document.getElementById('ticket-date').innerText = `Fecha: ${today.toLocaleDateString()}`;
 
         function initApp() {
             renderCategories();
             selectCategory(activeCategory);
+            loadFiscalUI();
             updateCartUI();
+        }
+
+        function loadFiscalUI() {
+            if (!fiscalData) {
+                // Si no hay datos, abrir el modal obligatoriamente
+                openFiscalModal();
+                return;
+            }
+
+            document.getElementById('display-comercio').innerText = fiscalData.storeName;
+            document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif;
+            document.getElementById('display-cliente').innerText = `${fiscalData.clientName} (${fiscalData.clientDoc})`;
+
+            document.getElementById('header-market-name').innerText = fiscalData.storeName;
+            document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
+            document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
+            document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
+
+            document.getElementById('ticket-cliente-name').innerText = fiscalData.clientName;
+            document.getElementById('ticket-cliente-doc').innerText = fiscalData.clientDoc;
+        }
+
+        function openFiscalModal() {
+            if (fiscalData) {
+                document.getElementById('store-name').value = fiscalData.storeName;
+                document.getElementById('store-rif').value = fiscalData.storeRif;
+                document.getElementById('store-dir').value = fiscalData.storeDir;
+                document.getElementById('client-name').value = fiscalData.clientName;
+                document.getElementById('client-doc').value = fiscalData.clientDoc;
+                document.getElementById('client-phone').value = fiscalData.clientPhone;
+            }
+            document.getElementById('fiscal-modal').classList.remove('hidden');
+        }
+
+        function closeFiscalModal() {
+            if (!fiscalData) return; // No dejar cerrar si no hay datos
+            document.getElementById('fiscal-modal').classList.add('hidden');
+        }
+
+        function saveFiscalData(e) {
+            e.preventDefault();
+            fiscalData = {
+                storeName: document.getElementById('store-name').value.trim(),
+                storeRif: document.getElementById('store-rif').value.trim(),
+                storeDir: document.getElementById('store-dir').value.trim(),
+                clientName: document.getElementById('client-name').value.trim(),
+                clientDoc: document.getElementById('client-doc').value.trim(),
+                clientPhone: document.getElementById('client-phone').value.trim()
+            };
+
+            localStorage.setItem('komprafacil_fiscal', JSON.stringify(fiscalData));
+            loadFiscalUI();
+            document.getElementById('fiscal-modal').classList.add('hidden');
         }
 
         function updateExchangeRate(val) {
@@ -456,7 +585,6 @@
             document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
             document.getElementById('grand-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             
-            // Actualizar bloques del ticket fiscal inferior
             document.getElementById('fiscal-sub-usd').innerText = `$${grandTotal.toFixed(2)}`;
             document.getElementById('fiscal-tasa').innerText = `Bs. ${exchangeRate.toFixed(2)}`;
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

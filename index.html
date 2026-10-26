@@ -96,7 +96,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 3: COMPROBANTE RECIBO CON LETRAS TOTALMENTE NEGRAS Y LEGIBLES -->
+        <!-- SECCIÓN 3: COMPROBANTE RECIBO CON MÁXIMA LEGIBILIDAD Y BOLÍVARES POR ÍTEM -->
         <section class="bg-white rounded-2xl shadow-md p-4 border border-slate-300 transition-colors duration-200" id="ticket-card">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
                 <h3 class="font-black text-slate-900 text-base flex items-center" id="ticket-title-text">
@@ -132,13 +132,13 @@
 
             <!-- Cabecera de columnas de la factura -->
             <div class="grid grid-cols-12 text-[10px] font-black text-slate-900 uppercase pb-2 border-b border-slate-300 px-1">
-                <span class="col-span-5">Descripción</span>
+                <span class="col-span-4">Descripción</span>
                 <span class="col-span-3 text-center">Cant/Peso</span>
-                <span class="col-span-3 text-right">Total $</span>
+                <span class="col-span-4 text-right">Total ($ / Bs)</span>
                 <span class="col-span-1"></span>
             </div>
 
-            <!-- Listado detallado fiscal con alto contraste (Negrita fuerte) -->
+            <!-- Listado detallado fiscal con alto contraste (Negrita fuerte obligatoria) -->
             <div class="divide-y divide-slate-200 max-h-52 overflow-y-auto px-1" id="cart-list">
                 <p class="text-sm text-slate-600 text-center py-4 font-bold">Sin ítems registrados en el recibo.</p>
             </div>
@@ -680,23 +680,25 @@
 
             cartList.innerHTML = cartKeys.map(key => {
                 const item = cart[key];
-                const subtotal = item.price * item.qty;
-                baseTotal += subtotal;
+                const subtotalUsd = item.price * item.qty;
+                const subtotalBs = subtotalUsd * exchangeRate;
+                baseTotal += subtotalUsd;
 
                 let isWeightItem = key.startsWith('hortalizas');
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 return `
                     <div class="py-2.5 grid grid-cols-12 items-center text-[11px] fiscal-ticket font-black text-slate-950 dark:text-white border-b border-slate-200 dark:border-slate-700">
-                        <div class="col-span-5 pr-1">
+                        <div class="col-span-4 pr-1">
                             <span class="text-slate-950 dark:text-white font-black text-xs truncate block">${item.name}</span>
-                            <span class="text-[10px] text-slate-800 dark:text-slate-200 font-extrabold">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
+                            <span class="text-[9px] text-slate-800 dark:text-slate-200 font-extrabold">$${item.price.toFixed(2)} ${isWeightItem ? '/kg' : 'c/u'}</span>
                         </div>
                         <div class="col-span-3 text-center font-black text-slate-950 dark:text-white text-xs">
                             ${qtyLabel}
                         </div>
-                        <div class="col-span-3 text-right font-black text-slate-950 dark:text-white text-xs">
-                            $${subtotal.toFixed(2)}
+                        <div class="col-span-4 text-right">
+                            <span class="font-black text-slate-950 dark:text-white text-xs block">$${subtotalUsd.toFixed(2)}</span>
+                            <span class="font-black text-emerald-700 dark:text-emerald-400 text-[10px] block">Bs. ${subtotalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                         <div class="col-span-1 text-right">
                             <button onclick="removeCartItem('${item.id}')" class="text-slate-700 hover:text-rose-600 p-1 font-bold">

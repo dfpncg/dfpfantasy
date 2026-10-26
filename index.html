@@ -344,8 +344,8 @@
 
     </main>
 
-    <!-- MODAL ESCÁNER DE CÁMARA PRO (OPTIMIZADO PARA ENFOQUE Y VELOCIDAD) -->
-    <div id="scanner-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
+    <!-- MODAL ESCÁNER DE CÁMARA (CORREGIDO PANTALLA NEGRA) -->
+    <div id="scanner-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                 <h3 class="font-black text-sm text-slate-950 flex items-center">
@@ -353,9 +353,10 @@
                 </h3>
                 <button onclick="closeScannerModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-700 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-500 font-medium">Mantén el teléfono a una distancia natural de 15 a 20 cm del código.</p>
+            <p class="text-[11px] text-slate-500 font-medium">Apunta la cámara trasera al código de barras.</p>
             
-            <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-950 min-h-[240px]"></div>
+            <!-- Contenedor limpio con dimensiones forzadas para evitar pantallas negras -->
+            <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-900 min-h-[260px] relative flex items-center justify-center"></div>
 
             <button onclick="closeScannerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black shadow-md">
                 Cerrar Escáner
@@ -758,56 +759,74 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE ESCÁNER DE CÁMARA PRO (OPTIMIZADO CON ENFOQUE AUTOMÁTICO CONTINUO) ---
+        // --- GESTIÓN DE ESCÁNER ROBUSTA (CORRECCIÓN PANTALLA NEGRA) ---
         function openScannerModal(mode = 'cart') {
             scannerContextMode = mode;
             document.getElementById('scanner-modal').classList.remove('hidden');
+            
+            // Retardo seguro para garantizar que el DOM del modal esté completamente renderizado antes de iniciar el stream
             setTimeout(() => {
                 startCameraScanner();
-            }, 300);
+            }, 400);
         }
 
         function closeScannerModal() {
             if (html5QrCode) {
                 html5QrCode.stop().then(() => {
                     html5QrCode.clear();
-                }).catch(err => console.error(err));
+                    html5QrCode = null;
+                }).catch(err => {
+                    console.error("Error al detener cámara:", err);
+                    html5QrCode = null;
+                });
+            } else {
+                // Limpieza de respaldo del contenedor HTML
+                const readerEl = document.getElementById('reader');
+                if (readerEl) readerEl.innerHTML = '';
             }
             document.getElementById('scanner-modal').classList.add('hidden');
         }
 
         function startCameraScanner() {
+            const readerEl = document.getElementById('reader');
+            if (!readerEl) return;
+            
+            // Limpiar contenedor previo para evitar conflictos de canvas negros
+            readerEl.innerHTML = '';
+
             const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                 closeScannerModal();
                 handleScannedBarcode(decodedText);
             };
 
-            // Parámetros avanzados optimizados para enfoque continuo y alta velocidad en lectura de barras
             const config = { 
-                fps: 20, 
-                qrbox: { width: 280, height: 160 },
-                aspectRatio: 1.0
+                fps: 15, 
+                qrbox: { width: 260, height: 160 }
             };
 
-            html5QrCode = new Html5Qrcode("reader");
-            
-            // Forzar cámara trasera con restricciones avanzadas de enfoque y nitidez
-            const constraints = {
-                facingMode: "environment",
-                focusMode: "continuous",
-                advanced: [{ focusMode: "continuous" }]
-            };
-
-            html5QrCode.start(constraints, config, qrCodeSuccessCallback)
-                .catch(err => {
-                    console.warn("Restricciones avanzadas no soportadas, iniciando estándar...", err);
-                    // Respaldo automático si el navegador no acepta el parámetro avanzado de enfoque
-                    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-                        .catch(err2 => {
-                            console.error("Error al encender cámara:", err2);
-                            alert("No se pudo encender la cámara. Asegúrate de dar permisos en tu navegador.");
-                        });
+            try {
+                html5QrCode = new Html5Qrcode("reader");
+                
+                // Forzar exclusivamente la cámara trasera ('environment') para evitar pantallas negras en dispositivos móviles
+                html5QrCode.start(
+                    { facingMode: "environment" }, 
+                    config, 
+                    qrCodeSuccessCallback
+                ).catch(err => {
+                    console.warn("Fallo al iniciar cámara trasera, intentando con selector genérico...", err);
+                    // Segundo intento de respaldo con ID de cámara por defecto
+                    html5QrCode.start(
+                        { facingMode: "user" }, 
+                        config, 
+                        qrCodeSuccessCallback
+                    ).catch(err2 => {
+                        console.error("Error crítico de cámara:", err2);
+                        readerEl.innerHTML = `<p class="text-xs text-rose-400 p-6 font-bold">No se pudo acceder a la cámara. Revisa los permisos de tu navegador.</p>`;
+                    });
                 });
+            } catch (e) {
+                console.error("Excepción al inicializar Html5Qrcode:", e);
+            }
         }
 
         function handleScannedBarcode(barcode) {
@@ -1511,7 +1530,7 @@
 
             emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
                 .then(() => {
-                    alert("¡Compra guardada, inventario de alacena actualizado y factura enviada con éxito à tu correo!");
+                    alert("¡Compra guardada, inventario de alacena actualizado y factura enviada con éxito a tu correo!");
                 }, (err) => {
                     alert("Compra guardada y sumada a alacena, pero ocurrió un error al enviar el correo.");
                     console.error(err);
@@ -1554,7 +1573,7 @@
                     </div>
                     <div class="text-right">
                         <span class="font-black text-emerald-700 text-sm block">$${rec.totalUsd.toFixed(2)}</span>
-                        <span class="text-[10px] font-extrabold text-slate-700 block">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <span class="text-[10px] text-extrabold text-slate-700 block">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                 </div>
             `).join('');

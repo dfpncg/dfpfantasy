@@ -349,11 +349,11 @@
         <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl modal-animated space-y-3 text-center">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                 <h3 class="font-black text-sm text-slate-950 flex items-center">
-                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner Inteligente
+                    <i class="fa-solid fa-barcode text-emerald-600 mr-2"></i> Escáner Estricto DFPfantasy
                 </h3>
                 <button onclick="closeScannerModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-700 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-500 font-medium">Apunta la cámara trasera al código de barras.</p>
+            <p class="text-[11px] text-slate-500 font-medium">Apunta la cámara al código de barras del producto.</p>
             
             <div id="reader" class="w-full overflow-hidden rounded-2xl border border-emerald-200 bg-slate-900 min-h-[260px] relative flex items-center justify-center"></div>
 
@@ -385,11 +385,11 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVO PRODUCTO (SÓLO SI EL CÓDIGO ES 100% NUEVO) -->
+    <!-- MODAL NUEVO PRODUCTO (SÓLO SI EL CÓDIGO ES 100% NUEVO Y NO ESTÁ REGISTRADO) -->
     <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-3">
             <h3 class="font-black text-base text-slate-900" id="modal-product-title">Registrar Producto Nuevo</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Este código de barras no existe en tus registros. Ingresa sus datos por única vez:</p>
+            <p class="text-[11px] text-slate-500 font-medium">Este código de barras no está registrado. Ingresa sus datos para guardarlo de manera orgánica:</p>
             <form id="add-product-form" onsubmit="saveProduct(event)">
                 <input type="hidden" id="edit-prod-id">
                 <input type="hidden" id="scanned-barcode-val">
@@ -673,7 +673,7 @@
         let products = {};
         let cart = {};
         let inventory = {}; 
-        let barcodeMap = {}; 
+        let barcodeMap = {}; // Diccionario estricto: codigoBarras -> productoId
         let fiscalData = null;
         let savedStores = [];
         let purchaseHistory = [];
@@ -842,12 +842,13 @@
             }
         }
 
-        // --- LÓGICA DE ESCANEO PRECISA (SIN ADIVINAR PRODUCTOS) ---
+        // --- REGLA ESTRICTA: ESCANEO Y REGISTRO ORGÁNICO ---
         function handleScannedBarcode(barcode) {
-            let foundProdId = barcodeMap[barcode];
+            let cleanBarcode = barcode.trim();
+            let foundProdId = barcodeMap[cleanBarcode];
             let foundProd = null;
 
-            // Buscamos estrictamente si el código de barras exacto pertenece a un producto
+            // Buscamos estrictamente por el código exacto en el diccionario
             if (foundProdId) {
                 for (let cat in products) {
                     const p = products[cat].find(item => item.id === foundProdId);
@@ -855,13 +856,13 @@
                 }
             }
 
-            // SI EL PRODUCTO EXISTE Y SU CÓDIGO ESTÁ REGISTRADO:
+            // CASO 1: EL PRODUCTO EXISTE Y SU CÓDIGO ESTÁ REGISTRADO
             if (foundProd) {
                 if (scannerContextMode === 'inventory') {
-                    // MODO ALACENA: Abre directo el cuadro para colocar la cantidad física actual
+                    // Abre directo el cuadro para actualizar la cantidad en alacena
                     openQuickInventoryModal(foundProd);
                 } else {
-                    // MODO CARRITO: Agrega 1 unidad al carrito de compras
+                    // Suma al carrito de compras
                     if (!cart[foundProd.id]) {
                         cart[foundProd.id] = { ...foundProd, qty: 1 };
                     } else {
@@ -874,9 +875,9 @@
                     alert(`¡Reconocido! Se agregó 1 unidad de "${foundProd.name}" al carrito.`);
                 }
             } else {
-                // SÓLO SI EL CÓDIGO ES TOTALMENTE NUEVO: Abre el formulario para registrarlo por única vez
+                // CASO 2: EL CÓDIGO NO EXISTE. VA DIRECTO Y ORGÁNICAMENTE AL REGISTRO NUEVO.
                 document.getElementById('edit-prod-id').value = '';
-                document.getElementById('scanned-barcode-val').value = barcode;
+                document.getElementById('scanned-barcode-val').value = cleanBarcode;
                 document.getElementById('modal-product-title').innerText = 'Registrar Producto Nuevo';
                 document.getElementById('new-prod-name').value = '';
                 document.getElementById('new-prod-price').value = '';
@@ -1263,6 +1264,15 @@
                 const currentPrice = inCart ? inCart.price : prod.price;
                 const inHouseQty = inventory[prod.id] || 0;
 
+                // Buscamos los 2 últimos dígitos del código de barras asociado a este producto (si existe)
+                let barcodeSuffix = '--';
+                for (let code in barcodeMap) {
+                    if (barcodeMap[code] === prod.id) {
+                        barcodeSuffix = code.slice(-2);
+                        break;
+                    }
+                }
+
                 let rightControlHTML = '';
                 if (currentCat.isWeight) {
                     rightControlHTML = `
@@ -1286,6 +1296,7 @@
                         <div class="flex-1 pr-2">
                             <div class="flex items-center space-x-2">
                                 <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">${prod.name}</h4>
+                                <span class="text-[9px] font-black bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-600" title="Últimos 2 dígitos del código de barras">[...${barcodeSuffix}]</span>
                                 <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 text-xs transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
                                 <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-xs transition" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
@@ -1365,7 +1376,7 @@
                 savedId = `${targetCategory}_${Date.now()}`;
                 products[targetCategory].push({ id: savedId, name, price });
                 
-                // Enlazamos correctamente el código de barras exacto de este producto nuevo
+                // Vinculación estricta del código de barras escaneado
                 if (barcode) {
                     barcodeMap[barcode] = savedId;
                 }
@@ -1375,7 +1386,7 @@
             closeAddModal();
             selectCategory(targetCategory);
             renderProducts();
-            alert(`¡Producto "${name}" guardado y vinculado correctamente a su código de barras!`);
+            alert(`¡Producto "${name}" registrado correctamente!`);
         }
 
         function deleteProductFromAisle(prodId) {

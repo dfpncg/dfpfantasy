@@ -117,7 +117,7 @@
                     </div>
                     <div>
                         <strong class="block text-sm font-black">Nueva Compra</strong>
-                        <span class="text-[11px] text-emerald-100 font-medium">Inicia un carrito limpio y selecciona tu comercio</span>
+                        <span class="text-[11px] text-emerald-100 font-medium">Inicia un carrito limpio para tus productos</span>
                     </div>
                 </button>
 
@@ -154,11 +154,11 @@
                     <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i> Datos Fiscales (SENIAT)
                 </h3>
                 <button onclick="openFiscalModal()" class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition">
-                    <i class="fa-solid fa-gear mr-1"></i> Configurar Comercio
+                    <i class="fa-solid fa-gear mr-1"></i> Seleccionar Comercio
                 </button>
             </div>
             <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-emerald-100" id="fiscal-box">
-                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se seleccionará al guardar factura</span></p>
+                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se pedirá al guardar factura</span></p>
                 <p><strong class="text-slate-900 font-bold">RIF Comercio:</strong> <span id="display-rif-comercio" class="font-semibold">--</span></p>
                 <p><strong class="text-slate-900 font-bold">Cliente / Comprador:</strong> <span id="display-cliente" class="font-semibold">Registrado</span></p>
             </div>
@@ -216,7 +216,7 @@
                 </div>
 
                 <div class="flex justify-between px-1 pt-1 border-t border-emerald-200 text-[10px] text-slate-900 font-bold">
-                    <span id="ticket-date">Fecha: --/--/----</span>
+                    <span id="ticket-date">Fecha: --/--/---- --:--</span>
                     <div class="flex items-center space-x-1">
                         <span>Nro Fac:</span>
                         <input type="text" id="ticket-number-input" placeholder="Ej: 0012345" class="w-20 bg-white border border-emerald-300 rounded px-1 text-[10px] text-center font-black text-slate-950 focus:outline-none focus:border-emerald-600" title="Colocar número de factura fiscal al finalizar">
@@ -376,20 +376,20 @@
     <div id="fiscal-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-lg mb-1 text-slate-900">Comercio Emisor de la Factura</h3>
-            <p class="text-[11px] text-slate-500 mb-3 font-semibold">Selecciona un comercio guardado o registra uno nuevo.</p>
+            <p class="text-[11px] text-slate-500 mb-3 font-semibold">Elige un comercio guardado o ingresa los datos de tu compra.</p>
             
             <!-- Selector de Comercios Frecuentes Guardados -->
             <div id="saved-stores-section" class="mb-3 hidden">
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Comercios Frecuentes</label>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Comercios Frecuentes Guardados</label>
                 <select id="saved-stores-select" onchange="fillSavedStore(this.value)" class="w-full bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-2 text-xs font-bold text-emerald-900 focus:outline-none">
-                    <option value="">-- Elige un comercio guardado --</option>
+                    <option value="">-- Haz clic para seleccionar un comercio --</option>
                 </select>
             </div>
 
             <form id="fiscal-form" onsubmit="saveFiscalData(event)">
                 <div class="border-b border-slate-100 pb-3 mb-3">
                     <div class="mb-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Comercio</label>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Supermercado</label>
                         <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600">
                     </div>
                     <div class="mb-2">
@@ -404,7 +404,7 @@
 
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Usar y Guardar Comercio</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Confirmar y Facturar</button>
                 </div>
             </form>
         </div>
@@ -452,8 +452,8 @@
 
         let products = {};
         let cart = {};
-        let fiscalData = null; // Comercio activo de la compra actual
-        let savedStores = []; // Lista de comercios frecuentes guardados
+        let fiscalData = null; // Inicia limpio sin comercio predeterminado
+        let savedStores = []; // Base de datos de comercios frecuentes
         let purchaseHistory = [];
 
         let tempAuthEmail = '';
@@ -462,8 +462,8 @@
         let tempClientData = null;
 
         document.getElementById('exchange-rate').value = exchangeRate;
-        const today = new Date();
-        document.getElementById('ticket-date').innerText = `Fecha: ${today.toLocaleDateString()}`;
+        const nowObj = new Date();
+        document.getElementById('ticket-date').innerText = `Fecha: ${nowObj.toLocaleDateString()} ${nowObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
         async function initApp() {
             if (!currentUser) {
@@ -485,7 +485,6 @@
             updateCartUI();
             renderHistory();
 
-            // Mostrar el menú principal flotante al iniciar sesión
             showDashboardMenu();
         }
 
@@ -494,19 +493,20 @@
             document.getElementById('dashboard-menu-modal').classList.remove('hidden');
         }
 
-        // FUNCIONALIDAD NUEVA: INICIAR NUEVA COMPRA LIMPIA
         function startNewPurchase() {
             document.getElementById('dashboard-menu-modal').classList.add('hidden');
             cart = {};
-            fiscalData = null; // Limpiar comercio previo para seleccionarlo al guardar
+            fiscalData = null; // Limpiar para que no arrastre nada previo
             document.getElementById('ticket-number-input').value = '';
             
-            // Restablecer interfaz visual del comercio en el ticket
-            document.getElementById('display-comercio').innerText = 'Se seleccionará al guardar factura';
+            document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
             document.getElementById('display-rif-comercio').innerText = '--';
             document.getElementById('ticket-comercio-name').innerText = 'COMERCIO NO SELECCIONADO';
             document.getElementById('ticket-comercio-rif').innerText = 'RIF: J-00000000-0';
             document.getElementById('ticket-comercio-dir').innerText = 'Ciudad Bolívar, Venezuela';
+
+            const currentTime = new Date();
+            document.getElementById('ticket-date').innerText = `Fecha: ${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
             saveDataToCloud();
             renderProducts();
@@ -756,7 +756,7 @@
 
         function loadFiscalUI() {
             if (!fiscalData || !fiscalData.storeName) {
-                document.getElementById('display-comercio').innerText = 'Se seleccionará al guardar factura';
+                document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
                 document.getElementById('display-rif-comercio').innerText = '--';
                 return;
             }
@@ -775,14 +775,14 @@
             }
         }
 
-        // ABRIR MODAL FISCAL CON OPCIÓN DE SELECCIONAR COMERCIOS GUARDADOS
+        // VENTANA FLOTANTE EXCLUSIVA AL MOMENTO DE DARLE A GUARDAR Y ENVIAR
         function openFiscalModal() {
             const selectEl = document.getElementById('saved-stores-select');
             const sectionEl = document.getElementById('saved-stores-section');
 
             if (savedStores && savedStores.length > 0) {
                 sectionEl.classList.remove('hidden');
-                selectEl.innerHTML = `<option value="">-- Elige un comercio guardado --</option>` + 
+                selectEl.innerHTML = `<option value="">-- Elige un comercio guardado (o escribe uno nuevo abajo) --</option>` + 
                     savedStores.map(st => `<option value="${st.storeName}">${st.storeName} (${st.storeRif})</option>`).join('');
             } else {
                 sectionEl.classList.add('hidden');
@@ -801,7 +801,7 @@
             document.getElementById('fiscal-modal').classList.remove('hidden');
         }
 
-        // RELLENAR AUTOMÁTICAMENTE SI SE SELECCIONA UN COMERCIO FRECUENTE
+        // AUTOCOMPLETADO CON UN SOLO CLIC EN EL COMERCIO GUARDADO
         function fillSavedStore(storeName) {
             if (!storeName) return;
             const found = savedStores.find(st => st.storeName === storeName);
@@ -827,7 +827,7 @@
             fiscalData.storeRif = rif;
             fiscalData.storeDir = dir;
 
-            // Guardar en la lista de comercios frecuentes si no existe ya
+            // Guardar automáticamente en la lista de comercios frecuentes si es nuevo
             const exists = savedStores.some(st => st.storeName.toLowerCase() === name.toLowerCase());
             if (!exists) {
                 savedStores.push({ storeName: name, storeRif: rif, storeDir: dir });
@@ -836,6 +836,9 @@
             saveDataToCloud();
             loadFiscalUI();
             document.getElementById('fiscal-modal').classList.add('hidden');
+
+            // Una vez guardado el comercio, ejecutamos el envío definitivo de la compra
+            executePurchaseEmission();
         }
 
         function updateExchangeRate(val) {
@@ -1131,6 +1134,7 @@
             document.getElementById('item-count').innerText = `${cartKeys.length} ítems`;
         }
 
+        // AL DARLE A GUARDAR Y ENVIAR, VERIFICAMOS SI YA TENEMOS EL COMERCIO; SI NO, ABRIMOS LA VENTANA FLOTANTE
         function saveAndSendPurchase() {
             const cartKeys = Object.keys(cart);
             if (cartKeys.length === 0) {
@@ -1138,13 +1142,17 @@
                 return;
             }
 
-            // Si el comercio no está seleccionado para esta compra, abrir el modal fiscal obligatorio
             if (!fiscalData || !fiscalData.storeName) {
-                alert("Para guardar y enviar la factura, debes indicar o seleccionar el comercio emisor.");
                 openFiscalModal();
                 return;
             }
 
+            executePurchaseEmission();
+        }
+
+        // FUNCIÓN QUE EJECUTA EL ENVÍO POR EMAIL Y REGISTRA LA HORA EXACTA
+        function executePurchaseEmission() {
+            const cartKeys = Object.keys(cart);
             let baseTotal = 0;
             let itemsHtml = '';
             cartKeys.forEach(key => {
@@ -1165,6 +1173,9 @@
             const grandTotalUsd = baseTotal + ivaAmount;
             const totalBs = grandTotalUsd * exchangeRate;
             const facNumber = document.getElementById('ticket-number-input').value.trim() || 'S/N';
+            
+            const exactTimeObj = new Date();
+            const dateTimeString = `${exactTimeObj.toLocaleDateString()} ${exactTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
             const templateParams = {
                 to_email: currentUser,
@@ -1174,7 +1185,7 @@
                 client_name: fiscalData.clientName,
                 client_doc: fiscalData.clientDoc,
                 client_phone: fiscalData.clientPhone,
-                invoice_date: new Date().toLocaleDateString(),
+                invoice_date: dateTimeString,
                 fac_number: facNumber,
                 invoice_items_html: itemsHtml,
                 base_usd: `$${baseTotal.toFixed(2)}`,
@@ -1194,7 +1205,7 @@
 
             const record = {
                 id: Date.now(),
-                date: new Date().toLocaleDateString(),
+                date: dateTimeString,
                 store: fiscalData.storeName,
                 facNumber: facNumber,
                 totalUsd: grandTotalUsd,

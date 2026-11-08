@@ -226,13 +226,9 @@
                     <span class="text-[9px] bg-slate-100 text-slate-600 font-black px-2 py-0.5 rounded-full">J-50341289-0</span>
                 </div>
                 <p class="text-[10px] text-slate-500 font-semibold mb-1">Ciudad Bolívar, Estado Bolívar</p>
-                <div class="text-[10px] bg-slate-50 p-2 rounded border border-slate-100 flex justify-between mb-1">
+                <div class="text-[10px] bg-slate-50 p-2 rounded border border-slate-100 flex justify-between">
                     <span class="font-bold text-slate-700">Cliente:</span>
                     <span id="display-cliente" class="font-black text-blue-900">Registrado</span>
-                </div>
-                <div class="text-[10px] bg-slate-50 p-2 rounded border border-slate-100 flex justify-between">
-                    <span class="font-bold text-slate-700">Teléfono:</span>
-                    <span id="display-telefono" class="font-black text-blue-900">S/N</span>
                 </div>
             </section>
 
@@ -407,10 +403,6 @@
                             <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
                             <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
                         </div>
-                        <div class="mb-3">
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Número de Teléfono</label>
-                            <input type="tel" id="auth-phone" required placeholder="Ej. 0414-1234567" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
-                        </div>
                         <div class="mb-2">
                             <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
                             <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
@@ -483,7 +475,6 @@
             storeName: "DFPfantasy Market C.A.",
             storeRif: "J-50341289-0",
             clientName: "Cliente DFPfantasy",
-            clientPhone: "S/N",
             clientDoc: "V-0000000"
         };
 
@@ -527,7 +518,6 @@
         async function handleAuthSubmit(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value.trim().toLowerCase();
-            const phone = document.getElementById('auth-phone').value.trim();
             const pin = document.getElementById('auth-pin').value.trim();
 
             try {
@@ -540,10 +530,6 @@
                         currentUser = email;
                         localStorage.setItem('komprafacil_current_user', currentUser);
                         fiscalData.clientName = userData.name || "Cliente DFPfantasy";
-                        fiscalData.clientPhone = phone || userData.phone || "S/N";
-                        
-                        await docRef.set({ phone: fiscalData.clientPhone }, { merge: true });
-
                         initApp();
                     } else {
                         alert("PIN de seguridad incorrecto.");
@@ -602,7 +588,6 @@
                     cart = data.cart || {};
                     purchaseHistory = data.history || [];
                     if (data.name) fiscalData.clientName = data.name;
-                    if (data.phone) fiscalData.clientPhone = data.phone;
                     if (data.doc) fiscalData.clientDoc = data.doc;
                 }
             } catch (err) { console.error("Error cargando datos: ", err); }
@@ -617,7 +602,6 @@
 
         function loadFiscalUI() {
             document.getElementById('display-cliente').innerText = `${fiscalData.clientName} (${fiscalData.clientDoc})`;
-            document.getElementById('display-telefono').innerText = fiscalData.clientPhone;
         }
 
         // --- SISTEMA UI GENERAL ---
@@ -967,7 +951,6 @@
                 store_rif: fiscalData.storeRif,
                 store_dir: "Ciudad Bolívar, Estado Bolívar",
                 client_name: fiscalData.clientName,
-                client_phone: fiscalData.clientPhone,
                 client_doc: fiscalData.clientDoc,
                 invoice_date: dateTimeString,
                 fac_number: `INT-${Date.now().toString().slice(-6)}`,

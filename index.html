@@ -165,9 +165,15 @@
         </div>
     </header>
 
-    <!-- MENÚ PRINCIPAL FLOTANTE -->
+    <!-- MENÚ PRINCIPAL FLOTANTE (CON BOTÓN DE CIERRE OBLIGATORIO "X") -->
     <div id="dashboard-menu-modal" class="fixed inset-0 bg-slate-900/70 z-40 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 text-center space-y-3 modal-animated">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 text-center space-y-3 modal-animated relative">
+            
+            <!-- Botón de Cierre "X" obligatorio y estricto -->
+            <button onclick="closeDashboardMenu()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold text-sm transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
             <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto text-2xl shadow-md animate-logo-glow">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="30" height="30">
                     <circle cx="25" cy="25" r="23" fill="#34D399" opacity="0.25" />
@@ -219,19 +225,18 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto p-4 space-y-4">
 
-        <!-- DATOS FISCALES -->
+        <!-- DATOS FISCALES FIJOS (DFPFANTASY MARKET) -->
         <section class="bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300" id="fiscal-card">
-            <div class="flex justify-between items-center mb-3">
+            <div class="flex justify-between items-center mb-2">
                 <h3 class="font-bold text-slate-900 text-sm flex items-center" id="fiscal-title-text">
                     <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i> Datos Fiscales (SENIAT)
                 </h3>
-                <button onclick="openFiscalModal()" class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition">
-                    <i class="fa-solid fa-gear mr-1"></i> Seleccionar Comercio
-                </button>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-black px-2 py-0.5 rounded-full">Comercio Fijo</span>
             </div>
             <div class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100" id="fiscal-box">
-                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span id="display-comercio" class="font-semibold text-emerald-700">Se pedirá al guardar factura</span></p>
-                <p><strong class="text-slate-900 font-bold">RIF Comercio:</strong> <span id="display-rif-comercio" class="font-semibold">--</span></p>
+                <p><strong class="text-slate-900 font-bold">Comercio:</strong> <span class="font-semibold text-emerald-700">DFPfantasy Market C.A.</span></p>
+                <p><strong class="text-slate-900 font-bold">RIF Comercio:</strong> <span class="font-semibold">J-50341289-0</span></p>
+                <p><strong class="text-slate-900 font-bold">Dirección:</strong> <span class="font-semibold">Ciudad Bolívar, Estado Bolívar</span></p>
                 <p><strong class="text-slate-900 font-bold">Cliente / Comprador:</strong> <span id="display-cliente" class="font-semibold">Registrado</span></p>
             </div>
         </section>
@@ -247,7 +252,7 @@
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base" id="current-category-title">Pasillo</h3>
-                    <p class="text-[11px] text-slate-500 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos manualmente</p>
+                    <p class="text-[11px] text-slate-500 font-medium" id="pasillo-subtitle">Gestiona tus cantidades o pesos por kilo</p>
                 </div>
                 <button onclick="openAddModal()" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200 hover:bg-emerald-100 transition">
                     <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
@@ -272,9 +277,9 @@
             </div>
             
             <div class="bg-emerald-50/50 rounded-xl p-3 mb-3 border border-dashed border-emerald-300 text-center fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1" id="ticket-inner-box">
-                <p class="font-black text-slate-950 text-xs" id="ticket-comercio-name">COMERCIO NO SELECCIONADO</p>
-                <p id="ticket-comercio-rif" class="text-slate-900 font-bold">RIF: J-00000000-0</p>
-                <p class="text-[10px] text-slate-700 font-semibold" id="ticket-comercio-dir">Ciudad Bolívar, Venezuela</p>
+                <p class="font-black text-slate-950 text-xs">DFPFANTASY MARKET C.A.</p>
+                <p class="text-slate-900 font-bold">RIF: J-50341289-0</p>
+                <p class="text-[10px] text-slate-700 font-semibold">Ciudad Bolívar, Estado Bolívar</p>
                 
                 <div class="pt-1 border-t border-emerald-200 text-left space-y-0.5 text-[10px]">
                     <p><strong class="text-slate-950 font-black">CLIENTE:</strong> <span id="ticket-cliente-name" class="font-bold">---</span></p>
@@ -333,23 +338,23 @@
                 <input type="hidden" id="edit-prod-id">
                 <div class="mb-2.5">
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Producto</label>
-                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina PAN" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
+                    <input type="text" id="new-prod-name" required placeholder="Ej. Harina PAN o Polgo Entero" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                 </div>
                 <div class="mb-2.5">
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">Pasillo / Categoría</label>
                     <select id="new-prod-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900">
                         <option value="higiene">Higiene</option>
                         <option value="secos" selected>Secos</option>
-                        <option value="charcuteria">Charcutería</option>
-                        <option value="frios">Fríos</option>
-                        <option value="hortalizas">Hortalizas (Peso)</option>
+                        <option value="charcuteria">Charcutería (Permite Peso)</option>
+                        <option value="frios">Fríos (Permite Peso)</option>
+                        <option value="hortalizas">Hortalizas (Permite Peso)</option>
                         <option value="panaderia">Panadería</option>
                         <option value="chucherias">Chucherías</option>
                         <option value="otros">Otros</option>
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1" id="price-label-modal">Precio Base ($)</label>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1" id="price-label-modal">Precio Base ($) [Por unidad o por kilo]</label>
                     <input type="number" step="0.01" id="new-prod-price" required placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
                 </div>
                 <div class="flex space-x-2">
@@ -444,11 +449,7 @@
                             <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600">
                         </div>
 
-                        <div class="text-right mb-4">
-                            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-emerald-700 font-bold hover:underline">¿Olvidaste tu PIN?</button>
-                        </div>
-
-                        <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md">Continuar</button>
+                        <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md mt-3">Continuar</button>
                     </form>
                 </div>
 
@@ -462,50 +463,13 @@
         </footer>
     </div>
 
-    <!-- MODAL SELECCIÓN DE COMERCIO -->
-    <div id="fiscal-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[90vh] overflow-y-auto modal-animated">
-            <h3 class="font-bold text-lg mb-1 text-slate-900">Comercio Emisor de la Factura</h3>
-            <p class="text-[11px] text-slate-500 mb-3 font-semibold">Elige un comercio guardado o ingresa los datos de tu compra.</p>
-            
-            <div id="saved-stores-section" class="mb-3 hidden">
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Comercios Frecuentes Guardados</label>
-                <select id="saved-stores-select" onchange="fillSavedStore(this.value)" class="w-full bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-2 text-xs font-bold text-emerald-900 focus:outline-none">
-                    <option value="">-- Haz clic para seleccionar un comercio --</option>
-                </select>
-            </div>
-
-            <form id="fiscal-form" onsubmit="saveFiscalData(event)">
-                <div class="border-b border-slate-100 pb-3 mb-3">
-                    <div class="mb-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre del Supermercado</label>
-                        <input type="text" id="store-name" required placeholder="Ej. Supermercado DFPfantasy" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
-                    </div>
-                    <div class="mb-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">RIF del Comercio</label>
-                        <input type="text" id="store-rif" required placeholder="Ej. J-31234567-8" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
-                    </div>
-                    <div class="mb-1">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Dirección / Ciudad</label>
-                        <input type="text" id="store-dir" required placeholder="Ej. Ciudad Bolívar, Venezuela" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900">
-                    </div>
-                </div>
-
-                <div class="flex space-x-2">
-                    <button type="button" onclick="closeFiscalModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 shimmer-btn text-white py-2.5 rounded-xl text-xs font-bold">Confirmar y Facturar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- SCRIPT DE LÓGICA Y CONTROL -->
     <script>
         const categories = [
             { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
             { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
-            { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese' },
-            { id: 'frios', name: 'Fríos', icon: 'fa-fish' },
+            { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese', isWeight: true }, // Estructura por peso activada
+            { id: 'frios', name: 'Fríos', icon: 'fa-fish', isWeight: true },             // Estructura por peso activada
             { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot', isWeight: true },
             { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
             { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' },
@@ -519,8 +483,11 @@
 
         let products = {};
         let cart = {};
-        let fiscalData = null;
-        let savedStores = [];
+        let fiscalData = {
+            storeName: "DFPfantasy Market C.A.",
+            storeRif: "J-50341289-0",
+            storeDir: "Ciudad Bolívar, Estado Bolívar"
+        };
         let purchaseHistory = [];
 
         document.getElementById('exchange-rate').value = exchangeRate;
@@ -568,21 +535,14 @@
             document.getElementById('dashboard-menu-modal').classList.remove('hidden');
         }
 
-        function startNewPurchase() {
+        function closeDashboardMenu() {
             document.getElementById('dashboard-menu-modal').classList.add('hidden');
+        }
+
+        function startNewPurchase() {
+            closeDashboardMenu();
             cart = {};
-            fiscalData = null;
             document.getElementById('ticket-number-input').value = '';
-            
-            document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
-            document.getElementById('display-rif-comercio').innerText = '--';
-            document.getElementById('ticket-comercio-name').innerText = 'COMERCIO NO SELECCIONADO';
-            document.getElementById('ticket-comercio-rif').innerText = 'RIF: J-00000000-0';
-            document.getElementById('ticket-comercio-dir').innerText = 'Ciudad Bolívar, Venezuela';
-
-            const currentTime = new Date();
-            document.getElementById('ticket-date').innerText = `Fecha: ${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
             saveDataToCloud();
             renderProducts();
             updateCartUI();
@@ -590,7 +550,7 @@
         }
 
         function openHistoryModal() {
-            document.getElementById('dashboard-menu-modal').classList.add('hidden');
+            closeDashboardMenu();
             renderModalHistory();
             document.getElementById('history-modal').classList.remove('hidden');
         }
@@ -600,7 +560,7 @@
         }
 
         function openStatsModal() {
-            document.getElementById('dashboard-menu-modal').classList.add('hidden');
+            closeDashboardMenu();
             renderStatsUI();
             document.getElementById('stats-modal').classList.remove('hidden');
         }
@@ -609,7 +569,7 @@
             document.getElementById('stats-modal').classList.add('hidden');
         }
 
-        // --- GESTIÓN DE PRODUCTOS MANUALES ---
+        // --- GESTIÓN DE PRODUCTOS ---
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => {
@@ -633,7 +593,7 @@
             renderCategories();
             const catObj = categories.find(c => c.id === catId);
             document.getElementById('current-category-title').innerText = `Pasillo: ${catObj.name}`;
-            document.getElementById('pasillo-subtitle').innerText = catObj.isWeight ? 'Indica los kilos o gramos requeridos' : 'Usa los botones + o - para sumar unidades al carrito';
+            document.getElementById('pasillo-subtitle').innerText = catObj.isWeight ? 'Indica los kilos o gramos requeridos (por peso)' : 'Usa los botones + o - para sumar unidades';
             renderProducts();
         }
 
@@ -685,8 +645,9 @@
                             <div class="flex items-center space-x-3 mt-1">
                                 <div class="flex items-center space-x-1.5">
                                     <span class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">$</span>
-                                    <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 text-xs font-black text-emerald-700 dark:text-emerald-400 focus:outline-none">
+                                    <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 text-xs font-black text-emerald-700 dark:text-emerald-400 focus:outline-none" title="Precio base o por kilo">
                                 </div>
+                                <span class="text-[9px] text-slate-400 font-bold">${currentCat.isWeight ? '(Precio/kg)' : '(Precio/und)'}</span>
                             </div>
                         </div>
                         <div>
@@ -849,7 +810,7 @@
                 const subtotal = item.price * item.qty;
                 baseTotal += subtotal;
 
-                let isWeightItem = key.startsWith('hortalizas');
+                let isWeightItem = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 return `
@@ -885,10 +846,6 @@
                 alert("⚠️ ¡Atención! No se puede guardar ni enviar una factura en blanco sin productos seleccionados.");
                 return;
             }
-            if (!fiscalData || !fiscalData.storeName) {
-                openFiscalModal();
-                return;
-            }
             executePurchaseEmission();
         }
 
@@ -902,7 +859,7 @@
                 const item = cart[key];
                 const sub = item.price * item.qty;
                 baseTotal += sub;
-                let isWeightItem = key.startsWith('hortalizas');
+                let isWeightItem = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
                 let qtyLabel = isWeightItem ? `${item.qty} kg` : `${item.qty} und`;
 
                 itemsSnapshot.push({ name: item.name, price: item.price, qty: qtyLabel, sub: sub });
@@ -924,9 +881,9 @@
 
             const templateParams = {
                 to_email: currentUser,
-                store_name: fiscalData.storeName,
-                store_rif: fiscalData.storeRif,
-                store_dir: fiscalData.storeDir,
+                store_name: "DFPfantasy Market C.A.",
+                store_rif: "J-50341289-0",
+                store_dir: "Ciudad Bolívar, Estado Bolívar",
                 client_name: fiscalData.clientName || 'Cliente DFPfantasy',
                 client_doc: fiscalData.clientDoc || 'V-0000000',
                 client_phone: fiscalData.clientPhone || '0414-0000000',
@@ -942,7 +899,7 @@
 
             emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
                 .then(() => {
-                    alert("¡Compra guardada y factura enviada con éxito a tu correo!");
+                    alert("¡Compra guardada y factura emitida con éxito a tu correo!");
                 }, (err) => {
                     alert("Compra guardada, pero ocurrió un error al enviar el correo.");
                     console.error(err);
@@ -951,7 +908,7 @@
             const record = {
                 id: Date.now(),
                 date: dateTimeString,
-                store: fiscalData.storeName,
+                store: "DFPfantasy Market C.A.",
                 facNumber: facNumber,
                 totalUsd: grandTotalUsd,
                 totalBs: totalBs,
@@ -969,59 +926,7 @@
             updateCartUI();
         }
 
-        // --- GRÁFICAS DE CONSUMO MENSUAL ---
-        function renderStatsUI() {
-            const container = document.getElementById('stats-content-bars');
-            if (!purchaseHistory || purchaseHistory.length === 0) {
-                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">No hay suficientes datos de compras en el historial para generar gráficas.</p>`;
-                return;
-            }
-
-            let catTotals = {};
-            let totalGeneral = 0;
-
-            purchaseHistory.forEach(rec => {
-                if (rec.itemsSnapshot) {
-                    rec.itemsSnapshot.forEach(item => {
-                        let catName = 'Otros';
-                        for (let cat in products) {
-                            if (products[cat].some(p => p.name === item.name)) {
-                                catName = cat;
-                                break;
-                            }
-                        }
-                        if (!catTotals[catName]) catTotals[catName] = 0;
-                        catTotals[catName] += item.sub;
-                        totalGeneral += item.sub;
-                    });
-                }
-            });
-
-            if (totalGeneral <= 0) {
-                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">Sin montos registrados en el historial.</p>`;
-                return;
-            }
-
-            let htmlBars = '';
-            for (let cat in catTotals) {
-                const amount = catTotals[cat];
-                const percentage = ((amount / totalGeneral) * 100).toFixed(1);
-                htmlBars += `
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-bold text-slate-800">
-                            <span class="capitalize"><i class="fa-solid fa-tag text-emerald-600 mr-1.5"></i> ${cat}</span>
-                            <span>$${amount.toFixed(2)} (${percentage}%)</span>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
-                            <div class="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }
-            container.innerHTML = htmlBars;
-        }
-
-        // --- LÓGICA DE DATOS Y NUBE ---
+        // --- LÓGICA DE DATOS Y NUBE (INCLUYENDO PERSISTENCIA DE CARRITO) ---
         async function handleAuthSubmit(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value.trim().toLowerCase();
@@ -1036,16 +941,19 @@
                     if (userData.pin === pin) {
                         currentUser = email;
                         localStorage.setItem('komprafacil_current_user', currentUser);
+                        fiscalData.clientName = userData.name || "Cliente DFPfantasy";
+                        fiscalData.clientDoc = userData.doc || "V-0000000";
+                        fiscalData.clientPhone = userData.phone || "0414-0000000";
                         initApp();
                     } else {
                         alert("PIN de seguridad incorrecto.");
                     }
                 } else {
-                    alert("Este correo no está registrado. Inscríbete completando el registro inicial.");
+                    alert("Este correo no está registrado en el sistema.");
                 }
             } catch (err) {
                 console.error("Error de base de datos:", err);
-                alert("Error de conexión con la base de datos. Comprueba tu conexión a internet.");
+                alert("Error de conexión con la base de datos.");
             }
         }
 
@@ -1077,10 +985,8 @@
             if (!currentUser) return;
             try {
                 await db.collection("users").doc(currentUser).set({
-                    fiscal: fiscalData,
-                    stores: savedStores,
                     products: products,
-                    cart: cart,
+                    cart: cart, // El carrito se guarda automáticamente para persistir ante recargas
                     history: purchaseHistory
                 }, { merge: true });
             } catch (err) {
@@ -1095,14 +1001,27 @@
                 if (doc.exists) {
                     const data = doc.data();
                     products = data.products || {};
-                    cart = data.cart || {};
-                    fiscalData = data.fiscal || null;
-                    savedStores = data.stores || [];
+                    cart = data.cart || {}; // Se recupera el carrito exactamente como se dejó
                     purchaseHistory = data.history || [];
+                    if (data.name) fiscalData.clientName = data.name;
+                    if (data.doc) fiscalData.clientDoc = data.doc;
+                    if (data.phone) fiscalData.clientPhone = data.phone;
                 }
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        function loadFiscalUI() {
+            document.getElementById('display-cliente').innerText = `${fiscalData.clientName} (${fiscalData.clientDoc})`;
+            document.getElementById('ticket-cliente-name').innerText = fiscalData.clientName;
+            document.getElementById('ticket-cliente-doc').innerText = fiscalData.clientDoc;
+        }
+
+        function updateExchangeRate(val) {
+            exchangeRate = parseFloat(val) || 0;
+            localStorage.setItem('komprafacil_rate', exchangeRate);
+            updateCartUI();
         }
 
         function toggleDarkMode() {
@@ -1129,94 +1048,6 @@
                 themeIcon.className = "fa-solid fa-moon text-xs";
                 cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300"; });
             }
-        }
-
-        function loadFiscalUI() {
-            if (!fiscalData || !fiscalData.storeName) {
-                document.getElementById('display-comercio').innerText = 'Se pedirá al guardar factura';
-                document.getElementById('display-rif-comercio').innerText = '--';
-                return;
-            }
-
-            document.getElementById('display-comercio').innerText = fiscalData.storeName;
-            document.getElementById('display-rif-comercio').innerText = fiscalData.storeRif;
-            document.getElementById('display-cliente').innerText = fiscalData.clientName ? `${fiscalData.clientName} (${fiscalData.clientDoc})` : 'Registrado';
-
-            document.getElementById('ticket-comercio-name').innerText = fiscalData.storeName.toUpperCase();
-            document.getElementById('ticket-comercio-rif').innerText = `RIF: ${fiscalData.storeRif}`;
-            document.getElementById('ticket-comercio-dir').innerText = fiscalData.storeDir;
-            
-            if (fiscalData.clientName) {
-                document.getElementById('ticket-cliente-name').innerText = fiscalData.clientName;
-                document.getElementById('ticket-cliente-doc').innerText = fiscalData.clientDoc;
-            }
-        }
-
-        function openFiscalModal() {
-            const selectEl = document.getElementById('saved-stores-select');
-            const sectionEl = document.getElementById('saved-stores-section');
-
-            if (savedStores && savedStores.length > 0) {
-                sectionEl.classList.remove('hidden');
-                selectEl.innerHTML = `<option value="">-- Elige un comercio guardado --</option>` + 
-                    savedStores.map(st => `<option value="${st.storeName}">${st.storeName} (${st.storeRif})</option>`).join('');
-            } else {
-                sectionEl.classList.add('hidden');
-            }
-
-            if (fiscalData && fiscalData.storeName) {
-                document.getElementById('store-name').value = fiscalData.storeName;
-                document.getElementById('store-rif').value = fiscalData.storeRif;
-                document.getElementById('store-dir').value = fiscalData.storeDir;
-            } else {
-                document.getElementById('store-name').value = '';
-                document.getElementById('store-rif').value = '';
-                document.getElementById('store-dir').value = '';
-            }
-
-            document.getElementById('fiscal-modal').classList.remove('hidden');
-        }
-
-        function fillSavedStore(storeName) {
-            if (!storeName) return;
-            const found = savedStores.find(st => st.storeName === storeName);
-            if (found) {
-                document.getElementById('store-name').value = found.storeName;
-                document.getElementById('store-rif').value = found.storeRif;
-                document.getElementById('store-dir').value = found.storeDir;
-            }
-        }
-
-        function closeFiscalModal() {
-            document.getElementById('fiscal-modal').classList.add('hidden');
-        }
-
-        function saveFiscalData(e) {
-            e.preventDefault();
-            const name = document.getElementById('store-name').value.trim();
-            const rif = document.getElementById('store-rif').value.trim();
-            const dir = document.getElementById('store-dir').value.trim();
-
-            if (!fiscalData) fiscalData = {};
-            fiscalData.storeName = name;
-            fiscalData.storeRif = rif;
-            fiscalData.storeDir = dir;
-
-            const exists = savedStores.some(st => st.storeName.toLowerCase() === name.toLowerCase());
-            if (!exists) {
-                savedStores.push({ storeName: name, storeRif: rif, storeDir: dir });
-            }
-
-            saveDataToCloud();
-            loadFiscalUI();
-            document.getElementById('fiscal-modal').classList.add('hidden');
-            executePurchaseEmission();
-        }
-
-        function updateExchangeRate(val) {
-            exchangeRate = parseFloat(val) || 0;
-            localStorage.setItem('komprafacil_rate', exchangeRate);
-            updateCartUI();
         }
 
         function renderModalHistory() {

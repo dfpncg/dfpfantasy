@@ -151,7 +151,7 @@
             </div>
 
             <div class="flex items-center space-x-2.5">
-                <div class="text-right bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 shadow-xs" id="total-badge-container">
+                <div class="text-right bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 shadow-xs">
                     <span class="text-[9px] uppercase tracking-wider block text-emerald-700 font-bold">Total Pagar</span>
                     <span class="text-sm font-black text-emerald-900" id="grand-total">$0.00</span>
                     <span class="text-[10px] font-bold block text-emerald-800" id="grand-total-bs">Bs. 0.00</span>
@@ -181,7 +181,7 @@
         </div>
     </header>
 
-    <!-- MENÚ PRINCIPAL FLOTANTE (CON BOTÓN DE CIERRE OBLIGATORIO "X") -->
+    <!-- MENÚ PRINCIPAL FLOTANTE -->
     <div id="dashboard-menu-modal" class="fixed inset-0 bg-slate-900/70 z-40 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-emerald-100 text-center space-y-3 modal-animated relative">
             
@@ -212,6 +212,16 @@
                     <div>
                         <strong class="block text-xs font-black">Nueva Compra</strong>
                         <span class="text-[10px] text-emerald-100 font-medium">Carrito limpio para tus productos</span>
+                    </div>
+                </button>
+
+                <button onclick="loadFavoritesModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 p-3 rounded-2xl shadow-xs flex items-center space-x-3 transition transform hover:scale-[1.02] text-left border border-amber-200">
+                    <div class="w-9 h-9 bg-amber-200 rounded-xl flex items-center justify-center text-amber-800 text-base font-bold">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-xs font-black">Cargar Compra Habitual</strong>
+                        <span class="text-[10px] text-amber-700 font-medium">Repite tus favoritos en 1 clic</span>
                     </div>
                 </button>
 
@@ -338,6 +348,23 @@
                 <p class="text-xs text-center py-4 font-black" style="color: #000000 !important;">Sin ítems registrados en el recibo.</p>
             </div>
 
+            <!-- DESGLOSE DE MONEDA DUAL AVANZADO -->
+            <div class="mt-3 p-2 bg-emerald-100/50 rounded-xl border border-emerald-300 text-[11px] text-slate-900 space-y-1 font-bold">
+                <p class="text-[10px] text-emerald-800 uppercase tracking-wider font-black mb-1">💱 Conversor de Pago Dual:</p>
+                <div class="flex justify-between">
+                    <span>• Pago Móvil (BCV):</span>
+                    <span id="dual-pagomovil" class="font-black text-emerald-950">Bs. 0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>• Divisa Efectivo ($):</span>
+                    <span id="dual-cash" class="font-black text-emerald-950">$0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>• Binance USDT (Ref):</span>
+                    <span id="dual-usdt" class="font-black text-emerald-950">0.00 USDT</span>
+                </div>
+            </div>
+
             <div class="mt-3 pt-3 border-t border-emerald-200 space-y-1.5 fiscal-ticket text-xs font-bold text-slate-900">
                 <div class="flex justify-between">
                     <span>BASE IMPONIBLE USD:</span>
@@ -398,6 +425,29 @@
         </div>
     </div>
 
+    <!-- MODAL CARGAR COMPRA HABITUAL (FAVORITOS) -->
+    <div id="favorites-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[85vh] overflow-y-auto modal-animated space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-black text-base text-slate-900 flex items-center">
+                    <i class="fa-solid fa-star text-amber-500 mr-2 text-lg"></i> Mi Compra Habitual (Favoritos)
+                </h3>
+                <button onclick="closeFavoritesModal()" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">Tus productos más comprados y guardados en tu historial reciente:</p>
+            
+            <div class="space-y-2 max-h-56 overflow-y-auto pr-1" id="favorites-items-list">
+                <p class="text-xs text-center py-6 text-slate-400 font-black">Aún no hay compras registradas para extraer favoritos.</p>
+            </div>
+
+            <button onclick="closeFavoritesModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black shadow-md">
+                Cerrar Ventana
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL FIJAR PRESUPUESTO MÁXIMO -->
     <div id="budget-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl w-full max-w-xs p-6 shadow-2xl modal-animated space-y-4 text-center">
@@ -423,15 +473,28 @@
         <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[85vh] overflow-y-auto modal-animated space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
                 <h3 class="font-black text-base text-slate-900 flex items-center">
-                    <i class="fa-solid fa-chart-pie text-indigo-600 mr-2 text-lg"></i> Gráficas de Consumo Mensual
+                    <i class="fa-solid fa-chart-pie text-indigo-600 mr-2 text-lg"></i> Gráficas y Resumen de Consumo
                 </h3>
                 <button onclick="closeStatsModal()" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <p class="text-xs text-slate-500 font-medium">Distribución porcentual de tus gastos por categoría según tus facturas guardadas:</p>
             
-            <div class="space-y-3 pt-2" id="stats-content-bars">
+            <!-- Resumen de Gasto Acumulado -->
+            <div class="grid grid-cols-2 gap-2 bg-indigo-50 p-3 rounded-2xl border border-indigo-200 text-center">
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-indigo-700 block">Gasto Esta Semana</span>
+                    <span class="text-sm font-black text-indigo-950" id="stat-week-spend">$0.00</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-indigo-700 block">Gasto Este Mes</span>
+                    <span class="text-sm font-black text-indigo-950" id="stat-month-spend">$0.00</span>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-500 font-medium pt-2">Distribución porcentual de tus gastos por categoría según tus facturas guardadas:</p>
+            
+            <div class="space-y-3 pt-1" id="stats-content-bars">
                 <p class="text-xs text-center py-6 text-slate-400 font-black">No hay suficientes datos de compras en el historial.</p>
             </div>
 
@@ -630,6 +693,72 @@
             closeBudgetModal();
             updateCartUI();
             alert(`¡Presupuesto máximo fijado en $${budgetLimit.toFixed(2)}!`);
+        }
+
+        // --- MODO LISTA RÁPIDA DE REPETICIÓN (FAVORITOS) ---
+        function loadFavoritesModal() {
+            closeDashboardMenu();
+            const listEl = document.getElementById('favorites-items-list');
+            
+            // Extraer productos únicos frecuentes de las facturas del historial
+            let freqMap = {};
+            purchaseHistory.forEach(rec => {
+                if (rec.itemsSnapshot) {
+                    rec.itemsSnapshot.forEach(item => {
+                        freqMap[item.name] = item;
+                    });
+                }
+            });
+
+            const favs = Object.values(freqMap);
+            if (favs.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">Aún no hay compras en el historial para generar favoritos.</p>`;
+            } else {
+                listEl.innerHTML = favs.map(f => `
+                    <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+                        <div>
+                            <strong class="font-black text-slate-900 block">${f.name}</strong>
+                            <span class="text-[10px] text-emerald-700 font-bold">$${f.price.toFixed(2)} (${f.qty})</span>
+                        </div>
+                        <button onclick="addFavoriteToCart('${f.name}', ${f.price})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-3 py-1.5 rounded-lg text-xs shadow-xs transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Añadir
+                        </button>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('favorites-modal').classList.remove('hidden');
+        }
+
+        function closeFavoritesModal() {
+            document.getElementById('favorites-modal').classList.add('hidden');
+        }
+
+        function addFavoriteToCart(name, price) {
+            let foundProd = null;
+            for (let cat in products) {
+                const p = products[cat].find(item => item.name.toLowerCase() === name.toLowerCase());
+                if (p) { foundProd = p; break; }
+            }
+
+            if (!foundProd) {
+                // Si no está creado en pasillos, lo creamos por defecto en 'secos'
+                const savedId = `secos_${Date.now()}`;
+                if (!products['secos']) products['secos'] = [];
+                foundProd = { id: savedId, name: name, price: price };
+                products['secos'].push(foundProd);
+            }
+
+            if (!cart[foundProd.id]) {
+                cart[foundProd.id] = { ...foundProd, qty: 1 };
+            } else {
+                cart[foundProd.id].qty += 1;
+            }
+
+            saveDataToCloud();
+            renderProducts();
+            renderCategories();
+            updateCartUI();
+            alert(`¡"${name}" añadido al carrito!`);
         }
 
         function openHistoryModal() {
@@ -885,6 +1014,9 @@
                 document.getElementById('fiscal-base-usd').innerText = '$0.00';
                 document.getElementById('fiscal-iva-usd').innerText = '$0.00';
                 document.getElementById('fiscal-total-bs').innerText = 'Bs. 0.00';
+                document.getElementById('dual-pagomovil').innerText = 'Bs. 0.00';
+                document.getElementById('dual-cash').innerText = '$0.00';
+                document.getElementById('dual-usdt').innerText = '0.00 USDT';
                 document.getElementById('budget-warning').classList.add('hidden');
                 return;
             }
@@ -922,6 +1054,11 @@
             document.getElementById('fiscal-iva-usd').innerText = `$${ivaAmount.toFixed(2)}`;
             document.getElementById('fiscal-tasa').innerText = `Bs. ${exchangeRate.toFixed(2)}`;
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            // Actualización del Conversor Dual Avanzado
+            document.getElementById('dual-pagomovil').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('dual-cash').innerText = `$${grandTotalUsd.toFixed(2)}`;
+            document.getElementById('dual-usdt').innerText = `${grandTotalUsd.toFixed(2)} USDT`;
 
             // Verificación de Presupuesto Máximo
             const warningEl = document.getElementById('budget-warning');
@@ -1006,6 +1143,7 @@
 
             const record = {
                 id: Date.now(),
+                timestamp: Date.now(),
                 date: dateTimeString,
                 store: "DFPfantasy Market C.A.",
                 facNumber: facNumber,
@@ -1025,7 +1163,7 @@
             updateCartUI();
         }
 
-        // --- LÓGICA DE DATOS Y NUBE (INCLUYENDO PERSISTENCIA) ---
+        // --- LÓGICA DE DATOS Y NUBE (INCLUYENDO ESTADÍSTICAS SEMANALES/MENSUALES) ---
         async function handleAuthSubmit(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value.trim().toLowerCase();
@@ -1147,6 +1285,65 @@
                 themeIcon.className = "fa-solid fa-moon text-xs";
                 cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-xs p-4 border border-emerald-100 transition-colors duration-300"; });
             }
+        }
+
+        function renderStatsUI() {
+            const container = document.getElementById('stats-content-bars');
+            const now = Date.now();
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            const oneMonth = 30 * 24 * 60 * 60 * 1000;
+
+            let weekSpend = 0;
+            let monthSpend = 0;
+            let catTotals = {};
+            let totalGeneral = 0;
+
+            purchaseHistory.forEach(rec => {
+                const recTime = rec.timestamp || rec.id;
+                if ((now - recTime) <= oneWeek) weekSpend += rec.totalUsd;
+                if ((now - recTime) <= oneMonth) monthSpend += rec.totalUsd;
+
+                if (rec.itemsSnapshot) {
+                    rec.itemsSnapshot.forEach(item => {
+                        let catName = 'Otros';
+                        for (let cat in products) {
+                            if (products[cat].some(p => p.name === item.name)) {
+                                catName = cat;
+                                break;
+                            }
+                        }
+                        if (!catTotals[catName]) catTotals[catName] = 0;
+                        catTotals[catName] += item.sub;
+                        totalGeneral += item.sub;
+                    });
+                }
+            });
+
+            document.getElementById('stat-week-spend').innerText = `$${weekSpend.toFixed(2)}`;
+            document.getElementById('stat-month-spend').innerText = `$${monthSpend.toFixed(2)}`;
+
+            if (totalGeneral <= 0) {
+                container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400 font-black">Sin montos suficientes para generar las barras de consumo.</p>`;
+                return;
+            }
+
+            let htmlBars = '';
+            for (let cat in catTotals) {
+                const amount = catTotals[cat];
+                const percentage = ((amount / totalGeneral) * 100).toFixed(1);
+                htmlBars += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-800">
+                            <span class="capitalize"><i class="fa-solid fa-tag text-indigo-600 mr-1.5"></i> ${cat}</span>
+                            <span>$${amount.toFixed(2)} (${percentage}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                            <div class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = htmlBars;
         }
 
         function renderModalHistory() {

@@ -61,6 +61,20 @@
         }
         .app-modern-gradient { background-color: #f8fafc; }
         
+        /* EFECTO ISLA DINÁMICA (APPLE SPRING) */
+        .dynamic-island {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .dynamic-island:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(30, 58, 138, 0.4);
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        .island-text { transition: all 0.4s ease; }
+        .dynamic-island:hover .island-text { color: #ffffff; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -74,7 +88,7 @@
         }
     </style>
 </head>
-<body class="app-modern-gradient text-slate-900 font-sans pb-24 md:pb-6 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
+<body class="app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
 
     <style>
         body.hidden-at-start { opacity: 0; }
@@ -91,11 +105,17 @@
                 <h3 class="font-black text-lg text-slate-900" id="transition-msg">¡Bienvenido a <span class="text-blue-900 font-extrabold">DFPfantasy</span>!</h3>
             </div>
         </div>
-        <footer class="w-full text-center py-3 px-4 rounded-2xl max-w-lg mb-2">
-            <p class="text-[10px] text-blue-100 font-medium tracking-wide">
-                <strong class="text-white font-black">DFPfantasy CorVe, C.A</strong> Todos los derechos reservados.
-            </p>
-        </footer>
+        
+        <!-- ISLA DINÁMICA FOOTER (TRANSICIÓN) -->
+        <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[60] flex justify-center w-full pointer-events-none px-4">
+            <div class="dynamic-island pointer-events-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-2 flex items-center justify-center gap-2.5 cursor-pointer group overflow-hidden">
+                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.9)] flex-shrink-0"></div>
+                <p class="island-text text-[10px] text-slate-400 font-medium tracking-wide whitespace-nowrap">
+                    <strong class="text-white font-black drop-shadow-sm">DFPfantasy CorVe, C.A</strong>[cite: 1]
+                    <span class="ml-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Todos los derechos reservados.</span>[cite: 1]
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- CABECERA FIJA (SUPERIOR) -->
@@ -195,11 +215,11 @@
             <section class="bg-white rounded-2xl shadow-sm p-3 border border-slate-200 transition-colors hidden lg:block" id="fiscal-card">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-bold text-slate-900 text-xs flex items-center">
-                        <i class="fa-solid fa-building text-blue-800 mr-1.5"></i> DFPfantasy Market C.A.
+                        <i class="fa-solid fa-building text-blue-800 mr-1.5"></i> DFPfantasy Market C.A.[cite: 1]
                     </h3>
-                    <span class="text-[9px] bg-slate-100 text-slate-600 font-black px-2 py-0.5 rounded-full">J-50341289-0</span>
+                    <span class="text-[9px] bg-slate-100 text-slate-600 font-black px-2 py-0.5 rounded-full">J-50341289-0</span>[cite: 1]
                 </div>
-                <p class="text-[10px] text-slate-500 font-semibold mb-1">Ciudad Bolívar, Estado Bolívar</p>
+                <p class="text-[10px] text-slate-500 font-semibold mb-1">Ciudad Bolívar, Estado Bolívar</p>[cite: 1]
                 <div class="text-[10px] bg-slate-50 p-2 rounded border border-slate-100 flex justify-between">
                     <span class="font-bold text-slate-700">Cliente:</span>
                     <span id="display-cliente" class="font-black text-blue-900">Registrado</span>
@@ -263,8 +283,19 @@
         </div>
     </main>
 
+    <!-- ISLA DINÁMICA FOOTER (PRINCIPAL FIJO ABAJO) -->
+    <div class="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-40 flex justify-center w-full pointer-events-none px-4 no-print">
+        <div class="dynamic-island pointer-events-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-2 flex items-center justify-center gap-2.5 cursor-pointer group overflow-hidden shadow-2xl">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.9)] flex-shrink-0"></div>
+            <p class="island-text text-[10px] text-slate-400 font-medium tracking-wide whitespace-nowrap">
+                <strong class="text-white font-black drop-shadow-sm">DFPfantasy CorVe, C.A</strong>[cite: 1]
+                <span class="ml-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Todos los derechos reservados.</span>[cite: 1]
+            </p>
+        </div>
+    </div>
+
     <!-- BARRA DE NAVEGACIÓN INFERIOR (Solo Móvil) -->
-    <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center p-2 pb-safe z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <nav class="lg:hidden fixed bottom-14 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center p-2 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <button onclick="showDashboardMenu()" class="flex flex-col items-center p-2 text-slate-500 hover:text-blue-900 transition">
             <i class="fa-solid fa-house text-lg mb-1"></i>
             <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
@@ -402,11 +433,6 @@
                 </div>
             </div>
         </div>
-        <footer class="w-full text-center py-3 px-4 rounded-2xl max-w-lg mb-2">
-            <p class="text-[10px] text-blue-100 font-medium tracking-wide">
-                <strong class="text-white font-black">DFPfantasy CorVe, C.A</strong> Todos los derechos reservados.
-            </p>
-        </footer>
     </div>
 
     <!-- APARTADO DE HISTORIAL COMPLETO -->
@@ -462,8 +488,8 @@
         let purchaseHistory = [];
         let totalGlobalUsd = 0;
         let fiscalData = {
-            storeName: "DFPfantasy Market C.A.",
-            storeRif: "J-50341289-0",
+            storeName: "DFPfantasy Market C.A.",[cite: 1]
+            storeRif: "J-50341289-0",[cite: 1]
             clientName: "Cliente DFPfantasy",
             clientDoc: "V-0000000"
         };
@@ -601,12 +627,12 @@
             const cards = ['search-card', 'aisle-card', 'ticket-card', 'fiscal-card'];
             
             if (isDarkMode) {
-                body.className = "bg-slate-900 text-slate-100 font-sans pb-24 lg:pb-6 transition-colors duration-300 overflow-x-hidden visible-app";
+                body.className = "bg-slate-900 text-slate-100 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden visible-app";
                 header.className = "bg-slate-900/90 backdrop-blur-md text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-800 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-sun text-xs";
                 cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-700 transition-colors duration-300"; });
             } else {
-                body.className = "app-modern-gradient text-slate-900 font-sans pb-24 lg:pb-6 transition-colors duration-300 overflow-x-hidden visible-app";
+                body.className = "app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden visible-app";
                 header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-slate-200 transition-colors duration-300";
                 themeIcon.className = "fa-solid fa-moon text-xs";
                 cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-300"; });
@@ -836,7 +862,7 @@
                             <div class="col-span-1 text-right"><button onclick="removeCartItem('${key}')" class="text-rose-500 hover:text-rose-700 font-black transition p-1"><i class="fa-solid fa-xmark"></i></button></div>
                         </div>`;
                 }).join('');
-                totalGlobalUsd = baseTotal * 1.16; // Con IVA 16% integrado al total
+                totalGlobalUsd = baseTotal * 1.16;
             }
 
             const totalBs = totalGlobalUsd * exchangeRate;
@@ -912,7 +938,7 @@
                 let msg = "⚠️ ASISTENTE ANTI-OLVIDOS:\n\nNoté que hoy no llevas productos que normalmente compras:\n\n- " 
                           + missingItems.slice(0, 3).join("\n- ") 
                           + "\n\n¿Estás seguro de que deseas cerrar la compra sin ellos?";
-                if (!confirm(msg)) return; // Se cancela el guardado para que vaya a buscarlos
+                if (!confirm(msg)) return;
             }
             executePurchaseEmission();
         }
@@ -944,12 +970,11 @@
             const exactTimeObj = new Date();
             const dateTimeString = `${exactTimeObj.toLocaleDateString()} ${exactTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-            // Enviar Correo por EmailJS
             const templateParams = {
                 to_email: currentUser,
-                store_name: fiscalData.storeName,
-                store_rif: fiscalData.storeRif,
-                store_dir: "Ciudad Bolívar, Estado Bolívar",
+                store_name: fiscalData.storeName,[cite: 1]
+                store_rif: fiscalData.storeRif,[cite: 1]
+                store_dir: "Ciudad Bolívar, Estado Bolívar",[cite: 1]
                 client_name: fiscalData.clientName,
                 client_doc: fiscalData.clientDoc,
                 invoice_date: dateTimeString,
@@ -960,16 +985,15 @@
                 total_usd: `$${totalGlobalUsd.toFixed(2)}`
             };
 
-            emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
+            emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)[cite: 1]
                 .then(() => { alert("¡Compra guardada y resumen enviado a tu correo!"); }, 
                       (err) => { console.error("Error EmailJS:", err); alert("Compra guardada localmente, pero falló el envío del correo."); });
 
-            // Guardar en Historial
             const record = {
                 id: Date.now(),
                 timestamp: Date.now(),
                 date: dateTimeString,
-                store: fiscalData.storeName,
+                store: fiscalData.storeName,[cite: 1]
                 facNumber: templateParams.fac_number,
                 totalUsd: totalGlobalUsd,
                 totalBs: totalBs,
@@ -1049,7 +1073,7 @@
             modalList.innerHTML = purchaseHistory.map(rec => `
                 <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center text-xs shadow-sm cursor-pointer hover:bg-blue-50 transition transform hover:scale-[1.01]">
                     <div>
-                        <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>
+                        <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>[cite: 1]
                         <span class="text-[11px] font-bold text-blue-800 block">Recibo: #${rec.facNumber}</span>
                         <span class="text-[10px] text-slate-500 font-semibold">${rec.date} • ${rec.itemsCount} ítems</span>
                     </div>
@@ -1073,7 +1097,7 @@
             `).join('') : '<p>Sin detalles de ítems</p>';
 
             document.getElementById('invoice-detail-content').innerHTML = `
-                <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>
+                <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>[cite: 1]
                 <p class="text-center text-[11px]">Recibo Control: #${rec.facNumber}</p>
                 <p class="text-center text-[10px] text-slate-500">${rec.date}</p>
                 <div class="my-2 border-t border-blue-200 pt-1">

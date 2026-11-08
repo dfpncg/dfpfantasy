@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFPFantasy - Mercado Inteligente</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        try { emailjs.init("KZlNPXhPilNfN8Br_"); } catch(e) { console.error("EmailJS init error:", e); }
+    </script>
+    <!-- Firebase SDKs (Compat version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        let db = null;
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyAjz8HFM1IDo8AdpB_QPZLu0NVPALzvBmk",
+                authDomain: "dfpfantasy-62dae.firebaseapp.com",
+                projectId: "dfpfantasy-62dae",
+                storageBucket: "dfpfantasy-62dae.appspot.com",
+                messagingSenderId: "506106402828",
+                appId: "1:506106402828:web:cc5afd50ce322a0ac7f629"
+            };
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+        } catch (e) {
+            console.error("Firebase init error:", e);
+        }
+    </script>
+    <style>
+        .fiscal-ticket { font-family: 'Courier New', Courier, monospace; }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(30, 58, 138, 0.4)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 12px rgba(30, 58, 138, 0.7)); }
+        }
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .animate-logo-glow { animation: pulseGlow 3s infinite ease-in-out; }
+        .modal-animated { animation: fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        .shimmer-btn {
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #1e3a8a 100%);
+            background-size: 200% auto;
+            transition: 0.4s;
+        }
+        .shimmer-btn:hover {
+            background-position: right center;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+        
+        .market-hero-bg {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.95) 100%),
+                        url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80');
+            background-blend-mode: overlay; background-size: cover; background-position: center;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .app-modern-gradient { background-color: #f8fafc; }
+        
+        /* EFECTO ISLA DINÁMICA (APPLE SPRING) */
+        .dynamic-island {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .dynamic-island:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(30, 58, 138, 0.4);
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        .island-text { transition: all 0.4s ease; }
+        .dynamic-island:hover .island-text { color: #ffffff; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #ticket-card, #ticket-card * { visibility: visible; }
+            #ticket-card { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100" id="body-theme">
+
+    <!-- CONTENEDOR DE ERROR VISIBLE POR SI ALGO FALLA -->
+    <div id="error-banner" style="display:none; background: #fee2e2; color: #991b1b; padding: 15px; text-align: center; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 9999;"></div>
+
+    <!-- CABECERA FIJA (SUPERIOR) -->
+    <header class="bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-slate-200 transition-colors duration-300" id="header-theme">
+        <div class="max-w-6xl mx-auto flex justify-between items-center mb-2">
+            <div class="flex items-center space-x-2.5 cursor-pointer group" onclick="showDashboardMenu()">
+                <div class="animate-logo-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="42" height="42" class="flex-shrink-0">
+                        <circle cx="25" cy="25" r="23" fill="#1e3a8a" opacity="0.1" />
+                        <path d="M15 18H21L25 32H35L38 21H20" stroke="#1e3a8a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="23" cy="37" r="2.5" fill="#1e3a8a"/>
+                        <circle cx="33" cy="37" r="2.5" fill="#1e3a8a"/>
+                        <path d="M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z" fill="#3b82f6" opacity="0.9"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base font-black tracking-wide text-slate-900 leading-tight">
+                        <span class="text-blue-900">DFP</span>fantasy
+                    </h1>
+                    <p class="text-[10px] font-extrabold text-blue-600 tracking-wider uppercase">MARKET HOGAR</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <div class="hidden sm:block text-right bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100 shadow-sm">
+                    <span class="text-[9px] uppercase tracking-wider block text-blue-800 font-bold">Total Pagar</span>
+                    <span class="text-sm font-black text-blue-950" id="grand-total-header">$0.00</span>
+                </div>
+                <button onclick="openComparatorModal()" class="bg-blue-100 hover:bg-blue-200 text-blue-900 w-9 h-9 rounded-xl flex items-center justify-center shadow-sm transition transform hover:scale-105 active:scale-95" title="Comparador de Anaquel">
+                    <i class="fa-solid fa-scale-balanced text-xs"></i>
+                </button>
+                <button onclick="toggleDarkMode()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 w-9 h-9 rounded-xl flex items-center justify-center shadow-sm transition transform hover:scale-105 active:scale-95" title="Cambiar Modo">
+                    <i class="fa-solid fa-moon text-xs" id="theme-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto bg-blue-900 text-white rounded-xl p-2.5 flex items-center justify-between text-xs shadow-md">
+            <div class="flex items-center space-x-1.5">
+                <button onclick="showDashboardMenu()" class="hidden sm:inline-flex items-center text-[10px] bg-blue-800 hover:bg-blue-700 px-2 py-1 rounded-lg border border-blue-600 font-bold transition">
+                    <i class="fa-solid fa-house mr-1"></i> Menú
+                </button>
+                <button onclick="logoutUser()" class="text-[10px] bg-blue-800 hover:bg-blue-700 px-2 py-1 rounded-lg border border-blue-600 font-bold transition flex items-center">
+                    <i class="fa-solid fa-user-slash mr-1"></i> <span id="current-user-badge">Usuario</span>
+                </button>
+                <button onclick="deleteAccount()" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded-lg border border-rose-500 font-bold transition flex items-center" title="Eliminar cuenta">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-1.5">
+                <span class="text-[11px] text-blue-100 font-bold">Tasa ($):</span>
+                <input type="number" step="0.01" id="exchange-rate" value="36.50" onchange="updateExchangeRate(this.value)" class="w-16 bg-white text-slate-900 font-black px-1.5 py-0.5 rounded-lg text-right text-xs focus:outline-none shadow-inner">
+            </div>
+        </div>
+    </header>
+
+    <!-- ARQUITECTURA DE PANTALLA DIVIDIDA (MODO POS) -->
+    <main class="max-w-6xl mx-auto p-4 flex flex-col lg:flex-row gap-5">
+
+        <!-- COLUMNA IZQUIERDA: PRODUCTOS Y BÚSQUEDA (65% en PC) -->
+        <div class="w-full lg:w-[65%] space-y-4">
+            
+            <!-- BUSCADOR RÁPIDO -->
+            <section class="bg-white rounded-2xl shadow-sm p-3 border border-slate-200 transition-colors" id="search-card">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-blue-700">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" id="global-search-input" oninput="filterProductsGlobal(this.value)" placeholder="Buscar producto rápido en el supermercado..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all">
+                </div>
+            </section>
+
+            <!-- PASILLOS -->
+            <section>
+                <h2 class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Pasillos del Supermercado</h2>
+                <div class="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-4 xl:grid-cols-8 gap-2" id="categories-container"></div>
+            </section>
+
+            <!-- PRODUCTOS -->
+            <section class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-300" id="aisle-card">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h3 class="font-black text-slate-900 text-sm" id="current-category-title">Pasillo</h3>
+                    </div>
+                    <button onclick="openAddModal()" class="bg-blue-50 text-blue-800 text-[10px] font-black px-2.5 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100 transition shadow-sm">
+                        <i class="fa-solid fa-plus mr-1"></i> Agregar
+                    </button>
+                </div>
+                <div class="space-y-2 max-h-[60vh] overflow-y-auto pr-1 pb-4" id="products-list"></div>
+            </section>
+        </div>
+
+        <!-- COLUMNA DERECHA: RECIBO Y CALCULADORAS (35% en PC - Sticky) -->
+        <div class="w-full lg:w-[35%] space-y-4 lg:sticky lg:top-36 self-start">
+            
+            <!-- DATOS FISCALES FIJOS -->
+            <section class="bg-white rounded-2xl shadow-sm p-3 border border-slate-200 transition-colors hidden lg:block" id="fiscal-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-slate-900 text-xs flex items-center">
+                        <i class="fa-solid fa-building text-blue-800 mr-1.5"></i> DFPfantasy Market C.A.[cite: 1]
+                    </h3>
+                    <span class="text-[9px] bg-slate-100 text-slate-600 font-black px-2 py-0.5 rounded-full">J-50341289-0</span>[cite: 1]
+                </div>
+                <p class="text-[10px] text-slate-500 font-semibold mb-1">Ciudad Bolívar, Estado Bolívar</p>[cite: 1]
+                <div class="text-[10px] bg-slate-50 p-2 rounded border border-slate-100 flex justify-between">
+                    <span class="font-bold text-slate-700">Cliente:</span>
+                    <span id="display-cliente" class="font-black text-blue-900">Registrado</span>
+                </div>
+            </section>
+
+            <!-- COMPROBANTE RECIBO -->
+            <section class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 transition-colors duration-300 relative overflow-hidden" id="ticket-card">
+                <div class="absolute top-0 left-0 w-full h-1 bg-blue-900"></div>
+
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+                    <h3 class="font-black text-slate-900 text-sm flex items-center">
+                        <i class="fa-solid fa-file-invoice-dollar text-blue-800 mr-2 text-lg"></i> Recibo Físico
+                    </h3>
+                    <div class="flex space-x-1.5 no-print">
+                        <button onclick="clearCart()" class="text-[10px] text-rose-600 font-bold bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-100 transition" title="Vaciar todo"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="checkAntiOlvidosAndSave()" class="text-[11px] text-white font-black shimmer-btn px-3 py-1.5 rounded-lg shadow-md transition flex items-center" title="Revisar y Guardar">
+                            Cerrar Compra <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-12 text-[10px] font-black text-slate-500 uppercase pb-1.5 border-b border-slate-200 px-1">
+                    <span class="col-span-5">Descrip.</span>
+                    <span class="col-span-3 text-center">Cant</span>
+                    <span class="col-span-3 text-right">Total $</span>
+                    <span class="col-span-1"></span>
+                </div>
+
+                <div class="divide-y divide-slate-100 max-h-48 overflow-y-auto px-1 min-h-[100px]" id="cart-list">
+                    <p class="text-xs text-center py-6 font-black text-slate-400">El carrito está vacío.</p>
+                </div>
+
+                <!-- CALCULADORA DE PAGO MIXTO (TRINCHERA) -->
+                <div class="mt-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100 text-xs font-bold transition-colors no-print">
+                    <p class="text-[10px] text-blue-900 uppercase tracking-wider mb-2 font-black"><i class="fa-solid fa-cash-register mr-1"></i> Pago Mixto en Caja:</p>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-slate-700">Efectivo entregado ($):</span>
+                        <div class="flex items-center">
+                            <span class="text-slate-500 mr-1 font-black">$</span>
+                            <input type="number" id="mixed-cash-input" step="1" oninput="calculateMixedPayment()" placeholder="0" class="w-16 bg-white border border-blue-200 rounded-lg px-2 py-1 text-xs text-center font-black text-blue-900 focus:outline-none focus:border-blue-600 shadow-inner">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-900 border-t border-blue-200/60 pt-2">
+                        <span class="text-[11px]">Pagar por Pago Móvil:</span>
+                        <span id="mixed-remaining-bs" class="text-blue-700 font-black text-sm">Bs. 0.00</span>
+                    </div>
+                </div>
+
+                <!-- TOTALES FISCALES -->
+                <div class="mt-3 pt-3 border-t border-slate-200 space-y-1.5 fiscal-ticket text-xs font-bold text-slate-900">
+                    <div class="flex justify-between items-center text-slate-950 font-black text-base pt-1 border-t border-dashed border-slate-300">
+                        <span>TOTAL GENERAL:</span>
+                        <div class="text-right">
+                            <span id="grand-total-sidebar" class="text-blue-900 block">$0.00</span>
+                            <span id="fiscal-total-bs" class="text-[10px] text-slate-600 block">Bs. 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ISLA DINÁMICA FOOTER (PRINCIPAL FIJO ABAJO) -->
+    <div class="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-40 flex justify-center w-full pointer-events-none px-4 no-print">
+        <div class="dynamic-island pointer-events-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-2 flex items-center justify-center gap-2.5 cursor-pointer group overflow-hidden shadow-2xl">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.9)] flex-shrink-0"></div>
+            <p class="island-text text-[10px] text-slate-400 font-medium tracking-wide whitespace-nowrap">
+                <strong class="text-white font-black drop-shadow-sm">DFPfantasy CorVe, C.A</strong>[cite: 1]
+                <span class="ml-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Todos los derechos reservados.</span>[cite: 1]
+            </p>
+        </div>
+    </div>
+
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (Solo Móvil) -->
+    <nav class="lg:hidden fixed bottom-14 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center p-2 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <button onclick="showDashboardMenu()" class="flex flex-col items-center p-2 text-slate-500 hover:text-blue-900 transition">
+            <i class="fa-solid fa-house text-lg mb-1"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
+        </button>
+        <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center p-2 text-slate-500 hover:text-blue-900 transition">
+            <i class="fa-solid fa-store text-lg mb-1"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Pasillos</span>
+        </button>
+        <button onclick="openComparatorModal()" class="flex flex-col items-center p-2 text-blue-600 font-black transition relative -top-3 bg-white rounded-full border border-blue-100 shadow-md w-14 h-14 justify-center">
+            <i class="fa-solid fa-scale-balanced text-xl"></i>
+        </button>
+        <button onclick="document.getElementById('ticket-card').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center p-2 text-slate-500 hover:text-blue-900 transition relative">
+            <i class="fa-solid fa-receipt text-lg mb-1"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Recibo</span>
+            <span id="mobile-cart-badge" class="absolute top-1 right-2 w-2 h-2 bg-rose-500 rounded-full hidden"></span>
+        </button>
+    </nav>
+
+    <!-- MENÚ PRINCIPAL FLOTANTE -->
+    <div id="dashboard-menu-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-slate-200 text-center space-y-4 modal-animated relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-blue-900"></div>
+            <button onclick="closeDashboardMenu()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold text-sm transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-14 h-14 bg-blue-50 text-blue-900 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-sm">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+            <h2 class="text-base font-black text-slate-900">Opciones de Compra</h2>
+
+            <div class="grid grid-cols-1 gap-2 pt-1">
+                <button onclick="startNewPurchase()" class="shimmer-btn text-white p-3.5 rounded-2xl shadow-md flex items-center space-x-3 transition transform hover:scale-[1.02] text-left">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white text-lg"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div><strong class="block text-sm font-black">Nueva Compra</strong><span class="text-[10px] text-blue-100 font-medium">Vaciar carrito e iniciar</span></div>
+                </button>
+                <button onclick="repeatLastPurchase()" class="bg-slate-50 hover:bg-slate-100 text-slate-900 p-3.5 rounded-2xl shadow-sm flex items-center space-x-3 transition border border-slate-200 text-left">
+                    <div class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-blue-800 text-lg"><i class="fa-solid fa-rotate-right"></i></div>
+                    <div><strong class="block text-sm font-black">Repetir Último Mercado</strong><span class="text-[10px] text-slate-500 font-medium">Cargar lista anterior rápido</span></div>
+                </button>
+                <button onclick="openHistoryModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-900 p-3.5 rounded-2xl shadow-sm flex items-center space-x-3 transition border border-slate-200 text-left">
+                    <div class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-blue-800 text-lg"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div><strong class="block text-sm font-black">Historial de Compras</strong><span class="text-[10px] text-slate-500 font-medium">Revisar facturas pasadas</span></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COMPARADOR EXPRESS DE ANAQUEL -->
+    <div id="comparator-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-4 border border-blue-200">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-black text-sm text-slate-900 flex items-center">
+                    <i class="fa-solid fa-scale-balanced text-blue-800 mr-2 text-lg"></i> Comparador de Anaquel
+                </h3>
+                <button onclick="closeComparatorModal()" class="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium leading-tight">Introduce el precio y peso/cantidad de dos opciones para saber cuál rinde más tu dinero en este pasillo.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-200">
+                    <strong class="text-[10px] uppercase text-blue-900 block text-center mb-2 font-black">Opción A</strong>
+                    <input type="number" step="0.01" id="comp-price-a" placeholder="Precio ($)" class="w-full mb-2 text-xs px-2 py-1.5 rounded-lg border border-blue-200 font-black text-center focus:outline-none focus:border-blue-500 shadow-inner">
+                    <input type="number" step="0.01" id="comp-qty-a" placeholder="Gramos/Und" class="w-full text-xs px-2 py-1.5 rounded-lg border border-blue-200 font-black text-center focus:outline-none focus:border-blue-500 shadow-inner">
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <strong class="text-[10px] uppercase text-slate-700 block text-center mb-2 font-black">Opción B</strong>
+                    <input type="number" step="0.01" id="comp-price-b" placeholder="Precio ($)" class="w-full mb-2 text-xs px-2 py-1.5 rounded-lg border border-slate-200 font-black text-center focus:outline-none focus:border-slate-400 shadow-inner">
+                    <input type="number" step="0.01" id="comp-qty-b" placeholder="Gramos/Und" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 font-black text-center focus:outline-none focus:border-slate-400 shadow-inner">
+                </div>
+            </div>
+            <button onclick="calculateComparator()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-black py-3 rounded-xl text-xs transition shadow-md">
+                Comparar Ahora
+            </button>
+            <div id="comp-result" class="text-center font-black text-sm pt-2 min-h-[32px] flex items-center justify-center"></div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO PRODUCTO -->
+    <div id="product-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl modal-animated space-y-4">
+            <h3 class="font-black text-base text-slate-900 border-b border-slate-100 pb-2" id="modal-product-title">Registrar Producto</h3>
+            <form id="add-product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="edit-prod-id">
+                <div class="mb-3">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Nombre</label>
+                    <input type="text" id="new-prod-name" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Pasillo</label>
+                    <select id="new-prod-category" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                        <option value="higiene">Higiene</option>
+                        <option value="secos" selected>Secos</option>
+                        <option value="charcuteria">Charcutería</option>
+                        <option value="frios">Fríos</option>
+                        <option value="hortalizas">Hortalizas</option>
+                        <option value="panaderia">Panadería</option>
+                        <option value="chucherias">Chucherías</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Precio Base ($)</label>
+                    <input type="number" step="0.01" id="new-prod-price" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600">
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl text-xs font-bold transition">Cancelar</button>
+                    <button type="submit" class="flex-1 shimmer-btn text-white py-3 rounded-xl text-xs font-bold shadow-md transition">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE INICIO DE SESIÓN -->
+    <div id="auth-modal" class="fixed inset-0 market-hero-bg z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
+        <div class="flex-1 w-full flex items-center justify-center">
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-slate-200 modal-animated">
+                <div id="auth-step-1">
+                    <div class="text-center mb-4">
+                        <div class="w-20 h-20 bg-blue-50 text-blue-900 rounded-3xl flex items-center justify-center mx-auto mb-3 text-4xl shadow-md animate-logo-glow">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                        <h3 class="font-black text-xl text-slate-900"><span class="text-blue-900">DFP</span>fantasy Market</h3>
+                        <p class="text-[11px] text-slate-500 font-semibold mt-1">Gestión corporativa y de compras en Venezuela</p>
+                    </div>
+                    <form onsubmit="handleAuthSubmit(event)">
+                        <div class="mb-3">
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">Correo Electrónico</label>
+                            <input type="email" id="auth-email" required placeholder="tucorreo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                        </div>
+                        <div class="mb-2">
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">PIN de Seguridad Numérico</label>
+                            <input type="number" id="auth-pin" required inputmode="numeric" placeholder="Ej. 1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                        </div>
+                        <button type="submit" class="w-full shimmer-btn text-white py-3 rounded-xl text-xs font-black shadow-md mt-3">Ingresar al Sistema</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APARTADO DE HISTORIAL COMPLETO -->
+    <div id="history-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl border border-slate-200 max-h-[85vh] overflow-y-auto modal-animated space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-black text-base text-slate-900 flex items-center">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-800 mr-2 text-lg"></i> Historial de Compras
+                </h3>
+                <button onclick="closeHistoryModal()" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-2.5" id="modal-history-list">
+                <p class="text-xs text-center py-8 font-black text-slate-400">No hay registros en el historial.</p>
+            </div>
+            <button onclick="closeHistoryModal()" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-2.5 rounded-xl text-xs font-black shadow-md">Cerrar Historial</button>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE DE FACTURA -->
+    <div id="invoice-detail-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[90vh] overflow-y-auto modal-animated space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-black text-sm text-slate-900">Detalle de Factura Histórica</h3>
+                <button onclick="closeInvoiceDetailModal()" class="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="invoice-detail-content" class="bg-blue-50/50 p-3 rounded-xl border border-dashed border-blue-200 fiscal-ticket text-[11px] text-slate-900 font-bold space-y-1"></div>
+            <button onclick="closeInvoiceDetailModal()" class="w-full bg-slate-800 text-white py-2 rounded-xl text-xs font-bold">Cerrar Detalle</button>
+        </div>
+    </div>
+
+    <!-- LÓGICA Y CONTROL COMPLETO -->
+    <script>
+        try {
+            const categories = [
+                { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
+                { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
+                { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese', isWeight: true },
+                { id: 'frios', name: 'Fríos', icon: 'fa-fish', isWeight: true },
+                { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot', isWeight: true },
+                { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
+                { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' },
+                { id: 'otros', name: 'Otros', icon: 'fa-box-open' }
+            ];
+
+            let currentUser = localStorage.getItem('komprafacil_current_user') || null;
+            let activeCategory = 'secos';
+            let exchangeRate = parseFloat(localStorage.getItem('komprafacil_rate')) || 36.50;
+            let isDarkMode = localStorage.getItem('komprafacil_dark') === 'true';
+
+            let products = {};
+            let cart = {};
+            let purchaseHistory = [];
+            let totalGlobalUsd = 0;
+            let fiscalData = {
+                storeName: "DFPfantasy Market C.A.",[cite: 1]
+                storeRif: "J-50341289-0",[cite: 1]
+                clientName: "Cliente DFPfantasy",
+                clientDoc: "V-0000000"
+            };
+
+            document.getElementById('exchange-rate').value = exchangeRate;
+
+            async function initApp() {
+                try {
+                    if (!currentUser) {
+                        document.getElementById('auth-modal').classList.remove('hidden');
+                        document.getElementById('auth-step-1').classList.remove('hidden');
+                        return;
+                    }
+
+                    document.getElementById('auth-modal').classList.add('hidden');
+                    document.getElementById('current-user-badge').innerText = currentUser;
+
+                    if (db) {
+                        await loadDataFromCloud();
+                    }
+                    applyTheme();
+                    renderCategories();
+                    selectCategory(activeCategory);
+                    loadFiscalUI();
+                    updateCartUI();
+                } catch (err) {
+                    console.error("Error en initApp:", err);
+                }
+            }
+
+            async function handleAuthSubmit(e) {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value.trim().toLowerCase();
+                const pin = document.getElementById('auth-pin').value.trim();
+
+                try {
+                    if (!db) {
+                        alert("Base de datos no disponible temporalmente. Iniciando en modo local.");
+                        currentUser = email;
+                        localStorage.setItem('komprafacil_current_user', currentUser);
+                        initApp();
+                        return;
+                    }
+
+                    const docRef = db.collection("users").doc(email);
+                    const doc = await docRef.get();
+
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        if (userData.pin === pin) {
+                            currentUser = email;
+                            localStorage.setItem('komprafacil_current_user', currentUser);
+                            fiscalData.clientName = userData.name || "Cliente DFPfantasy";
+                            fiscalData.clientDoc = userData.doc || "V-0000000";
+                            initApp();
+                        } else {
+                            alert("PIN de seguridad incorrecto.");
+                        }
+                    } else {
+                        alert("Este correo no está registrado en el sistema.");
+                    }
+                } catch (err) {
+                    console.error("Error de base de datos:", err);
+                    alert("Error de conexión con la base de datos.");
+                }
+            }
+
+            function logoutUser() {
+                if (!confirm("¿Deseas cerrar sesión?")) return;
+                localStorage.removeItem('komprafacil_current_user');
+                currentUser = null;
+                location.reload();
+            }
+
+            async function deleteAccount() {
+                if (!currentUser || !db) return;
+                if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"?`)) return;
+
+                try {
+                    await db.collection("users").doc(currentUser).delete();
+                    localStorage.removeItem('komprafacil_current_user');
+                    currentUser = null;
+                    location.reload();
+                } catch (err) {
+                    console.error("Error eliminando cuenta: ", err);
+                }
+            }
+
+            async function saveDataToCloud() {
+                if (!currentUser || !db) return;
+                try {
+                    await db.collection("users").doc(currentUser).set({
+                        products: products,
+                        cart: cart,
+                        history: purchaseHistory
+                    }, { merge: true });
+                } catch (err) { console.error("Error guardando datos: ", err); }
+            }
+
+            async function loadDataFromCloud() {
+                if (!currentUser || !db) return;
+                try {
+                    const doc = await db.collection("users").doc(currentUser).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        products = data.products || {};
+                        cart = data.cart || {};
+                        purchaseHistory = data.history || [];
+                        if (data.name) fiscalData.clientName = data.name;
+                        if (data.doc) fiscalData.clientDoc = data.doc;
+                    }
+                } catch (err) { console.error("Error cargando datos: ", err); }
+            }
+
+            function loadFiscalUI() {
+                document.getElementById('display-cliente').innerText = `${fiscalData.clientName} (${fiscalData.clientDoc})`;
+            }
+
+            function toggleDarkMode() {
+                isDarkMode = !isDarkMode;
+                localStorage.setItem('komprafacil_dark', isDarkMode);
+                applyTheme();
+            }
+
+            function applyTheme() {
+                const body = document.body;
+                const header = document.getElementById('header-theme');
+                const themeIcon = document.getElementById('theme-icon');
+                const cards = ['search-card', 'aisle-card', 'ticket-card', 'fiscal-card'];
+                
+                if (isDarkMode) {
+                    body.className = "bg-slate-900 text-slate-100 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100";
+                    header.className = "bg-slate-900/90 backdrop-blur-md text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-800 transition-colors duration-300";
+                    if(themeIcon) themeIcon.className = "fa-solid fa-sun text-xs";
+                    cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-700 transition-colors duration-300"; });
+                } else {
+                    body.className = "app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100";
+                    header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-slate-200 transition-colors duration-300";
+                    if(themeIcon) themeIcon.className = "fa-solid fa-moon text-xs";
+                    cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-300"; });
+                }
+            }
+
+            function openAddModal() {
+                document.getElementById('modal-product-title').innerText = 'Registrar Producto';
+                document.getElementById('new-prod-category').value = activeCategory;
+                document.getElementById('edit-prod-id').value = '';
+                document.getElementById('new-prod-name').value = '';
+                document.getElementById('new-prod-price').value = '';
+                document.getElementById('product-modal').classList.remove('hidden');
+            }
+
+            function closeAddModal() {
+                document.getElementById('product-modal').classList.add('hidden');
+                document.getElementById('add-product-form').reset();
+            }
+
+            function openEditProductModal(prodId) {
+                const catProducts = products[activeCategory] || [];
+                const prod = catProducts.find(p => p.id === prodId);
+                if (!prod) return;
+
+                document.getElementById('modal-product-title').innerText = 'Editar Producto';
+                document.getElementById('new-prod-category').value = activeCategory;
+                document.getElementById('edit-prod-id').value = prod.id;
+                document.getElementById('new-prod-name').value = prod.name;
+                document.getElementById('new-prod-price').value = prod.price;
+                document.getElementById('product-modal').classList.remove('hidden');
+            }
+
+            function saveProduct(e) {
+                e.preventDefault();
+                const editId = document.getElementById('edit-prod-id').value;
+                const targetCategory = document.getElementById('new-prod-category').value;
+                const name = document.getElementById('new-prod-name').value.trim();
+                const price = parseFloat(document.getElementById('new-prod-price').value);
+
+                if (!products[targetCategory]) products[targetCategory] = [];
+
+                if (editId) {
+                    for (let cat in products) {
+                        const idx = products[cat].findIndex(p => p.id === editId);
+                        if (idx !== -1) {
+                            products[cat][idx].name = name;
+                            products[cat][idx].price = price;
+                            if (cat !== targetCategory) {
+                                products[targetCategory].push(products[cat][idx]);
+                                products[cat].splice(idx, 1);
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    const savedId = `${targetCategory}_${Date.now()}`;
+                    products[targetCategory].push({ id: savedId, name, price });
+                }
+
+                saveDataToCloud();
+                closeAddModal();
+                selectCategory(targetCategory);
+            }
+
+            function deleteProductFromAisle(prodId) {
+                if (!confirm("¿Estás seguro de eliminar este producto del pasillo?")) return;
+                for (let cat in products) {
+                    products[cat] = products[cat].filter(p => p.id !== prodId);
+                }
+                if (cart[prodId]) delete cart[prodId];
+                saveDataToCloud();
+                renderProducts();
+                renderCategories();
+                updateCartUI();
+            }
+
+            function renderCategories() {
+                document.getElementById('categories-container').innerHTML = categories.map(cat => {
+                    let count = 0; for (let key in cart) { if (key.startsWith(cat.id)) count += 1; }
+                    return `
+                        <button onclick="selectCategory('${cat.id}')" class="relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all duration-300 ${activeCategory === cat.id ? 'bg-blue-900 border-blue-900 text-white shadow-md transform scale-[1.02]' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'}">
+                            ${count > 0 ? `<span class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm border border-white">${count}</span>` : ''}
+                            <i class="fa-solid ${cat.icon} text-lg mb-1 ${activeCategory === cat.id ? 'text-white' : 'text-blue-800'}"></i>
+                            <span class="text-[10px] truncate w-full text-center font-bold tracking-tight">${cat.name}</span>
+                        </button>`;
+                }).join('');
+            }
+
+            function selectCategory(catId) {
+                activeCategory = catId;
+                document.getElementById('global-search-input').value = '';
+                renderCategories();
+                document.getElementById('current-category-title').innerText = categories.find(c => c.id === catId).name;
+                renderProducts();
+            }
+
+            function filterProductsGlobal(query) {
+                const q = query.trim().toLowerCase();
+                const listContainer = document.getElementById('products-list');
+                if (!q) { renderProducts(); return; }
+                let matches = [];
+                for (let cat in products) {
+                    products[cat].forEach(prod => { if (prod.name.toLowerCase().includes(q)) matches.push({ ...prod, categoryId: cat }); });
+                }
+                document.getElementById('current-category-title').innerText = `Búsqueda: "${query}"`;
+                listContainer.innerHTML = matches.map(prod => generateProductHTML(prod, categories.find(c=>c.id===prod.categoryId).isWeight)).join('');
+            }
+
+            function renderProducts() {
+                const listContainer = document.getElementById('products-list');
+                const catProds = products[activeCategory] || [];
+                const isWeight = categories.find(c => c.id === activeCategory).isWeight;
+                if (catProds.length === 0) { listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Pasillo vacío.</p>`; return; }
+                listContainer.innerHTML = catProds.map(p => generateProductHTML(p, isWeight)).join('');
+            }
+
+            function generateProductHTML(prod, isWeight) {
+                const inCart = cart[prod.id];
+                const qty = inCart ? inCart.qty : 0;
+                const currentPrice = inCart ? inCart.price : prod.price;
+
+                let rightControlHTML = '';
+                if (isWeight) {
+                    rightControlHTML = `
+                        <div class="flex flex-col items-end space-y-1.5">
+                            <div class="flex items-center space-x-1">
+                                <input type="number" step="0.05" value="${qty>0?qty:''}" onchange="updateWeightQty('${prod.id}', this.value)" class="w-16 bg-slate-50 border border-slate-200 rounded-lg px-1.5 py-1 text-xs font-black text-center focus:outline-none focus:border-blue-400">
+                                <span class="text-[10px] font-bold text-slate-500">kg</span>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button onclick="setQuickWeight('${prod.id}', 0.5)" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-md font-black transition">+0.5</button>
+                                <button onclick="setQuickWeight('${prod.id}', 1.0)" class="text-[10px] bg-blue-800 hover:bg-blue-900 text-white px-1.5 py-0.5 rounded-md font-black shadow-sm transition">+1.0</button>
+                            </div>
+                        </div>`;
+                } else {
+                    rightControlHTML = `
+                        <div class="flex items-center space-x-1.5">
+                            <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center font-black shadow-sm transition text-slate-700">-</button>
+                            <span class="text-sm font-black w-6 text-center text-blue-900">${qty}</span>
+                            <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-blue-800 hover:bg-blue-900 text-white rounded-lg flex items-center justify-center font-black shadow-sm transition">+</button>
+                        </div>`;
+                }
+
+                return `
+                    <div class="flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <h4 class="font-bold text-slate-900 text-xs">${prod.name}</h4>
+                                <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 text-[10px] transition"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-[10px] transition"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <span class="text-[10px] text-blue-700 font-black">$</span>
+                                <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-14 bg-transparent text-xs font-black text-blue-700 focus:outline-none focus:border-b border-blue-300">
+                            </div>
+                        </div>
+                        <div>${rightControlHTML}</div>
+                    </div>`;
+            }
+
+            function findProd(id) { for(let c in products){let f = products[c].find(i=>i.id===id); if(f) return f;} return null;}
+            
+            function setQuickWeight(prodId, w) {
+                let p = findProd(prodId); if(!p) return;
+                if(!cart[prodId]) cart[prodId] = {...p, qty:0};
+                cart[prodId].qty = parseFloat((cart[prodId].qty + w).toFixed(2));
+                saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
+            }
+            function changeQty(prodId, c) {
+                let p = findProd(prodId); if(!p) return;
+                if(!cart[prodId]) cart[prodId] = {...p, qty:0};
+                cart[prodId].qty += c;
+                if(cart[prodId].qty <= 0) delete cart[prodId];
+                saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
+            }
+            function updateWeightQty(prodId, val) {
+                let p = findProd(prodId); if(!p) return;
+                let w = parseFloat(val);
+                if(isNaN(w) || w <= 0) delete cart[prodId]; else { cart[prodId] = {...p, qty: w}; }
+                saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
+            }
+            function updateCartItemPrice(prodId, val) {
+                let p = parseFloat(val)||0;
+                if(cart[prodId]) cart[prodId].price = p;
+                let pObj = findProd(prodId); if(pObj) pObj.price = p;
+                saveDataToCloud(); updateCartUI();
+            }
+            function removeCartItem(prodId) { 
+                delete cart[prodId]; saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories(); 
+            }
+            function clearCart() { 
+                if(confirm("¿Estás seguro de vaciar el carrito por completo?")) { 
+                    cart = {}; saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories(); 
+                } 
+            }
+
+            function updateExchangeRate(val) { 
+                exchangeRate = parseFloat(val) || 0; 
+                localStorage.setItem('komprafacil_rate', exchangeRate); 
+                updateCartUI(); 
+            }
+
+            function updateCartUI() {
+                const cartList = document.getElementById('cart-list');
+                const cartKeys = Object.keys(cart);
+                let baseTotal = 0;
+
+                if (cartKeys.length === 0) {
+                    cartList.innerHTML = `<p class="text-xs text-center py-6 font-black text-slate-400">El carrito está vacío.</p>`;
+                    totalGlobalUsd = 0;
+                    const badge = document.getElementById('mobile-cart-badge');
+                    if(badge) badge.classList.add('hidden');
+                } else {
+                    const badge = document.getElementById('mobile-cart-badge');
+                    if(badge) badge.classList.remove('hidden');
+                    cartList.innerHTML = cartKeys.map(key => {
+                        const item = cart[key];
+                        const subtotal = item.price * item.qty;
+                        baseTotal += subtotal;
+                        let isWeight = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
+                        return `
+                            <div class="py-2 grid grid-cols-12 items-center text-[11px] fiscal-ticket border-b border-slate-100 hover:bg-slate-50 transition">
+                                <div class="col-span-5 pr-1 font-black text-slate-800 leading-tight">${item.name} <br><span class="font-normal text-blue-700">$${item.price.toFixed(2)}</span></div>
+                                <div class="col-span-3 text-center font-black text-slate-700">${item.qty} <span class="text-[9px] font-bold text-slate-400">${isWeight?'kg':'u'}</span></div>
+                                <div class="col-span-3 text-right font-black text-slate-900">$${subtotal.toFixed(2)}</div>
+                                <div class="col-span-1 text-right"><button onclick="removeCartItem('${key}')" class="text-rose-500 hover:text-rose-700 font-black transition p-1"><i class="fa-solid fa-xmark"></i></button></div>
+                            </div>`;
+                    }).join('');
+                    totalGlobalUsd = baseTotal * 1.16;
+                }
+
+                const totalBs = totalGlobalUsd * exchangeRate;
+                
+                document.getElementById('grand-total-header').innerText = `$${totalGlobalUsd.toFixed(2)}`;
+                document.getElementById('grand-total-sidebar').innerText = `$${totalGlobalUsd.toFixed(2)}`;
+                document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                calculateMixedPayment();
+            }
+
+            function openComparatorModal() { document.getElementById('comparator-modal').classList.remove('hidden'); }
+            function closeComparatorModal() { document.getElementById('comparator-modal').classList.add('hidden'); }
+            
+            function calculateComparator() {
+                let pA = parseFloat(document.getElementById('comp-price-a').value) || 0;
+                let qA = parseFloat(document.getElementById('comp-qty-a').value) || 1;
+                let pB = parseFloat(document.getElementById('comp-price-b').value) || 0;
+                let qB = parseFloat(document.getElementById('comp-qty-b').value) || 1;
+                
+                let resEl = document.getElementById('comp-result');
+                if(pA > 0 && qA > 0 && pB > 0 && qB > 0) {
+                    let costA = pA / qA; let costB = pB / qB;
+                    if(costA < costB) resEl.innerHTML = "<span class='text-blue-900 bg-blue-100 px-4 py-1.5 rounded-lg border border-blue-200'>🏆 ¡La Opción A es más rentable!</span>";
+                    else if(costB < costA) resEl.innerHTML = "<span class='text-blue-900 bg-blue-100 px-4 py-1.5 rounded-lg border border-blue-200'>🏆 ¡La Opción B es más rentable!</span>";
+                    else resEl.innerHTML = "<span class='text-slate-600 bg-slate-100 px-4 py-1.5 rounded-lg'>⚖️ Ambas rinden exactamente igual.</span>";
+                } else {
+                    resEl.innerHTML = "<span class='text-rose-600 text-xs'>Ingresa todos los valores primero.</span>";
+                }
+            }
+
+            function calculateMixedPayment() {
+                let cashGiven = parseFloat(document.getElementById('mixed-cash-input').value) || 0;
+                let remainingUsd = totalGlobalUsd - cashGiven;
+                let remainingBsDisplay = document.getElementById('mixed-remaining-bs');
+                
+                if (remainingUsd <= 0) {
+                    remainingBsDisplay.innerText = "¡Cubierto! $0.00 Restantes";
+                    remainingBsDisplay.className = "text-emerald-600 font-black text-sm";
+                } else {
+                    let bsToPay = remainingUsd * exchangeRate;
+                    remainingBsDisplay.innerText = `Bs. ${bsToPay.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    remainingBsDisplay.className = "text-blue-700 font-black text-sm";
+                }
+            }
+
+            function checkAntiOlvidosAndSave() {
+                const cartKeys = Object.keys(cart);
+                if (cartKeys.length === 0) { alert("El carrito está vacío, no se puede cerrar la compra."); return; }
+                
+                if (purchaseHistory.length < 2) { 
+                    executePurchaseEmission(); 
+                    return; 
+                }
+                
+                let freqMap = {};
+                purchaseHistory.forEach(rec => {
+                    if(rec.itemsSnapshot) rec.itemsSnapshot.forEach(item => { freqMap[item.name] = (freqMap[item.name] || 0) + 1; });
+                });
+                
+                let threshold = Math.ceil(purchaseHistory.length * 0.4); 
+                let missingItems = [];
+                for (let name in freqMap) {
+                    if (freqMap[name] >= threshold) {
+                        let isInCart = false;
+                        for (let k in cart) { if (cart[k].name.toLowerCase() === name.toLowerCase()) isInCart = true; }
+                        if (!isInCart) missingItems.push(name);
+                    }
+                }
+                
+                if (missingItems.length > 0) {
+                    let msg = "⚠️ ASISTENTE ANTI-OLVIDOS:\n\nNoté que hoy no llevas productos que normalmente compras:\n\n- " 
+                              + missingItems.slice(0, 3).join("\n- ") 
+                              + "\n\n¿Estás seguro de que deseas cerrar la compra sin ellos?";
+                    if (!confirm(msg)) return;
+                }
+                executePurchaseEmission();
+            }
+
+            function executePurchaseEmission() {
+                const cartKeys = Object.keys(cart);
+                let baseTotal = 0;
+                let itemsHtml = '';
+                let itemsSnapshot = [];
+
+                cartKeys.forEach(key => {
+                    const item = cart[key];
+                    const sub = item.price * item.qty;
+                    baseTotal += sub;
+                    let isWeight = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
+                    let qtyLabel = isWeight ? `${item.qty} kg` : `${item.qty} und`;
+
+                    itemsSnapshot.push({ name: item.name, price: item.price, qty: qtyLabel, sub: sub });
+
+                    itemsHtml += `<tr>
+                        <td style="padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${item.name}<br><span style="font-size:10px; font-weight:normal;">$${item.price.toFixed(2)}</span></td>
+                        <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${qtyLabel}</td>
+                        <td style="text-align: right; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">$${sub.toFixed(2)}</td>
+                    </tr>`;
+                });
+
+                const totalBs = totalGlobalUsd * exchangeRate;
+                const exactTimeObj = new Date();
+                const dateTimeString = `${exactTimeObj.toLocaleDateString()} ${exactTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+                const templateParams = {
+                    to_email: currentUser,
+                    store_name: fiscalData.storeName,[cite: 1]
+                    store_rif: fiscalData.storeRif,[cite: 1]
+                    store_dir: "Ciudad Bolívar, Estado Bolívar",[cite: 1]
+                    client_name: fiscalData.clientName,
+                    client_doc: fiscalData.clientDoc,
+                    invoice_date: dateTimeString,
+                    fac_number: `INT-${Date.now().toString().slice(-6)}`,
+                    invoice_items_html: itemsHtml,
+                    tasa_bcv: `Bs. ${exchangeRate.toFixed(2)}`,
+                    total_bs: `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    total_usd: `$${totalGlobalUsd.toFixed(2)}`
+                };
+
+                try {
+                    emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)[cite: 1]
+                        .then(() => { alert("¡Compra guardada y resumen enviado a tu correo!"); }, 
+                              (err) => { console.error("Error EmailJS:", err); });
+                } catch(e) { console.error(e); }
+
+                const record = {
+                    id: Date.now(),
+                    timestamp: Date.now(),
+                    date: dateTimeString,
+                    store: fiscalData.storeName,[cite: 1]
+                    facNumber: templateParams.fac_number,
+                    totalUsd: totalGlobalUsd,
+                    totalBs: totalBs,
+                    itemsCount: cartKeys.length,
+                    itemsSnapshot: itemsSnapshot
+                };
+
+                purchaseHistory.unshift(record);
+                cart = {};
+                document.getElementById('mixed-cash-input').value = '';
+                saveDataToCloud();
+                updateCartUI();
+                renderProducts();
+                renderCategories();
+            }
+
+            function showDashboardMenu() { document.getElementById('dashboard-menu-modal').classList.remove('hidden'); }
+            function closeDashboardMenu() { document.getElementById('dashboard-menu-modal').classList.add('hidden'); }
+            
+            function startNewPurchase() {
+                closeDashboardMenu();
+                clearCart();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function repeatLastPurchase() {
+                closeDashboardMenu();
+                if (!purchaseHistory || purchaseHistory.length === 0) {
+                    alert("No hay compras anteriores registradas en tu historial.");
+                    return;
+                }
+                const lastRec = purchaseHistory[0];
+                
+                cart = {};
+                lastRec.itemsSnapshot.forEach(item => {
+                    let foundProd = null;
+                    for (let cat in products) {
+                        const p = products[cat].find(prod => prod.name.toLowerCase() === item.name.toLowerCase());
+                        if (p) { foundProd = p; break; }
+                    }
+
+                    let numericQty = parseFloat(item.qty) || 1;
+                    if (foundProd) {
+                        cart[foundProd.id] = { ...foundProd, qty: numericQty, price: item.price };
+                    } else {
+                        const savedId = `secos_${Date.now()}_${Math.random()}`;
+                        if (!products['secos']) products['secos'] = [];
+                        const newP = { id: savedId, name: item.name, price: item.price };
+                        products['secos'].push(newP);
+                        cart[savedId] = { ...newP, qty: numericQty };
+                    }
+                });
+
+                saveDataToCloud();
+                renderProducts();
+                renderCategories();
+                updateCartUI();
+                alert("¡Se ha cargado tu última compra en el carrito exitosamente!");
+            }
+
+            function openHistoryModal() {
+                closeDashboardMenu();
+                renderModalHistory();
+                document.getElementById('history-modal').classList.remove('hidden');
+            }
+
+            function closeHistoryModal() { document.getElementById('history-modal').classList.add('hidden'); }
+
+            function renderModalHistory() {
+                const modalList = document.getElementById('modal-history-list');
+                if (purchaseHistory.length === 0) {
+                    modalList.innerHTML = `<p class="text-xs text-center py-8 font-black text-slate-400">Aún no hay compras registradas en el historial.</p>`;
+                    return;
+                }
+
+                modalList.innerHTML = purchaseHistory.map(rec => `
+                    <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center text-xs shadow-sm cursor-pointer hover:bg-blue-50 transition transform hover:scale-[1.01]">
+                        <div>
+                            <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>[cite: 1]
+                            <span class="text-[11px] font-bold text-blue-800 block">Recibo: #${rec.facNumber}</span>
+                            <span class="text-[10px] text-slate-500 font-semibold">${rec.date} • ${rec.itemsCount} ítems</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-black text-blue-700 text-sm block">$${rec.totalUsd.toFixed(2)}</span>
+                            <span class="text-[10px] font-bold text-slate-700 block">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function viewInvoiceDetail(recordId) {
+                const rec = purchaseHistory.find(r => r.id === recordId);
+                if (!rec) return;
+
+                let itemsHtmlDetail = rec.itemsSnapshot ? rec.itemsSnapshot.map(i => `
+                    <div class="flex justify-between text-[10px] py-1 border-b border-blue-100">
+                        <span>${i.name} (${i.qty})</span>
+                        <span class="font-black">$${i.sub.toFixed(2)}</span>
+                    </div>
+                `).join('') : '<p>Sin detalles de ítems</p>';
+
+                document.getElementById('invoice-detail-content').innerHTML = `
+                    <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>[cite: 1]
+                    <p class="text-center text-[11px]">Recibo Control: #${rec.facNumber}</p>
+                    <p class="text-center text-[10px] text-slate-500">${rec.date}</p>
+                    <div class="my-2 border-t border-blue-200 pt-1">
+                        ${itemsHtmlDetail}
+                    </div>
+                    <div class="flex justify-between font-black pt-1 border-t border-blue-300 text-sm">
+                        <span>TOTAL:</span>
+                        <span>$${rec.totalUsd.toFixed(2)}</span>
+                    </div>
+                    <div class="text-right text-[10px] font-bold text-slate-600">(Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
+                `;
+                document.getElementById('invoice-detail-modal').classList.remove('hidden');
+            }
+
+            function closeInvoiceDetailModal() { document.getElementById('invoice-detail-modal').classList.add('hidden'); }
+
+            // Ejecución segura de inicio
+            window.addEventListener('DOMContentLoaded', () => {
+                initApp();
+            });
+
+        } catch (globalErr) {
+            console.error("Error crítico de ejecución:", globalErr);
+            const errBanner = document.getElementById('error-banner');
+            if(errBanner) {
+                errBanner.style.display = 'block';
+                errBanner.innerText = "Error al iniciar la aplicación: " + globalErr.message;
+            }
+        }
+    </script>
+</body>
+</html>

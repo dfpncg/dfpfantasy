@@ -74,7 +74,7 @@
         }
     </style>
 </head>
-<body class="app-modern-gradient text-slate-900 font-sans pb-24 md:pb-6 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
+<body class="app-modern-gradient text-slate-900 font-sans pb-24 lg:pb-6 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
 
     <style>
         body.hidden-at-start { opacity: 0; }
@@ -231,22 +231,6 @@
 
                 <div class="divide-y divide-slate-100 max-h-48 overflow-y-auto px-1 min-h-[100px]" id="cart-list">
                     <p class="text-xs text-center py-6 font-black text-slate-400">El carrito está vacío.</p>
-                </div>
-
-                <!-- CALCULADORA DE PAGO MIXTO (TRINCHERA) -->
-                <div class="mt-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100 text-xs font-bold transition-colors no-print">
-                    <p class="text-[10px] text-blue-900 uppercase tracking-wider mb-2 font-black"><i class="fa-solid fa-cash-register mr-1"></i> Pago Mixto en Caja:</p>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-slate-700">Efectivo entregado ($):</span>
-                        <div class="flex items-center">
-                            <span class="text-slate-500 mr-1 font-black">$</span>
-                            <input type="number" id="mixed-cash-input" step="1" oninput="calculateMixedPayment()" placeholder="0" class="w-16 bg-white border border-blue-200 rounded-lg px-2 py-1 text-xs text-center font-black text-blue-900 focus:outline-none focus:border-blue-600 shadow-inner">
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between text-slate-900 border-t border-blue-200/60 pt-2">
-                        <span class="text-[11px]">Pagar por Pago Móvil:</span>
-                        <span id="mixed-remaining-bs" class="text-blue-700 font-black text-sm">Bs. 0.00</span>
-                    </div>
                 </div>
 
                 <!-- TOTALES FISCALES -->
@@ -836,7 +820,7 @@
                             <div class="col-span-1 text-right"><button onclick="removeCartItem('${key}')" class="text-rose-500 hover:text-rose-700 font-black transition p-1"><i class="fa-solid fa-xmark"></i></button></div>
                         </div>`;
                 }).join('');
-                totalGlobalUsd = baseTotal * 1.16; // Con IVA 16% integrado al total
+                totalGlobalUsd = baseTotal * 1.16;
             }
 
             const totalBs = totalGlobalUsd * exchangeRate;
@@ -844,8 +828,6 @@
             document.getElementById('grand-total-header').innerText = `$${totalGlobalUsd.toFixed(2)}`;
             document.getElementById('grand-total-sidebar').innerText = `$${totalGlobalUsd.toFixed(2)}`;
             document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-            calculateMixedPayment();
         }
 
         // --- HERRAMIENTAS DE TRINCHERA (SUPERMERCADO) ---
@@ -866,21 +848,6 @@
                 else resEl.innerHTML = "<span class='text-slate-600 bg-slate-100 px-4 py-1.5 rounded-lg'>⚖️ Ambas rinden exactamente igual.</span>";
             } else {
                 resEl.innerHTML = "<span class='text-rose-600 text-xs'>Ingresa todos los valores primero.</span>";
-            }
-        }
-
-        function calculateMixedPayment() {
-            let cashGiven = parseFloat(document.getElementById('mixed-cash-input').value) || 0;
-            let remainingUsd = totalGlobalUsd - cashGiven;
-            let remainingBsDisplay = document.getElementById('mixed-remaining-bs');
-            
-            if (remainingUsd <= 0) {
-                remainingBsDisplay.innerText = "¡Cubierto! $0.00 Restantes";
-                remainingBsDisplay.className = "text-emerald-600 font-black text-sm";
-            } else {
-                let bsToPay = remainingUsd * exchangeRate;
-                remainingBsDisplay.innerText = `Bs. ${bsToPay.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                remainingBsDisplay.className = "text-blue-700 font-black text-sm";
             }
         }
 
@@ -912,7 +879,7 @@
                 let msg = "⚠️ ASISTENTE ANTI-OLVIDOS:\n\nNoté que hoy no llevas productos que normalmente compras:\n\n- " 
                           + missingItems.slice(0, 3).join("\n- ") 
                           + "\n\n¿Estás seguro de que deseas cerrar la compra sin ellos?";
-                if (!confirm(msg)) return; // Se cancela el guardado para que vaya a buscarlos
+                if (!confirm(msg)) return; 
             }
             executePurchaseEmission();
         }
@@ -979,7 +946,6 @@
 
             purchaseHistory.unshift(record);
             cart = {};
-            document.getElementById('mixed-cash-input').value = '';
             saveDataToCloud();
             updateCartUI();
             renderProducts();

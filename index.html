@@ -5,22 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DFPFantasy - Mercado Inteligente</title>
     
-    <!-- Configuración para PWA (Instalación en el teléfono) -->
+    <!-- Configuración avanzada de PWA para Teléfono y PC -->
     <meta name="theme-color" content="#1e3a8a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DFPfantasy Market">
+    
+    <!-- Manifiesto embebido con ícono corporativo adaptado -->
     <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
-        %22name%22: %22DFPFantasy Market%22,
-        %22short_name%22: %22DFPFantasy%22,
+        %22name%22: %22DFPFantasy Market Hogar%22,
+        %22short_name%22: %22DFPfantasy%22,
+        %22description%22: %22Gestión inteligente de compras y mercado en Venezuela%22,
         %22start_url%22: %22./%22,
         %22display%22: %22standalone%22,
         %22background_color%22: %22%23f8fafc%22,
         %22theme_color%22: %22%231e3a8a%22,
         %22icons%22: [
             {
-                %22src%22: %22https://cdn-icons-png.flaticon.com/512/3081/3081559.png%22,
-                %22sizes%22: %22512x512%22,
-                %22type%22: %22image/png%22
+                %22src%22: %22data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' width='512' height='512'><circle cx='25' cy='25' r='23' fill='%231e3a8a'/><path d='M15 18H21L25 32H35L38 21H20' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='23' cy='37' r='2.5' fill='%23ffffff'/><circle cx='33' cy='37' r='2.5' fill='%23ffffff'/><path d='M28 12C28 10 25 8 23 10C21 8 18 10 18 12C18 14 23 17 23 17C23 17 28 14 28 12Z' fill='%233b82f6'/></svg>%22,
+                %22sizes%22: %22192x192 512x512%22,
+                %22type%22: %22image/svg+xml%22,
+                %22purpose%22: %22any maskable%22
             }
         ]
     }">
@@ -537,7 +542,6 @@
                         fiscalData.clientName = userData.name || "Cliente DFPfantasy";
                         fiscalData.clientPhone = phone || userData.phone || "S/N";
                         
-                        // Actualizar teléfono en Firebase si se ingresó uno nuevo
                         await docRef.set({ phone: fiscalData.clientPhone }, { merge: true });
 
                         initApp();

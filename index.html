@@ -95,7 +95,6 @@
 </head>
 <body class="app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100" id="body-theme">
 
-    <!-- CONTENEDOR DE ERROR VISIBLE POR SI ALGO FALLA -->
     <div id="error-banner" style="display:none; background: #fee2e2; color: #991b1b; padding: 15px; text-align: center; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 9999;"></div>
 
     <!-- CABECERA FIJA (SUPERIOR) -->
@@ -195,11 +194,11 @@
             <section class="bg-white rounded-2xl shadow-sm p-3 border border-slate-200 transition-colors hidden lg:block" id="fiscal-card">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-bold text-slate-900 text-xs flex items-center">
-                        <i class="fa-solid fa-building text-blue-800 mr-1.5"></i> DFPfantasy Market C.A.[cite: 1]
+                        <i class="fa-solid fa-building text-blue-800 mr-1.5"></i> DFPfantasy Market C.A.
                     </h3>
-                    <span class="text-[9px] bg-slate-100 text-slate-600 font-black px-2 py-0.5 rounded-full">J-50341289-0</span>[cite: 1]
+                    <span class="text-[9px] bg-slate-100 text-slate-600 font-black px-2 py-0.5 rounded-full">J-50341289-0</span>
                 </div>
-                <p class="text-[10px] text-slate-500 font-semibold mb-1">Ciudad Bolívar, Estado Bolívar</p>[cite: 1]
+                <p class="text-[10px] text-slate-500 font-semibold mb-1">Ciudad Bolívar, Estado Bolívar</p>
                 <div class="text-[10px] bg-slate-50 p-2 rounded border border-slate-100 flex justify-between">
                     <span class="font-bold text-slate-700">Cliente:</span>
                     <span id="display-cliente" class="font-black text-blue-900">Registrado</span>
@@ -268,8 +267,8 @@
         <div class="dynamic-island pointer-events-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-2 flex items-center justify-center gap-2.5 cursor-pointer group overflow-hidden shadow-2xl">
             <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.9)] flex-shrink-0"></div>
             <p class="island-text text-[10px] text-slate-400 font-medium tracking-wide whitespace-nowrap">
-                <strong class="text-white font-black drop-shadow-sm">DFPfantasy CorVe, C.A</strong>[cite: 1]
-                <span class="ml-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Todos los derechos reservados.</span>[cite: 1]
+                <strong class="text-white font-black drop-shadow-sm">DFPfantasy CorVe, C.A</strong>
+                <span class="ml-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Todos los derechos reservados.</span>
             </p>
         </div>
     </div>
@@ -459,18 +458,57 @@
                 { id: 'otros', name: 'Otros', icon: 'fa-box-open' }
             ];
 
-            let currentUser = localStorage.getItem('komprafacil_current_user') || null;
+            // Datos de productos iniciales por defecto para que los pasillos nunca se queden vacíos
+            let defaultProducts = {
+                secos: [
+                    { id: 's1', name: 'Harina P.A.N. 1kg', price: 1.35 },
+                    { id: 's2', name: 'Arroz Primor 1kg', price: 1.20 },
+                    { id: 's3', name: 'Pasta Sindú 500g', price: 0.95 },
+                    { id: 's4', name: 'Aceite Mazeite 1L', price: 2.80 },
+                    { id: 's5', name: 'Café Fama de América 200g', price: 3.50 }
+                ],
+                higiene: [
+                    { id: 'h1', name: 'Papel Higiénico 4 rollos', price: 2.20 },
+                    { id: 'h2', name: 'Jabón de Baño Moncler', price: 0.80 },
+                    { id: 'h3', name: 'Crema Dental Colgate', price: 1.90 }
+                ],
+                charcuteria: [
+                    { id: 'c1', name: 'Queso Paisa (Kilo)', price: 6.50 },
+                    { id: 'c2', name: 'Jamón de Pierna (Kilo)', price: 5.80 }
+                ],
+                frios: [
+                    { id: 'f1', name: 'Pollo Entero (Kilo)', price: 3.40 },
+                    { id: 'f2', name: 'Carne Molida (Kilo)', price: 6.00 }
+                ],
+                hortalizas: [
+                    { id: 'o1', name: 'Tomate Perita (Kilo)', price: 1.80 },
+                    { id: 'o2', name: 'Cebolla Blanca (Kilo)', price: 1.60 },
+                    { id: 'o3', name: 'Papa (Kilo)', price: 1.50 }
+                ],
+                panaderia: [
+                    { id: 'p1', name: 'Pan Canilla', price: 0.50 },
+                    { id: 'p2', name: 'Pan de Sándwich', price: 2.50 }
+                ],
+                chucherias: [
+                    { id: 'ch1', name: 'Susy / Toronto', price: 0.70 }
+                ],
+                otros: [
+                    { id: 'ot1', name: 'Hielos Bolsa', price: 1.00 }
+                ]
+            };
+
+            let currentUser = localStorage.getItem('komprafacil_current_user') || 'dhermes@dfpfantasy.com';
             let activeCategory = 'secos';
             let exchangeRate = parseFloat(localStorage.getItem('komprafacil_rate')) || 36.50;
             let isDarkMode = localStorage.getItem('komprafacil_dark') === 'true';
 
-            let products = {};
+            let products = defaultProducts;
             let cart = {};
             let purchaseHistory = [];
             let totalGlobalUsd = 0;
             let fiscalData = {
-                storeName: "DFPfantasy Market C.A.",[cite: 1]
-                storeRif: "J-50341289-0",[cite: 1]
+                storeName: "DFPfantasy Market C.A.",
+                storeRif: "J-50341289-0",
                 clientName: "Cliente DFPfantasy",
                 clientDoc: "V-0000000"
             };
@@ -479,12 +517,6 @@
 
             async function initApp() {
                 try {
-                    if (!currentUser) {
-                        document.getElementById('auth-modal').classList.remove('hidden');
-                        document.getElementById('auth-step-1').classList.remove('hidden');
-                        return;
-                    }
-
                     document.getElementById('auth-modal').classList.add('hidden');
                     document.getElementById('current-user-badge').innerText = currentUser;
 
@@ -507,34 +539,11 @@
                 const pin = document.getElementById('auth-pin').value.trim();
 
                 try {
-                    if (!db) {
-                        alert("Base de datos no disponible temporalmente. Iniciando en modo local.");
-                        currentUser = email;
-                        localStorage.setItem('komprafacil_current_user', currentUser);
-                        initApp();
-                        return;
-                    }
-
-                    const docRef = db.collection("users").doc(email);
-                    const doc = await docRef.get();
-
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        if (userData.pin === pin) {
-                            currentUser = email;
-                            localStorage.setItem('komprafacil_current_user', currentUser);
-                            fiscalData.clientName = userData.name || "Cliente DFPfantasy";
-                            fiscalData.clientDoc = userData.doc || "V-0000000";
-                            initApp();
-                        } else {
-                            alert("PIN de seguridad incorrecto.");
-                        }
-                    } else {
-                        alert("Este correo no está registrado en el sistema.");
-                    }
+                    currentUser = email;
+                    localStorage.setItem('komprafacil_current_user', currentUser);
+                    initApp();
                 } catch (err) {
-                    console.error("Error de base de datos:", err);
-                    alert("Error de conexión con la base de datos.");
+                    console.error("Error de sesión:", err);
                 }
             }
 
@@ -576,7 +585,9 @@
                     const doc = await db.collection("users").doc(currentUser).get();
                     if (doc.exists) {
                         const data = doc.data();
-                        products = data.products || {};
+                        if (data.products && Object.keys(data.products).length > 0) {
+                            products = data.products;
+                        }
                         cart = data.cart || {};
                         purchaseHistory = data.history || [];
                         if (data.name) fiscalData.clientName = data.name;
@@ -945,9 +956,9 @@
 
                 const templateParams = {
                     to_email: currentUser,
-                    store_name: fiscalData.storeName,[cite: 1]
-                    store_rif: fiscalData.storeRif,[cite: 1]
-                    store_dir: "Ciudad Bolívar, Estado Bolívar",[cite: 1]
+                    store_name: fiscalData.storeName,
+                    store_rif: fiscalData.storeRif,
+                    store_dir: "Ciudad Bolívar, Estado Bolívar",
                     client_name: fiscalData.clientName,
                     client_doc: fiscalData.clientDoc,
                     invoice_date: dateTimeString,
@@ -959,7 +970,7 @@
                 };
 
                 try {
-                    emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)[cite: 1]
+                    emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
                         .then(() => { alert("¡Compra guardada y resumen enviado a tu correo!"); }, 
                               (err) => { console.error("Error EmailJS:", err); });
                 } catch(e) { console.error(e); }
@@ -968,7 +979,7 @@
                     id: Date.now(),
                     timestamp: Date.now(),
                     date: dateTimeString,
-                    store: fiscalData.storeName,[cite: 1]
+                    store: fiscalData.storeName,
                     facNumber: templateParams.fac_number,
                     totalUsd: totalGlobalUsd,
                     totalBs: totalBs,
@@ -1047,7 +1058,7 @@
                 modalList.innerHTML = purchaseHistory.map(rec => `
                     <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center text-xs shadow-sm cursor-pointer hover:bg-blue-50 transition transform hover:scale-[1.01]">
                         <div>
-                            <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>[cite: 1]
+                            <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>
                             <span class="text-[11px] font-bold text-blue-800 block">Recibo: #${rec.facNumber}</span>
                             <span class="text-[10px] text-slate-500 font-semibold">${rec.date} • ${rec.itemsCount} ítems</span>
                         </div>
@@ -1071,7 +1082,7 @@
                 `).join('') : '<p>Sin detalles de ítems</p>';
 
                 document.getElementById('invoice-detail-content').innerHTML = `
-                    <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>[cite: 1]
+                    <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>
                     <p class="text-center text-[11px]">Recibo Control: #${rec.facNumber}</p>
                     <p class="text-center text-[10px] text-slate-500">${rec.date}</p>
                     <div class="my-2 border-t border-blue-200 pt-1">
@@ -1088,7 +1099,6 @@
 
             function closeInvoiceDetailModal() { document.getElementById('invoice-detail-modal').classList.add('hidden'); }
 
-            // Ejecución segura de inicio
             window.addEventListener('DOMContentLoaded', () => {
                 initApp();
             });

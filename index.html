@@ -10,29 +10,24 @@
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        try { emailjs.init("KZlNPXhPilNfN8Br_"); } catch(e) { console.error("EmailJS init error:", e); }
+        (function() {
+            emailjs.init("KZlNPXhPilNfN8Br_");
+        })();
     </script>
     <!-- Firebase SDKs (Compat version) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
-        let db = null;
-        try {
-            const firebaseConfig = {
-                apiKey: "AIzaSyAjz8HFM1IDo8AdpB_QPZLu0NVPALzvBmk",
-                authDomain: "dfpfantasy-62dae.firebaseapp.com",
-                projectId: "dfpfantasy-62dae",
-                storageBucket: "dfpfantasy-62dae.appspot.com",
-                messagingSenderId: "506106402828",
-                appId: "1:506106402828:web:cc5afd50ce322a0ac7f629"
-            };
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            db = firebase.firestore();
-        } catch (e) {
-            console.error("Firebase init error:", e);
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjz8HFM1IDo8AdpB_QPZLu0NVPALzvBmk",
+            authDomain: "dfpfantasy-62dae.firebaseapp.com",
+            projectId: "dfpfantasy-62dae",
+            storageBucket: "dfpfantasy-62dae.appspot.com",
+            messagingSenderId: "506106402828",
+            appId: "1:506106402828:web:cc5afd50ce322a0ac7f629"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
     </script>
     <style>
         .fiscal-ticket { font-family: 'Courier New', Courier, monospace; }
@@ -66,20 +61,6 @@
         }
         .app-modern-gradient { background-color: #f8fafc; }
         
-        /* EFECTO ISLA DINÁMICA (APPLE SPRING) */
-        .dynamic-island {
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-        .dynamic-island:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(30, 58, 138, 0.4);
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-        }
-        .island-text { transition: all 0.4s ease; }
-        .dynamic-island:hover .island-text { color: #ffffff; }
-
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -93,9 +74,29 @@
         }
     </style>
 </head>
-<body class="app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100" id="body-theme">
+<body class="app-modern-gradient text-slate-900 font-sans pb-24 md:pb-6 transition-colors duration-300 overflow-x-hidden hidden-at-start" id="body-theme">
 
-    <div id="error-banner" style="display:none; background: #fee2e2; color: #991b1b; padding: 15px; text-align: center; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 9999;"></div>
+    <style>
+        body.hidden-at-start { opacity: 0; }
+        body.visible-app { opacity: 1; transition: opacity 0.4s ease-in; }
+    </style>
+
+    <!-- PANTALLA DE TRANSICIÓN ANIMADA -->
+    <div id="transition-screen" class="fixed inset-0 market-hero-bg z-50 hidden flex flex-col items-center justify-between p-4 overflow-hidden">
+        <div class="flex-1 w-full flex items-center justify-center">
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-xs p-8 shadow-2xl text-center space-y-4 modal-animated border border-slate-200">
+                <div class="w-20 h-20 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center mx-auto text-4xl shadow-md animate-logo-glow">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <h3 class="font-black text-lg text-slate-900" id="transition-msg">¡Bienvenido a <span class="text-blue-900 font-extrabold">DFPfantasy</span>!</h3>
+            </div>
+        </div>
+        <footer class="w-full text-center py-3 px-4 rounded-2xl max-w-lg mb-2">
+            <p class="text-[10px] text-blue-100 font-medium tracking-wide">
+                <strong class="text-white font-black">DFPfantasy CorVe, C.A</strong> Todos los derechos reservados.
+            </p>
+        </footer>
+    </div>
 
     <!-- CABECERA FIJA (SUPERIOR) -->
     <header class="bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-slate-200 transition-colors duration-300" id="header-theme">
@@ -262,19 +263,8 @@
         </div>
     </main>
 
-    <!-- ISLA DINÁMICA FOOTER (PRINCIPAL FIJO ABAJO) -->
-    <div class="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-40 flex justify-center w-full pointer-events-none px-4 no-print">
-        <div class="dynamic-island pointer-events-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-2 flex items-center justify-center gap-2.5 cursor-pointer group overflow-hidden shadow-2xl">
-            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.9)] flex-shrink-0"></div>
-            <p class="island-text text-[10px] text-slate-400 font-medium tracking-wide whitespace-nowrap">
-                <strong class="text-white font-black drop-shadow-sm">DFPfantasy CorVe, C.A</strong>
-                <span class="ml-0.5 opacity-80 group-hover:opacity-100 transition-opacity">Todos los derechos reservados.</span>
-            </p>
-        </div>
-    </div>
-
     <!-- BARRA DE NAVEGACIÓN INFERIOR (Solo Móvil) -->
-    <nav class="lg:hidden fixed bottom-14 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center p-2 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center p-2 pb-safe z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <button onclick="showDashboardMenu()" class="flex flex-col items-center p-2 text-slate-500 hover:text-blue-900 transition">
             <i class="fa-solid fa-house text-lg mb-1"></i>
             <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
@@ -412,6 +402,11 @@
                 </div>
             </div>
         </div>
+        <footer class="w-full text-center py-3 px-4 rounded-2xl max-w-lg mb-2">
+            <p class="text-[10px] text-blue-100 font-medium tracking-wide">
+                <strong class="text-white font-black">DFPfantasy CorVe, C.A</strong> Todos los derechos reservados.
+            </p>
+        </footer>
     </div>
 
     <!-- APARTADO DE HISTORIAL COMPLETO -->
@@ -446,671 +441,657 @@
 
     <!-- LÓGICA Y CONTROL COMPLETO -->
     <script>
-        try {
-            const categories = [
-                { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
-                { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
-                { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese', isWeight: true },
-                { id: 'frios', name: 'Fríos', icon: 'fa-fish', isWeight: true },
-                { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot', isWeight: true },
-                { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
-                { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' },
-                { id: 'otros', name: 'Otros', icon: 'fa-box-open' }
-            ];
+        const categories = [
+            { id: 'higiene', name: 'Higiene', icon: 'fa-pump-soap' },
+            { id: 'secos', name: 'Secos', icon: 'fa-wheat-awn' },
+            { id: 'charcuteria', name: 'Charcutería', icon: 'fa-cheese', isWeight: true },
+            { id: 'frios', name: 'Fríos', icon: 'fa-fish', isWeight: true },
+            { id: 'hortalizas', name: 'Hortalizas', icon: 'fa-carrot', isWeight: true },
+            { id: 'panaderia', name: 'Panadería', icon: 'fa-bread-slice' },
+            { id: 'chucherias', name: 'Chucherías', icon: 'fa-cookie' },
+            { id: 'otros', name: 'Otros', icon: 'fa-box-open' }
+        ];
 
-            // Datos de productos iniciales por defecto para que los pasillos nunca se queden vacíos
-            let defaultProducts = {
-                secos: [
-                    { id: 's1', name: 'Harina P.A.N. 1kg', price: 1.35 },
-                    { id: 's2', name: 'Arroz Primor 1kg', price: 1.20 },
-                    { id: 's3', name: 'Pasta Sindú 500g', price: 0.95 },
-                    { id: 's4', name: 'Aceite Mazeite 1L', price: 2.80 },
-                    { id: 's5', name: 'Café Fama de América 200g', price: 3.50 }
-                ],
-                higiene: [
-                    { id: 'h1', name: 'Papel Higiénico 4 rollos', price: 2.20 },
-                    { id: 'h2', name: 'Jabón de Baño Moncler', price: 0.80 },
-                    { id: 'h3', name: 'Crema Dental Colgate', price: 1.90 }
-                ],
-                charcuteria: [
-                    { id: 'c1', name: 'Queso Paisa (Kilo)', price: 6.50 },
-                    { id: 'c2', name: 'Jamón de Pierna (Kilo)', price: 5.80 }
-                ],
-                frios: [
-                    { id: 'f1', name: 'Pollo Entero (Kilo)', price: 3.40 },
-                    { id: 'f2', name: 'Carne Molida (Kilo)', price: 6.00 }
-                ],
-                hortalizas: [
-                    { id: 'o1', name: 'Tomate Perita (Kilo)', price: 1.80 },
-                    { id: 'o2', name: 'Cebolla Blanca (Kilo)', price: 1.60 },
-                    { id: 'o3', name: 'Papa (Kilo)', price: 1.50 }
-                ],
-                panaderia: [
-                    { id: 'p1', name: 'Pan Canilla', price: 0.50 },
-                    { id: 'p2', name: 'Pan de Sándwich', price: 2.50 }
-                ],
-                chucherias: [
-                    { id: 'ch1', name: 'Susy / Toronto', price: 0.70 }
-                ],
-                otros: [
-                    { id: 'ot1', name: 'Hielos Bolsa', price: 1.00 }
-                ]
-            };
+        let currentUser = localStorage.getItem('komprafacil_current_user') || null;
+        let activeCategory = 'secos';
+        let exchangeRate = parseFloat(localStorage.getItem('komprafacil_rate')) || 36.50;
+        let isDarkMode = localStorage.getItem('komprafacil_dark') === 'true';
 
-            let currentUser = localStorage.getItem('komprafacil_current_user') || 'dhermes@dfpfantasy.com';
-            let activeCategory = 'secos';
-            let exchangeRate = parseFloat(localStorage.getItem('komprafacil_rate')) || 36.50;
-            let isDarkMode = localStorage.getItem('komprafacil_dark') === 'true';
+        let products = {};
+        let cart = {};
+        let purchaseHistory = [];
+        let totalGlobalUsd = 0;
+        let fiscalData = {
+            storeName: "DFPfantasy Market C.A.",
+            storeRif: "J-50341289-0",
+            clientName: "Cliente DFPfantasy",
+            clientDoc: "V-0000000"
+        };
 
-            let products = defaultProducts;
-            let cart = {};
-            let purchaseHistory = [];
-            let totalGlobalUsd = 0;
-            let fiscalData = {
-                storeName: "DFPfantasy Market C.A.",
-                storeRif: "J-50341289-0",
-                clientName: "Cliente DFPfantasy",
-                clientDoc: "V-0000000"
-            };
+        document.getElementById('exchange-rate').value = exchangeRate;
 
-            document.getElementById('exchange-rate').value = exchangeRate;
+        // --- SISTEMA DE INICIO Y FIREBASE ---
+        async function initApp() {
+            const bodyEl = document.body;
+            if (!currentUser) {
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('auth-step-1').classList.remove('hidden');
+                bodyEl.classList.remove('hidden-at-start');
+                bodyEl.classList.add('visible-app');
+                return;
+            }
 
-            async function initApp() {
-                try {
-                    document.getElementById('auth-modal').classList.add('hidden');
-                    document.getElementById('current-user-badge').innerText = currentUser;
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('current-user-badge').innerText = currentUser;
 
-                    if (db) {
-                        await loadDataFromCloud();
+            await loadDataFromCloud();
+            applyTheme();
+            renderCategories();
+            selectCategory(activeCategory);
+            loadFiscalUI();
+            updateCartUI();
+
+            bodyEl.classList.remove('hidden-at-start');
+            bodyEl.classList.add('visible-app');
+
+            showTransitionScreen("¡Bienvenido a DFPfantasy Market!", 2000);
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim().toLowerCase();
+            const pin = document.getElementById('auth-pin').value.trim();
+
+            try {
+                const docRef = db.collection("users").doc(email);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    const userData = doc.data();
+                    if (userData.pin === pin) {
+                        currentUser = email;
+                        localStorage.setItem('komprafacil_current_user', currentUser);
+                        fiscalData.clientName = userData.name || "Cliente DFPfantasy";
+                        fiscalData.clientDoc = userData.doc || "V-0000000";
+                        initApp();
+                    } else {
+                        alert("PIN de seguridad incorrecto.");
                     }
-                    applyTheme();
-                    renderCategories();
-                    selectCategory(activeCategory);
-                    loadFiscalUI();
-                    updateCartUI();
-                } catch (err) {
-                    console.error("Error en initApp:", err);
+                } else {
+                    alert("Este correo no está registrado en el sistema.");
                 }
+            } catch (err) {
+                console.error("Error de base de datos:", err);
+                alert("Error de conexión con la base de datos.");
             }
+        }
 
-            async function handleAuthSubmit(e) {
-                e.preventDefault();
-                const email = document.getElementById('auth-email').value.trim().toLowerCase();
-                const pin = document.getElementById('auth-pin').value.trim();
-
-                try {
-                    currentUser = email;
-                    localStorage.setItem('komprafacil_current_user', currentUser);
-                    initApp();
-                } catch (err) {
-                    console.error("Error de sesión:", err);
-                }
-            }
-
-            function logoutUser() {
-                if (!confirm("¿Deseas cerrar sesión?")) return;
+        function logoutUser() {
+            if (!confirm("¿Deseas cerrar sesión?")) return;
+            showTransitionScreen("Cerrando sesión en DFPfantasy...", 2000);
+            setTimeout(() => {
                 localStorage.removeItem('komprafacil_current_user');
                 currentUser = null;
                 location.reload();
+            }, 2000);
+        }
+
+        async function deleteAccount() {
+            if (!currentUser) return;
+            if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"? Todos los registros se perderán.`)) return;
+
+            try {
+                await db.collection("users").doc(currentUser).delete();
+                localStorage.removeItem('komprafacil_current_user');
+                currentUser = null;
+                location.reload();
+            } catch (err) {
+                console.error("Error eliminando cuenta: ", err);
             }
+        }
 
-            async function deleteAccount() {
-                if (!currentUser || !db) return;
-                if (!confirm(`¿Estás completamente seguro de ELIMINAR la cuenta "${currentUser}"?`)) return;
+        async function saveDataToCloud() {
+            if (!currentUser) return;
+            try {
+                await db.collection("users").doc(currentUser).set({
+                    products: products,
+                    cart: cart,
+                    history: purchaseHistory
+                }, { merge: true });
+            } catch (err) { console.error("Error guardando datos: ", err); }
+        }
 
-                try {
-                    await db.collection("users").doc(currentUser).delete();
-                    localStorage.removeItem('komprafacil_current_user');
-                    currentUser = null;
-                    location.reload();
-                } catch (err) {
-                    console.error("Error eliminando cuenta: ", err);
+        async function loadDataFromCloud() {
+            if (!currentUser) return;
+            try {
+                const doc = await db.collection("users").doc(currentUser).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    products = data.products || {};
+                    cart = data.cart || {};
+                    purchaseHistory = data.history || [];
+                    if (data.name) fiscalData.clientName = data.name;
+                    if (data.doc) fiscalData.clientDoc = data.doc;
                 }
+            } catch (err) { console.error("Error cargando datos: ", err); }
+        }
+
+        function showTransitionScreen(msg, duration = 2000) {
+            const screen = document.getElementById('transition-screen');
+            document.getElementById('transition-msg').innerHTML = msg;
+            screen.classList.remove('hidden');
+            setTimeout(() => { screen.classList.add('hidden'); }, duration);
+        }
+
+        function loadFiscalUI() {
+            document.getElementById('display-cliente').innerText = `${fiscalData.clientName} (${fiscalData.clientDoc})`;
+        }
+
+        // --- SISTEMA UI GENERAL ---
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('komprafacil_dark', isDarkMode);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            const body = document.body;
+            const header = document.getElementById('header-theme');
+            const themeIcon = document.getElementById('theme-icon');
+            const cards = ['search-card', 'aisle-card', 'ticket-card', 'fiscal-card'];
+            
+            if (isDarkMode) {
+                body.className = "bg-slate-900 text-slate-100 font-sans pb-24 lg:pb-6 transition-colors duration-300 overflow-x-hidden visible-app";
+                header.className = "bg-slate-900/90 backdrop-blur-md text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-800 transition-colors duration-300";
+                themeIcon.className = "fa-solid fa-sun text-xs";
+                cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-700 transition-colors duration-300"; });
+            } else {
+                body.className = "app-modern-gradient text-slate-900 font-sans pb-24 lg:pb-6 transition-colors duration-300 overflow-x-hidden visible-app";
+                header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-slate-200 transition-colors duration-300";
+                themeIcon.className = "fa-solid fa-moon text-xs";
+                cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-300"; });
             }
+        }
 
-            async function saveDataToCloud() {
-                if (!currentUser || !db) return;
-                try {
-                    await db.collection("users").doc(currentUser).set({
-                        products: products,
-                        cart: cart,
-                        history: purchaseHistory
-                    }, { merge: true });
-                } catch (err) { console.error("Error guardando datos: ", err); }
-            }
+        // --- GESTIÓN DE PRODUCTOS ---
+        function openAddModal() {
+            document.getElementById('modal-product-title').innerText = 'Registrar Producto';
+            document.getElementById('new-prod-category').value = activeCategory;
+            document.getElementById('edit-prod-id').value = '';
+            document.getElementById('new-prod-name').value = '';
+            document.getElementById('new-prod-price').value = '';
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
 
-            async function loadDataFromCloud() {
-                if (!currentUser || !db) return;
-                try {
-                    const doc = await db.collection("users").doc(currentUser).get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        if (data.products && Object.keys(data.products).length > 0) {
-                            products = data.products;
-                        }
-                        cart = data.cart || {};
-                        purchaseHistory = data.history || [];
-                        if (data.name) fiscalData.clientName = data.name;
-                        if (data.doc) fiscalData.clientDoc = data.doc;
-                    }
-                } catch (err) { console.error("Error cargando datos: ", err); }
-            }
+        function closeAddModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.getElementById('add-product-form').reset();
+        }
 
-            function loadFiscalUI() {
-                document.getElementById('display-cliente').innerText = `${fiscalData.clientName} (${fiscalData.clientDoc})`;
-            }
+        function openEditProductModal(prodId) {
+            const catProducts = products[activeCategory] || [];
+            const prod = catProducts.find(p => p.id === prodId);
+            if (!prod) return;
 
-            function toggleDarkMode() {
-                isDarkMode = !isDarkMode;
-                localStorage.setItem('komprafacil_dark', isDarkMode);
-                applyTheme();
-            }
+            document.getElementById('modal-product-title').innerText = 'Editar Producto';
+            document.getElementById('new-prod-category').value = activeCategory;
+            document.getElementById('edit-prod-id').value = prod.id;
+            document.getElementById('new-prod-name').value = prod.name;
+            document.getElementById('new-prod-price').value = prod.price;
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
 
-            function applyTheme() {
-                const body = document.body;
-                const header = document.getElementById('header-theme');
-                const themeIcon = document.getElementById('theme-icon');
-                const cards = ['search-card', 'aisle-card', 'ticket-card', 'fiscal-card'];
-                
-                if (isDarkMode) {
-                    body.className = "bg-slate-900 text-slate-100 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100";
-                    header.className = "bg-slate-900/90 backdrop-blur-md text-white p-3 sticky top-0 z-40 shadow-sm border-b border-slate-800 transition-colors duration-300";
-                    if(themeIcon) themeIcon.className = "fa-solid fa-sun text-xs";
-                    cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-700 transition-colors duration-300"; });
-                } else {
-                    body.className = "app-modern-gradient text-slate-900 font-sans pb-28 lg:pb-16 transition-colors duration-300 overflow-x-hidden opacity-100";
-                    header.className = "bg-white/90 backdrop-blur-md text-slate-900 p-3 sticky top-0 z-40 shadow-sm border-b border-slate-200 transition-colors duration-300";
-                    if(themeIcon) themeIcon.className = "fa-solid fa-moon text-xs";
-                    cards.forEach(id => { const el = document.getElementById(id); if(el) el.className = "bg-white rounded-2xl shadow-sm p-4 border border-slate-200 transition-colors duration-300"; });
-                }
-            }
+        function saveProduct(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-prod-id').value;
+            const targetCategory = document.getElementById('new-prod-category').value;
+            const name = document.getElementById('new-prod-name').value.trim();
+            const price = parseFloat(document.getElementById('new-prod-price').value);
 
-            function openAddModal() {
-                document.getElementById('modal-product-title').innerText = 'Registrar Producto';
-                document.getElementById('new-prod-category').value = activeCategory;
-                document.getElementById('edit-prod-id').value = '';
-                document.getElementById('new-prod-name').value = '';
-                document.getElementById('new-prod-price').value = '';
-                document.getElementById('product-modal').classList.remove('hidden');
-            }
+            if (!products[targetCategory]) products[targetCategory] = [];
 
-            function closeAddModal() {
-                document.getElementById('product-modal').classList.add('hidden');
-                document.getElementById('add-product-form').reset();
-            }
-
-            function openEditProductModal(prodId) {
-                const catProducts = products[activeCategory] || [];
-                const prod = catProducts.find(p => p.id === prodId);
-                if (!prod) return;
-
-                document.getElementById('modal-product-title').innerText = 'Editar Producto';
-                document.getElementById('new-prod-category').value = activeCategory;
-                document.getElementById('edit-prod-id').value = prod.id;
-                document.getElementById('new-prod-name').value = prod.name;
-                document.getElementById('new-prod-price').value = prod.price;
-                document.getElementById('product-modal').classList.remove('hidden');
-            }
-
-            function saveProduct(e) {
-                e.preventDefault();
-                const editId = document.getElementById('edit-prod-id').value;
-                const targetCategory = document.getElementById('new-prod-category').value;
-                const name = document.getElementById('new-prod-name').value.trim();
-                const price = parseFloat(document.getElementById('new-prod-price').value);
-
-                if (!products[targetCategory]) products[targetCategory] = [];
-
-                if (editId) {
-                    for (let cat in products) {
-                        const idx = products[cat].findIndex(p => p.id === editId);
-                        if (idx !== -1) {
-                            products[cat][idx].name = name;
-                            products[cat][idx].price = price;
-                            if (cat !== targetCategory) {
-                                products[targetCategory].push(products[cat][idx]);
-                                products[cat].splice(idx, 1);
-                            }
-                            break;
-                        }
-                    }
-                } else {
-                    const savedId = `${targetCategory}_${Date.now()}`;
-                    products[targetCategory].push({ id: savedId, name, price });
-                }
-
-                saveDataToCloud();
-                closeAddModal();
-                selectCategory(targetCategory);
-            }
-
-            function deleteProductFromAisle(prodId) {
-                if (!confirm("¿Estás seguro de eliminar este producto del pasillo?")) return;
+            if (editId) {
                 for (let cat in products) {
-                    products[cat] = products[cat].filter(p => p.id !== prodId);
+                    const idx = products[cat].findIndex(p => p.id === editId);
+                    if (idx !== -1) {
+                        products[cat][idx].name = name;
+                        products[cat][idx].price = price;
+                        if (cat !== targetCategory) {
+                            products[targetCategory].push(products[cat][idx]);
+                            products[cat].splice(idx, 1);
+                        }
+                        break;
+                    }
                 }
-                if (cart[prodId]) delete cart[prodId];
-                saveDataToCloud();
-                renderProducts();
-                renderCategories();
-                updateCartUI();
+            } else {
+                const savedId = `${targetCategory}_${Date.now()}`;
+                products[targetCategory].push({ id: savedId, name, price });
             }
 
-            function renderCategories() {
-                document.getElementById('categories-container').innerHTML = categories.map(cat => {
-                    let count = 0; for (let key in cart) { if (key.startsWith(cat.id)) count += 1; }
-                    return `
-                        <button onclick="selectCategory('${cat.id}')" class="relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all duration-300 ${activeCategory === cat.id ? 'bg-blue-900 border-blue-900 text-white shadow-md transform scale-[1.02]' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'}">
-                            ${count > 0 ? `<span class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm border border-white">${count}</span>` : ''}
-                            <i class="fa-solid ${cat.icon} text-lg mb-1 ${activeCategory === cat.id ? 'text-white' : 'text-blue-800'}"></i>
-                            <span class="text-[10px] truncate w-full text-center font-bold tracking-tight">${cat.name}</span>
-                        </button>`;
-                }).join('');
+            saveDataToCloud();
+            closeAddModal();
+            selectCategory(targetCategory);
+        }
+
+        function deleteProductFromAisle(prodId) {
+            if (!confirm("¿Estás seguro de eliminar este producto del pasillo?")) return;
+            for (let cat in products) {
+                products[cat] = products[cat].filter(p => p.id !== prodId);
             }
+            if (cart[prodId]) delete cart[prodId];
+            saveDataToCloud();
+            renderProducts();
+            renderCategories();
+            updateCartUI();
+        }
 
-            function selectCategory(catId) {
-                activeCategory = catId;
-                document.getElementById('global-search-input').value = '';
-                renderCategories();
-                document.getElementById('current-category-title').innerText = categories.find(c => c.id === catId).name;
-                renderProducts();
-            }
-
-            function filterProductsGlobal(query) {
-                const q = query.trim().toLowerCase();
-                const listContainer = document.getElementById('products-list');
-                if (!q) { renderProducts(); return; }
-                let matches = [];
-                for (let cat in products) {
-                    products[cat].forEach(prod => { if (prod.name.toLowerCase().includes(q)) matches.push({ ...prod, categoryId: cat }); });
-                }
-                document.getElementById('current-category-title').innerText = `Búsqueda: "${query}"`;
-                listContainer.innerHTML = matches.map(prod => generateProductHTML(prod, categories.find(c=>c.id===prod.categoryId).isWeight)).join('');
-            }
-
-            function renderProducts() {
-                const listContainer = document.getElementById('products-list');
-                const catProds = products[activeCategory] || [];
-                const isWeight = categories.find(c => c.id === activeCategory).isWeight;
-                if (catProds.length === 0) { listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Pasillo vacío.</p>`; return; }
-                listContainer.innerHTML = catProds.map(p => generateProductHTML(p, isWeight)).join('');
-            }
-
-            function generateProductHTML(prod, isWeight) {
-                const inCart = cart[prod.id];
-                const qty = inCart ? inCart.qty : 0;
-                const currentPrice = inCart ? inCart.price : prod.price;
-
-                let rightControlHTML = '';
-                if (isWeight) {
-                    rightControlHTML = `
-                        <div class="flex flex-col items-end space-y-1.5">
-                            <div class="flex items-center space-x-1">
-                                <input type="number" step="0.05" value="${qty>0?qty:''}" onchange="updateWeightQty('${prod.id}', this.value)" class="w-16 bg-slate-50 border border-slate-200 rounded-lg px-1.5 py-1 text-xs font-black text-center focus:outline-none focus:border-blue-400">
-                                <span class="text-[10px] font-bold text-slate-500">kg</span>
-                            </div>
-                            <div class="flex space-x-1">
-                                <button onclick="setQuickWeight('${prod.id}', 0.5)" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-md font-black transition">+0.5</button>
-                                <button onclick="setQuickWeight('${prod.id}', 1.0)" class="text-[10px] bg-blue-800 hover:bg-blue-900 text-white px-1.5 py-0.5 rounded-md font-black shadow-sm transition">+1.0</button>
-                            </div>
-                        </div>`;
-                } else {
-                    rightControlHTML = `
-                        <div class="flex items-center space-x-1.5">
-                            <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center font-black shadow-sm transition text-slate-700">-</button>
-                            <span class="text-sm font-black w-6 text-center text-blue-900">${qty}</span>
-                            <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-blue-800 hover:bg-blue-900 text-white rounded-lg flex items-center justify-center font-black shadow-sm transition">+</button>
-                        </div>`;
-                }
-
+        function renderCategories() {
+            document.getElementById('categories-container').innerHTML = categories.map(cat => {
+                let count = 0; for (let key in cart) { if (key.startsWith(cat.id)) count += 1; }
                 return `
-                    <div class="flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                        <div class="flex-1 pr-2">
-                            <div class="flex items-center space-x-2 mb-1">
-                                <h4 class="font-bold text-slate-900 text-xs">${prod.name}</h4>
-                                <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 text-[10px] transition"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-[10px] transition"><i class="fa-solid fa-trash-can"></i></button>
-                            </div>
-                            <div class="flex items-center space-x-1">
-                                <span class="text-[10px] text-blue-700 font-black">$</span>
-                                <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-14 bg-transparent text-xs font-black text-blue-700 focus:outline-none focus:border-b border-blue-300">
-                            </div>
+                    <button onclick="selectCategory('${cat.id}')" class="relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all duration-300 ${activeCategory === cat.id ? 'bg-blue-900 border-blue-900 text-white shadow-md transform scale-[1.02]' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'}">
+                        ${count > 0 ? `<span class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm border border-white">${count}</span>` : ''}
+                        <i class="fa-solid ${cat.icon} text-lg mb-1 ${activeCategory === cat.id ? 'text-white' : 'text-blue-800'}"></i>
+                        <span class="text-[10px] truncate w-full text-center font-bold tracking-tight">${cat.name}</span>
+                    </button>`;
+            }).join('');
+        }
+
+        function selectCategory(catId) {
+            activeCategory = catId;
+            document.getElementById('global-search-input').value = '';
+            renderCategories();
+            document.getElementById('current-category-title').innerText = categories.find(c => c.id === catId).name;
+            renderProducts();
+        }
+
+        function filterProductsGlobal(query) {
+            const q = query.trim().toLowerCase();
+            const listContainer = document.getElementById('products-list');
+            if (!q) { renderProducts(); return; }
+            let matches = [];
+            for (let cat in products) {
+                products[cat].forEach(prod => { if (prod.name.toLowerCase().includes(q)) matches.push({ ...prod, categoryId: cat }); });
+            }
+            document.getElementById('current-category-title').innerText = `Búsqueda: "${query}"`;
+            listContainer.innerHTML = matches.map(prod => generateProductHTML(prod, categories.find(c=>c.id===prod.categoryId).isWeight)).join('');
+        }
+
+        function renderProducts() {
+            const listContainer = document.getElementById('products-list');
+            const catProds = products[activeCategory] || [];
+            const isWeight = categories.find(c => c.id === activeCategory).isWeight;
+            if (catProds.length === 0) { listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Pasillo vacío.</p>`; return; }
+            listContainer.innerHTML = catProds.map(p => generateProductHTML(p, isWeight)).join('');
+        }
+
+        function generateProductHTML(prod, isWeight) {
+            const inCart = cart[prod.id];
+            const qty = inCart ? inCart.qty : 0;
+            const currentPrice = inCart ? inCart.price : prod.price;
+
+            let rightControlHTML = '';
+            if (isWeight) {
+                rightControlHTML = `
+                    <div class="flex flex-col items-end space-y-1.5">
+                        <div class="flex items-center space-x-1">
+                            <input type="number" step="0.05" value="${qty>0?qty:''}" onchange="updateWeightQty('${prod.id}', this.value)" class="w-16 bg-slate-50 border border-slate-200 rounded-lg px-1.5 py-1 text-xs font-black text-center focus:outline-none focus:border-blue-400">
+                            <span class="text-[10px] font-bold text-slate-500">kg</span>
                         </div>
-                        <div>${rightControlHTML}</div>
+                        <div class="flex space-x-1">
+                            <button onclick="setQuickWeight('${prod.id}', 0.5)" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-md font-black transition">+0.5</button>
+                            <button onclick="setQuickWeight('${prod.id}', 1.0)" class="text-[10px] bg-blue-800 hover:bg-blue-900 text-white px-1.5 py-0.5 rounded-md font-black shadow-sm transition">+1.0</button>
+                        </div>
+                    </div>`;
+            } else {
+                rightControlHTML = `
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="changeQty('${prod.id}', -1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center font-black shadow-sm transition text-slate-700">-</button>
+                        <span class="text-sm font-black w-6 text-center text-blue-900">${qty}</span>
+                        <button onclick="changeQty('${prod.id}', 1)" class="w-8 h-8 bg-blue-800 hover:bg-blue-900 text-white rounded-lg flex items-center justify-center font-black shadow-sm transition">+</button>
                     </div>`;
             }
 
-            function findProd(id) { for(let c in products){let f = products[c].find(i=>i.id===id); if(f) return f;} return null;}
-            
-            function setQuickWeight(prodId, w) {
-                let p = findProd(prodId); if(!p) return;
-                if(!cart[prodId]) cart[prodId] = {...p, qty:0};
-                cart[prodId].qty = parseFloat((cart[prodId].qty + w).toFixed(2));
-                saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
-            }
-            function changeQty(prodId, c) {
-                let p = findProd(prodId); if(!p) return;
-                if(!cart[prodId]) cart[prodId] = {...p, qty:0};
-                cart[prodId].qty += c;
-                if(cart[prodId].qty <= 0) delete cart[prodId];
-                saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
-            }
-            function updateWeightQty(prodId, val) {
-                let p = findProd(prodId); if(!p) return;
-                let w = parseFloat(val);
-                if(isNaN(w) || w <= 0) delete cart[prodId]; else { cart[prodId] = {...p, qty: w}; }
-                saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
-            }
-            function updateCartItemPrice(prodId, val) {
-                let p = parseFloat(val)||0;
-                if(cart[prodId]) cart[prodId].price = p;
-                let pObj = findProd(prodId); if(pObj) pObj.price = p;
-                saveDataToCloud(); updateCartUI();
-            }
-            function removeCartItem(prodId) { 
-                delete cart[prodId]; saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories(); 
-            }
-            function clearCart() { 
-                if(confirm("¿Estás seguro de vaciar el carrito por completo?")) { 
-                    cart = {}; saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories(); 
-                } 
-            }
+            return `
+                <div class="flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                    <div class="flex-1 pr-2">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <h4 class="font-bold text-slate-900 text-xs">${prod.name}</h4>
+                            <button onclick="openEditProductModal('${prod.id}')" class="text-slate-400 hover:text-slate-700 text-[10px] transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteProductFromAisle('${prod.id}')" class="text-slate-400 hover:text-rose-600 text-[10px] transition"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[10px] text-blue-700 font-black">$</span>
+                            <input type="number" step="0.01" value="${currentPrice}" onchange="updateCartItemPrice('${prod.id}', this.value)" class="w-14 bg-transparent text-xs font-black text-blue-700 focus:outline-none focus:border-b border-blue-300">
+                        </div>
+                    </div>
+                    <div>${rightControlHTML}</div>
+                </div>`;
+        }
 
-            function updateExchangeRate(val) { 
-                exchangeRate = parseFloat(val) || 0; 
-                localStorage.setItem('komprafacil_rate', exchangeRate); 
-                updateCartUI(); 
-            }
+        // --- MANEJO DEL CARRITO ---
+        function findProd(id) { for(let c in products){let f = products[c].find(i=>i.id===id); if(f) return f;} return null;}
+        
+        function setQuickWeight(prodId, w) {
+            let p = findProd(prodId); if(!p) return;
+            if(!cart[prodId]) cart[prodId] = {...p, qty:0};
+            cart[prodId].qty = parseFloat((cart[prodId].qty + w).toFixed(2));
+            saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
+        }
+        function changeQty(prodId, c) {
+            let p = findProd(prodId); if(!p) return;
+            if(!cart[prodId]) cart[prodId] = {...p, qty:0};
+            cart[prodId].qty += c;
+            if(cart[prodId].qty <= 0) delete cart[prodId];
+            saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
+        }
+        function updateWeightQty(prodId, val) {
+            let p = findProd(prodId); if(!p) return;
+            let w = parseFloat(val);
+            if(isNaN(w) || w <= 0) delete cart[prodId]; else { cart[prodId] = {...p, qty: w}; }
+            saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories();
+        }
+        function updateCartItemPrice(prodId, val) {
+            let p = parseFloat(val)||0;
+            if(cart[prodId]) cart[prodId].price = p;
+            let pObj = findProd(prodId); if(pObj) pObj.price = p;
+            saveDataToCloud(); updateCartUI();
+        }
+        function removeCartItem(prodId) { 
+            delete cart[prodId]; saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories(); 
+        }
+        function clearCart() { 
+            if(confirm("¿Estás seguro de vaciar el carrito por completo?")) { 
+                cart = {}; saveDataToCloud(); updateCartUI(); renderProducts(); renderCategories(); 
+            } 
+        }
 
-            function updateCartUI() {
-                const cartList = document.getElementById('cart-list');
-                const cartKeys = Object.keys(cart);
-                let baseTotal = 0;
+        function updateExchangeRate(val) { 
+            exchangeRate = parseFloat(val) || 0; 
+            localStorage.setItem('komprafacil_rate', exchangeRate); 
+            updateCartUI(); 
+        }
 
-                if (cartKeys.length === 0) {
-                    cartList.innerHTML = `<p class="text-xs text-center py-6 font-black text-slate-400">El carrito está vacío.</p>`;
-                    totalGlobalUsd = 0;
-                    const badge = document.getElementById('mobile-cart-badge');
-                    if(badge) badge.classList.add('hidden');
-                } else {
-                    const badge = document.getElementById('mobile-cart-badge');
-                    if(badge) badge.classList.remove('hidden');
-                    cartList.innerHTML = cartKeys.map(key => {
-                        const item = cart[key];
-                        const subtotal = item.price * item.qty;
-                        baseTotal += subtotal;
-                        let isWeight = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
-                        return `
-                            <div class="py-2 grid grid-cols-12 items-center text-[11px] fiscal-ticket border-b border-slate-100 hover:bg-slate-50 transition">
-                                <div class="col-span-5 pr-1 font-black text-slate-800 leading-tight">${item.name} <br><span class="font-normal text-blue-700">$${item.price.toFixed(2)}</span></div>
-                                <div class="col-span-3 text-center font-black text-slate-700">${item.qty} <span class="text-[9px] font-bold text-slate-400">${isWeight?'kg':'u'}</span></div>
-                                <div class="col-span-3 text-right font-black text-slate-900">$${subtotal.toFixed(2)}</div>
-                                <div class="col-span-1 text-right"><button onclick="removeCartItem('${key}')" class="text-rose-500 hover:text-rose-700 font-black transition p-1"><i class="fa-solid fa-xmark"></i></button></div>
-                            </div>`;
-                    }).join('');
-                    totalGlobalUsd = baseTotal * 1.16;
-                }
+        function updateCartUI() {
+            const cartList = document.getElementById('cart-list');
+            const cartKeys = Object.keys(cart);
+            let baseTotal = 0;
 
-                const totalBs = totalGlobalUsd * exchangeRate;
-                
-                document.getElementById('grand-total-header').innerText = `$${totalGlobalUsd.toFixed(2)}`;
-                document.getElementById('grand-total-sidebar').innerText = `$${totalGlobalUsd.toFixed(2)}`;
-                document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-                calculateMixedPayment();
-            }
-
-            function openComparatorModal() { document.getElementById('comparator-modal').classList.remove('hidden'); }
-            function closeComparatorModal() { document.getElementById('comparator-modal').classList.add('hidden'); }
-            
-            function calculateComparator() {
-                let pA = parseFloat(document.getElementById('comp-price-a').value) || 0;
-                let qA = parseFloat(document.getElementById('comp-qty-a').value) || 1;
-                let pB = parseFloat(document.getElementById('comp-price-b').value) || 0;
-                let qB = parseFloat(document.getElementById('comp-qty-b').value) || 1;
-                
-                let resEl = document.getElementById('comp-result');
-                if(pA > 0 && qA > 0 && pB > 0 && qB > 0) {
-                    let costA = pA / qA; let costB = pB / qB;
-                    if(costA < costB) resEl.innerHTML = "<span class='text-blue-900 bg-blue-100 px-4 py-1.5 rounded-lg border border-blue-200'>🏆 ¡La Opción A es más rentable!</span>";
-                    else if(costB < costA) resEl.innerHTML = "<span class='text-blue-900 bg-blue-100 px-4 py-1.5 rounded-lg border border-blue-200'>🏆 ¡La Opción B es más rentable!</span>";
-                    else resEl.innerHTML = "<span class='text-slate-600 bg-slate-100 px-4 py-1.5 rounded-lg'>⚖️ Ambas rinden exactamente igual.</span>";
-                } else {
-                    resEl.innerHTML = "<span class='text-rose-600 text-xs'>Ingresa todos los valores primero.</span>";
-                }
-            }
-
-            function calculateMixedPayment() {
-                let cashGiven = parseFloat(document.getElementById('mixed-cash-input').value) || 0;
-                let remainingUsd = totalGlobalUsd - cashGiven;
-                let remainingBsDisplay = document.getElementById('mixed-remaining-bs');
-                
-                if (remainingUsd <= 0) {
-                    remainingBsDisplay.innerText = "¡Cubierto! $0.00 Restantes";
-                    remainingBsDisplay.className = "text-emerald-600 font-black text-sm";
-                } else {
-                    let bsToPay = remainingUsd * exchangeRate;
-                    remainingBsDisplay.innerText = `Bs. ${bsToPay.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                    remainingBsDisplay.className = "text-blue-700 font-black text-sm";
-                }
-            }
-
-            function checkAntiOlvidosAndSave() {
-                const cartKeys = Object.keys(cart);
-                if (cartKeys.length === 0) { alert("El carrito está vacío, no se puede cerrar la compra."); return; }
-                
-                if (purchaseHistory.length < 2) { 
-                    executePurchaseEmission(); 
-                    return; 
-                }
-                
-                let freqMap = {};
-                purchaseHistory.forEach(rec => {
-                    if(rec.itemsSnapshot) rec.itemsSnapshot.forEach(item => { freqMap[item.name] = (freqMap[item.name] || 0) + 1; });
-                });
-                
-                let threshold = Math.ceil(purchaseHistory.length * 0.4); 
-                let missingItems = [];
-                for (let name in freqMap) {
-                    if (freqMap[name] >= threshold) {
-                        let isInCart = false;
-                        for (let k in cart) { if (cart[k].name.toLowerCase() === name.toLowerCase()) isInCart = true; }
-                        if (!isInCart) missingItems.push(name);
-                    }
-                }
-                
-                if (missingItems.length > 0) {
-                    let msg = "⚠️ ASISTENTE ANTI-OLVIDOS:\n\nNoté que hoy no llevas productos que normalmente compras:\n\n- " 
-                              + missingItems.slice(0, 3).join("\n- ") 
-                              + "\n\n¿Estás seguro de que deseas cerrar la compra sin ellos?";
-                    if (!confirm(msg)) return;
-                }
-                executePurchaseEmission();
-            }
-
-            function executePurchaseEmission() {
-                const cartKeys = Object.keys(cart);
-                let baseTotal = 0;
-                let itemsHtml = '';
-                let itemsSnapshot = [];
-
-                cartKeys.forEach(key => {
+            if (cartKeys.length === 0) {
+                cartList.innerHTML = `<p class="text-xs text-center py-6 font-black text-slate-400">El carrito está vacío.</p>`;
+                totalGlobalUsd = 0;
+                document.getElementById('mobile-cart-badge').classList.add('hidden');
+            } else {
+                document.getElementById('mobile-cart-badge').classList.remove('hidden');
+                cartList.innerHTML = cartKeys.map(key => {
                     const item = cart[key];
-                    const sub = item.price * item.qty;
-                    baseTotal += sub;
+                    const subtotal = item.price * item.qty;
+                    baseTotal += subtotal;
                     let isWeight = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
-                    let qtyLabel = isWeight ? `${item.qty} kg` : `${item.qty} und`;
-
-                    itemsSnapshot.push({ name: item.name, price: item.price, qty: qtyLabel, sub: sub });
-
-                    itemsHtml += `<tr>
-                        <td style="padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${item.name}<br><span style="font-size:10px; font-weight:normal;">$${item.price.toFixed(2)}</span></td>
-                        <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${qtyLabel}</td>
-                        <td style="text-align: right; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">$${sub.toFixed(2)}</td>
-                    </tr>`;
-                });
-
-                const totalBs = totalGlobalUsd * exchangeRate;
-                const exactTimeObj = new Date();
-                const dateTimeString = `${exactTimeObj.toLocaleDateString()} ${exactTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
-                const templateParams = {
-                    to_email: currentUser,
-                    store_name: fiscalData.storeName,
-                    store_rif: fiscalData.storeRif,
-                    store_dir: "Ciudad Bolívar, Estado Bolívar",
-                    client_name: fiscalData.clientName,
-                    client_doc: fiscalData.clientDoc,
-                    invoice_date: dateTimeString,
-                    fac_number: `INT-${Date.now().toString().slice(-6)}`,
-                    invoice_items_html: itemsHtml,
-                    tasa_bcv: `Bs. ${exchangeRate.toFixed(2)}`,
-                    total_bs: `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-                    total_usd: `$${totalGlobalUsd.toFixed(2)}`
-                };
-
-                try {
-                    emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
-                        .then(() => { alert("¡Compra guardada y resumen enviado a tu correo!"); }, 
-                              (err) => { console.error("Error EmailJS:", err); });
-                } catch(e) { console.error(e); }
-
-                const record = {
-                    id: Date.now(),
-                    timestamp: Date.now(),
-                    date: dateTimeString,
-                    store: fiscalData.storeName,
-                    facNumber: templateParams.fac_number,
-                    totalUsd: totalGlobalUsd,
-                    totalBs: totalBs,
-                    itemsCount: cartKeys.length,
-                    itemsSnapshot: itemsSnapshot
-                };
-
-                purchaseHistory.unshift(record);
-                cart = {};
-                document.getElementById('mixed-cash-input').value = '';
-                saveDataToCloud();
-                updateCartUI();
-                renderProducts();
-                renderCategories();
+                    return `
+                        <div class="py-2 grid grid-cols-12 items-center text-[11px] fiscal-ticket border-b border-slate-100 hover:bg-slate-50 transition">
+                            <div class="col-span-5 pr-1 font-black text-slate-800 leading-tight">${item.name} <br><span class="font-normal text-blue-700">$${item.price.toFixed(2)}</span></div>
+                            <div class="col-span-3 text-center font-black text-slate-700">${item.qty} <span class="text-[9px] font-bold text-slate-400">${isWeight?'kg':'u'}</span></div>
+                            <div class="col-span-3 text-right font-black text-slate-900">$${subtotal.toFixed(2)}</div>
+                            <div class="col-span-1 text-right"><button onclick="removeCartItem('${key}')" class="text-rose-500 hover:text-rose-700 font-black transition p-1"><i class="fa-solid fa-xmark"></i></button></div>
+                        </div>`;
+                }).join('');
+                totalGlobalUsd = baseTotal * 1.16; // Con IVA 16% integrado al total
             }
 
-            function showDashboardMenu() { document.getElementById('dashboard-menu-modal').classList.remove('hidden'); }
-            function closeDashboardMenu() { document.getElementById('dashboard-menu-modal').classList.add('hidden'); }
+            const totalBs = totalGlobalUsd * exchangeRate;
             
-            function startNewPurchase() {
-                closeDashboardMenu();
-                clearCart();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            document.getElementById('grand-total-header').innerText = `$${totalGlobalUsd.toFixed(2)}`;
+            document.getElementById('grand-total-sidebar').innerText = `$${totalGlobalUsd.toFixed(2)}`;
+            document.getElementById('fiscal-total-bs').innerText = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-            function repeatLastPurchase() {
-                closeDashboardMenu();
-                if (!purchaseHistory || purchaseHistory.length === 0) {
-                    alert("No hay compras anteriores registradas en tu historial.");
-                    return;
-                }
-                const lastRec = purchaseHistory[0];
-                
-                cart = {};
-                lastRec.itemsSnapshot.forEach(item => {
-                    let foundProd = null;
-                    for (let cat in products) {
-                        const p = products[cat].find(prod => prod.name.toLowerCase() === item.name.toLowerCase());
-                        if (p) { foundProd = p; break; }
-                    }
+            calculateMixedPayment();
+        }
 
-                    let numericQty = parseFloat(item.qty) || 1;
-                    if (foundProd) {
-                        cart[foundProd.id] = { ...foundProd, qty: numericQty, price: item.price };
-                    } else {
-                        const savedId = `secos_${Date.now()}_${Math.random()}`;
-                        if (!products['secos']) products['secos'] = [];
-                        const newP = { id: savedId, name: item.name, price: item.price };
-                        products['secos'].push(newP);
-                        cart[savedId] = { ...newP, qty: numericQty };
-                    }
-                });
-
-                saveDataToCloud();
-                renderProducts();
-                renderCategories();
-                updateCartUI();
-                alert("¡Se ha cargado tu última compra en el carrito exitosamente!");
-            }
-
-            function openHistoryModal() {
-                closeDashboardMenu();
-                renderModalHistory();
-                document.getElementById('history-modal').classList.remove('hidden');
-            }
-
-            function closeHistoryModal() { document.getElementById('history-modal').classList.add('hidden'); }
-
-            function renderModalHistory() {
-                const modalList = document.getElementById('modal-history-list');
-                if (purchaseHistory.length === 0) {
-                    modalList.innerHTML = `<p class="text-xs text-center py-8 font-black text-slate-400">Aún no hay compras registradas en el historial.</p>`;
-                    return;
-                }
-
-                modalList.innerHTML = purchaseHistory.map(rec => `
-                    <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center text-xs shadow-sm cursor-pointer hover:bg-blue-50 transition transform hover:scale-[1.01]">
-                        <div>
-                            <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>
-                            <span class="text-[11px] font-bold text-blue-800 block">Recibo: #${rec.facNumber}</span>
-                            <span class="text-[10px] text-slate-500 font-semibold">${rec.date} • ${rec.itemsCount} ítems</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="font-black text-blue-700 text-sm block">$${rec.totalUsd.toFixed(2)}</span>
-                            <span class="text-[10px] font-bold text-slate-700 block">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            function viewInvoiceDetail(recordId) {
-                const rec = purchaseHistory.find(r => r.id === recordId);
-                if (!rec) return;
-
-                let itemsHtmlDetail = rec.itemsSnapshot ? rec.itemsSnapshot.map(i => `
-                    <div class="flex justify-between text-[10px] py-1 border-b border-blue-100">
-                        <span>${i.name} (${i.qty})</span>
-                        <span class="font-black">$${i.sub.toFixed(2)}</span>
-                    </div>
-                `).join('') : '<p>Sin detalles de ítems</p>';
-
-                document.getElementById('invoice-detail-content').innerHTML = `
-                    <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>
-                    <p class="text-center text-[11px]">Recibo Control: #${rec.facNumber}</p>
-                    <p class="text-center text-[10px] text-slate-500">${rec.date}</p>
-                    <div class="my-2 border-t border-blue-200 pt-1">
-                        ${itemsHtmlDetail}
-                    </div>
-                    <div class="flex justify-between font-black pt-1 border-t border-blue-300 text-sm">
-                        <span>TOTAL:</span>
-                        <span>$${rec.totalUsd.toFixed(2)}</span>
-                    </div>
-                    <div class="text-right text-[10px] font-bold text-slate-600">(Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-                `;
-                document.getElementById('invoice-detail-modal').classList.remove('hidden');
-            }
-
-            function closeInvoiceDetailModal() { document.getElementById('invoice-detail-modal').classList.add('hidden'); }
-
-            window.addEventListener('DOMContentLoaded', () => {
-                initApp();
-            });
-
-        } catch (globalErr) {
-            console.error("Error crítico de ejecución:", globalErr);
-            const errBanner = document.getElementById('error-banner');
-            if(errBanner) {
-                errBanner.style.display = 'block';
-                errBanner.innerText = "Error al iniciar la aplicación: " + globalErr.message;
+        // --- HERRAMIENTAS DE TRINCHERA (SUPERMERCADO) ---
+        function openComparatorModal() { document.getElementById('comparator-modal').classList.remove('hidden'); }
+        function closeComparatorModal() { document.getElementById('comparator-modal').classList.add('hidden'); }
+        
+        function calculateComparator() {
+            let pA = parseFloat(document.getElementById('comp-price-a').value) || 0;
+            let qA = parseFloat(document.getElementById('comp-qty-a').value) || 1;
+            let pB = parseFloat(document.getElementById('comp-price-b').value) || 0;
+            let qB = parseFloat(document.getElementById('comp-qty-b').value) || 1;
+            
+            let resEl = document.getElementById('comp-result');
+            if(pA > 0 && qA > 0 && pB > 0 && qB > 0) {
+                let costA = pA / qA; let costB = pB / qB;
+                if(costA < costB) resEl.innerHTML = "<span class='text-blue-900 bg-blue-100 px-4 py-1.5 rounded-lg border border-blue-200'>🏆 ¡La Opción A es más rentable!</span>";
+                else if(costB < costA) resEl.innerHTML = "<span class='text-blue-900 bg-blue-100 px-4 py-1.5 rounded-lg border border-blue-200'>🏆 ¡La Opción B es más rentable!</span>";
+                else resEl.innerHTML = "<span class='text-slate-600 bg-slate-100 px-4 py-1.5 rounded-lg'>⚖️ Ambas rinden exactamente igual.</span>";
+            } else {
+                resEl.innerHTML = "<span class='text-rose-600 text-xs'>Ingresa todos los valores primero.</span>";
             }
         }
+
+        function calculateMixedPayment() {
+            let cashGiven = parseFloat(document.getElementById('mixed-cash-input').value) || 0;
+            let remainingUsd = totalGlobalUsd - cashGiven;
+            let remainingBsDisplay = document.getElementById('mixed-remaining-bs');
+            
+            if (remainingUsd <= 0) {
+                remainingBsDisplay.innerText = "¡Cubierto! $0.00 Restantes";
+                remainingBsDisplay.className = "text-emerald-600 font-black text-sm";
+            } else {
+                let bsToPay = remainingUsd * exchangeRate;
+                remainingBsDisplay.innerText = `Bs. ${bsToPay.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                remainingBsDisplay.className = "text-blue-700 font-black text-sm";
+            }
+        }
+
+        function checkAntiOlvidosAndSave() {
+            const cartKeys = Object.keys(cart);
+            if (cartKeys.length === 0) { alert("El carrito está vacío, no se puede cerrar la compra."); return; }
+            
+            if (purchaseHistory.length < 2) { 
+                executePurchaseEmission(); 
+                return; 
+            }
+            
+            let freqMap = {};
+            purchaseHistory.forEach(rec => {
+                if(rec.itemsSnapshot) rec.itemsSnapshot.forEach(item => { freqMap[item.name] = (freqMap[item.name] || 0) + 1; });
+            });
+            
+            let threshold = Math.ceil(purchaseHistory.length * 0.4); 
+            let missingItems = [];
+            for (let name in freqMap) {
+                if (freqMap[name] >= threshold) {
+                    let isInCart = false;
+                    for (let k in cart) { if (cart[k].name.toLowerCase() === name.toLowerCase()) isInCart = true; }
+                    if (!isInCart) missingItems.push(name);
+                }
+            }
+            
+            if (missingItems.length > 0) {
+                let msg = "⚠️ ASISTENTE ANTI-OLVIDOS:\n\nNoté que hoy no llevas productos que normalmente compras:\n\n- " 
+                          + missingItems.slice(0, 3).join("\n- ") 
+                          + "\n\n¿Estás seguro de que deseas cerrar la compra sin ellos?";
+                if (!confirm(msg)) return; // Se cancela el guardado para que vaya a buscarlos
+            }
+            executePurchaseEmission();
+        }
+
+        // --- CHECKOUT Y EMAIL ---
+        function executePurchaseEmission() {
+            const cartKeys = Object.keys(cart);
+            let baseTotal = 0;
+            let itemsHtml = '';
+            let itemsSnapshot = [];
+
+            cartKeys.forEach(key => {
+                const item = cart[key];
+                const sub = item.price * item.qty;
+                baseTotal += sub;
+                let isWeight = key.startsWith('hortalizas') || key.startsWith('charcuteria') || key.startsWith('frios');
+                let qtyLabel = isWeight ? `${item.qty} kg` : `${item.qty} und`;
+
+                itemsSnapshot.push({ name: item.name, price: item.price, qty: qtyLabel, sub: sub });
+
+                itemsHtml += `<tr>
+                    <td style="padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${item.name}<br><span style="font-size:10px; font-weight:normal;">$${item.price.toFixed(2)}</span></td>
+                    <td style="text-align: center; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">${qtyLabel}</td>
+                    <td style="text-align: right; padding: 4px 0; border-bottom: 1px dashed #ddd; font-weight: bold; color: #000;">$${sub.toFixed(2)}</td>
+                </tr>`;
+            });
+
+            const totalBs = totalGlobalUsd * exchangeRate;
+            const exactTimeObj = new Date();
+            const dateTimeString = `${exactTimeObj.toLocaleDateString()} ${exactTimeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+            // Enviar Correo por EmailJS
+            const templateParams = {
+                to_email: currentUser,
+                store_name: fiscalData.storeName,
+                store_rif: fiscalData.storeRif,
+                store_dir: "Ciudad Bolívar, Estado Bolívar",
+                client_name: fiscalData.clientName,
+                client_doc: fiscalData.clientDoc,
+                invoice_date: dateTimeString,
+                fac_number: `INT-${Date.now().toString().slice(-6)}`,
+                invoice_items_html: itemsHtml,
+                tasa_bcv: `Bs. ${exchangeRate.toFixed(2)}`,
+                total_bs: `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                total_usd: `$${totalGlobalUsd.toFixed(2)}`
+            };
+
+            emailjs.send("service_s3hefmh", "template_fiv28yn", templateParams)
+                .then(() => { alert("¡Compra guardada y resumen enviado a tu correo!"); }, 
+                      (err) => { console.error("Error EmailJS:", err); alert("Compra guardada localmente, pero falló el envío del correo."); });
+
+            // Guardar en Historial
+            const record = {
+                id: Date.now(),
+                timestamp: Date.now(),
+                date: dateTimeString,
+                store: fiscalData.storeName,
+                facNumber: templateParams.fac_number,
+                totalUsd: totalGlobalUsd,
+                totalBs: totalBs,
+                itemsCount: cartKeys.length,
+                itemsSnapshot: itemsSnapshot
+            };
+
+            purchaseHistory.unshift(record);
+            cart = {};
+            document.getElementById('mixed-cash-input').value = '';
+            saveDataToCloud();
+            updateCartUI();
+            renderProducts();
+            renderCategories();
+        }
+
+        // --- DASHBOARD MENÚ & HISTORIAL ---
+        function showDashboardMenu() { document.getElementById('dashboard-menu-modal').classList.remove('hidden'); }
+        function closeDashboardMenu() { document.getElementById('dashboard-menu-modal').classList.add('hidden'); }
+        
+        function startNewPurchase() {
+            closeDashboardMenu();
+            clearCart();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function repeatLastPurchase() {
+            closeDashboardMenu();
+            if (!purchaseHistory || purchaseHistory.length === 0) {
+                alert("No hay compras anteriores registradas en tu historial.");
+                return;
+            }
+            const lastRec = purchaseHistory[0];
+            
+            cart = {};
+            lastRec.itemsSnapshot.forEach(item => {
+                let foundProd = null;
+                for (let cat in products) {
+                    const p = products[cat].find(prod => prod.name.toLowerCase() === item.name.toLowerCase());
+                    if (p) { foundProd = p; break; }
+                }
+
+                let numericQty = parseFloat(item.qty) || 1;
+                if (foundProd) {
+                    cart[foundProd.id] = { ...foundProd, qty: numericQty, price: item.price };
+                } else {
+                    const savedId = `secos_${Date.now()}_${Math.random()}`;
+                    if (!products['secos']) products['secos'] = [];
+                    const newP = { id: savedId, name: item.name, price: item.price };
+                    products['secos'].push(newP);
+                    cart[savedId] = { ...newP, qty: numericQty };
+                }
+            });
+
+            saveDataToCloud();
+            renderProducts();
+            renderCategories();
+            updateCartUI();
+            alert("¡Se ha cargado tu última compra en el carrito exitosamente!");
+        }
+
+        function openHistoryModal() {
+            closeDashboardMenu();
+            renderModalHistory();
+            document.getElementById('history-modal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() { document.getElementById('history-modal').classList.add('hidden'); }
+
+        function renderModalHistory() {
+            const modalList = document.getElementById('modal-history-list');
+            if (purchaseHistory.length === 0) {
+                modalList.innerHTML = `<p class="text-xs text-center py-8 font-black text-slate-400">Aún no hay compras registradas en el historial.</p>`;
+                return;
+            }
+
+            modalList.innerHTML = purchaseHistory.map(rec => `
+                <div onclick="viewInvoiceDetail(${rec.id})" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center text-xs shadow-sm cursor-pointer hover:bg-blue-50 transition transform hover:scale-[1.01]">
+                    <div>
+                        <strong class="font-black text-slate-900 block text-sm">${rec.store}</strong>
+                        <span class="text-[11px] font-bold text-blue-800 block">Recibo: #${rec.facNumber}</span>
+                        <span class="text-[10px] text-slate-500 font-semibold">${rec.date} • ${rec.itemsCount} ítems</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-black text-blue-700 text-sm block">$${rec.totalUsd.toFixed(2)}</span>
+                        <span class="text-[10px] font-bold text-slate-700 block">Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewInvoiceDetail(recordId) {
+            const rec = purchaseHistory.find(r => r.id === recordId);
+            if (!rec) return;
+
+            let itemsHtmlDetail = rec.itemsSnapshot ? rec.itemsSnapshot.map(i => `
+                <div class="flex justify-between text-[10px] py-1 border-b border-blue-100">
+                    <span>${i.name} (${i.qty})</span>
+                    <span class="font-black">$${i.sub.toFixed(2)}</span>
+                </div>
+            `).join('') : '<p>Sin detalles de ítems</p>';
+
+            document.getElementById('invoice-detail-content').innerHTML = `
+                <p class="font-black text-center text-xs text-blue-900">${rec.store.toUpperCase()}</p>
+                <p class="text-center text-[11px]">Recibo Control: #${rec.facNumber}</p>
+                <p class="text-center text-[10px] text-slate-500">${rec.date}</p>
+                <div class="my-2 border-t border-blue-200 pt-1">
+                    ${itemsHtmlDetail}
+                </div>
+                <div class="flex justify-between font-black pt-1 border-t border-blue-300 text-sm">
+                    <span>TOTAL:</span>
+                    <span>$${rec.totalUsd.toFixed(2)}</span>
+                </div>
+                <div class="text-right text-[10px] font-bold text-slate-600">(Bs. ${rec.totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
+            `;
+            document.getElementById('invoice-detail-modal').classList.remove('hidden');
+        }
+
+        function closeInvoiceDetailModal() { document.getElementById('invoice-detail-modal').classList.add('hidden'); }
+
+        // Start 
+        initApp();
     </script>
 </body>
 </html>
